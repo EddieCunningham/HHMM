@@ -7,20 +7,11 @@ import matplotlib.pyplot as plt
 from pyLogVar import LogVar
 import json
 import itertools
-from model import *
-from PedigreeHypergraph import *
+from model import Pedigree
+from PedigreeHypergraph import PedigreeHG
 from AutosomalDistribution import *
-# from HHMMUpDown4 import *
-# from HHMMLoopy import *
-# from HHMMUpDown5 import *
-from HHMMUpDown9 import *
-# from HHMMUpDown8 import *
-# from HHMMUpDown7 import *
-# from HHMMUpDown6 import *
-# from HHMMUpDown3 import *
-# from HHMMUpDown2 import *
-# from HHMMUpDown import *
-from HypergraphIterator import BFSHypergraph
+from HHMMUpDown import HiddenMarkovModelMessagePasser,MessagePassingHG
+from MMUpDown import MarkovModelMessagePasser
 
 def printListOfNodes(nodes):
     print('[ '),
@@ -64,11 +55,11 @@ def pedigreeExample():
 
     hg.draw()
     hg.initHyperParams('autosome','dominant',1000)
-    msg = MessagePasser(hg,sampleHyperGraphParameters)
+    msg = HiddenMarkovModelMessagePasser(hg,sampleHyperGraphParameters)
     return hg,msg
 
 
-def cycleExample1():
+def cycleExample1(isHidden):
     hg = MessagePassingHG(2)
     n0 = hg.addNode(0)
     n1 = hg.addNode(1)
@@ -89,10 +80,13 @@ def cycleExample1():
     hg.initialize()
 
     hg.draw()
-    msg = MessagePasser(hg,generic2DParameters)
+    if(isHidden):
+        msg = HiddenMarkovModelMessagePasser(hg,generic2DParameters)
+    else:
+        msg = MarkovModelMessagePasser(hg,generic2DParameters)
     return hg,msg
 
-def cycleExample2():
+def cycleExample2(isHidden):
     hg = MessagePassingHG(2)
     n1 = hg.addNode(1)
     n3 = hg.addNode(3)
@@ -116,10 +110,13 @@ def cycleExample2():
 
     hg.draw()
 
-    msg = MessagePasser(hg,generic2DParameters)
+    if(isHidden):
+        msg = HiddenMarkovModelMessagePasser(hg,generic2DParameters)
+    else:
+        msg = MarkovModelMessagePasser(hg,generic2DParameters)
     return hg,msg
 
-def cycleExample3():
+def cycleExample3(isHidden):
     hg = MessagePassingHG(2)
     n0 = hg.addNode(0)
     n1 = hg.addNode(1)
@@ -149,10 +146,13 @@ def cycleExample3():
 
     hg.draw()
 
-    msg = MessagePasser(hg,generic2DParameters)
+    if(isHidden):
+        msg = HiddenMarkovModelMessagePasser(hg,generic2DParameters)
+    else:
+        msg = MarkovModelMessagePasser(hg,generic2DParameters)
     return hg,msg
 
-def cycleExample4():
+def cycleExample4(isHidden=True):
     hg = MessagePassingHG(2)
     n1 = hg.addNode(1)
     n2 = hg.addNode(2)
@@ -176,10 +176,13 @@ def cycleExample4():
 
     hg.draw()
 
-    msg = MessagePasser(hg,generic2DParameters)
+    if(isHidden):
+        msg = HiddenMarkovModelMessagePasser(hg,generic2DParameters)
+    else:
+        msg = MarkovModelMessagePasser(hg,generic2DParameters)
     return hg,msg
 
-def cycleExample5():
+def cycleExample5(isHidden=True):
     hg = MessagePassingHG(2)
     n0 = hg.addNode(0)
     n1 = hg.addNode(1)
@@ -213,10 +216,51 @@ def cycleExample5():
 
     hg.draw()
 
-    msg = MessagePasser(hg,generic2DParameters)
+    if(isHidden):
+        msg = HiddenMarkovModelMessagePasser(hg,generic2DParameters)
+    else:
+        msg = MarkovModelMessagePasser(hg,generic2DParameters)
     return hg,msg
 
-def cycleExample6():
+
+def cycleExample5_1(isHidden=True):
+    hg = MessagePassingHG(2)
+    n1 = hg.addNode(1)
+    n2 = hg.addNode(2)
+    n3 = hg.addNode(3)
+    n4 = hg.addNode(4)
+    n5 = hg.addNode(5)
+    n6 = hg.addNode(6)
+    n7 = hg.addNode(7)
+    n8 = hg.addNode(8)
+    n9 = hg.addNode(9)
+
+    e1 = hg.addEdge(set([n1]),1)
+    e1.addChild(n2)
+    e1.addChild(n3)
+    e1.addChild(n9)
+
+    e2 = hg.addEdge(set([n2,n3]),2)
+    e2.addChild(n4)
+
+    e3 = hg.addEdge(set([n4,n8,n2,n3,n1]),3)
+    e3.addChild(n5)
+    e3.addChild(n6)
+
+    e4 = hg.addEdge(set([n5,n6,n1,n2,n4,n6,n9]),4)
+    e4.addChild(n7)
+
+    hg.initialize()
+
+    hg.draw()
+
+    if(isHidden):
+        msg = HiddenMarkovModelMessagePasser(hg,generic2DParameters)
+    else:
+        msg = MarkovModelMessagePasser(hg,generic2DParameters)
+    return hg,msg
+
+def cycleExample6(isHidden=True):
     hg = MessagePassingHG(2)
     n1 = hg.addNode(1)
     n2 = hg.addNode(2)
@@ -234,10 +278,13 @@ def cycleExample6():
 
     hg.draw()
 
-    msg = MessagePasser(hg,generic2DParameters)
+    if(isHidden):
+        msg = HiddenMarkovModelMessagePasser(hg,generic2DParameters)
+    else:
+        msg = MarkovModelMessagePasser(hg,generic2DParameters)
     return hg,msg
 
-def cycleExample7():
+def cycleExample7(isHidden=True):
     hg = MessagePassingHG(2)
     n0 = hg.addNode(0)
     n1 = hg.addNode(1)
@@ -263,10 +310,13 @@ def cycleExample7():
 
     hg.draw()
 
-    msg = MessagePasser(hg,generic2DParameters)
+    if(isHidden):
+        msg = HiddenMarkovModelMessagePasser(hg,generic2DParameters)
+    else:
+        msg = MarkovModelMessagePasser(hg,generic2DParameters)
     return hg,msg
 
-def cycleExample7():
+def cycleExample8(isHidden=True):
     hg = MessagePassingHG(2)
     n0 = hg.addNode(0)
     n2 = hg.addNode(2)
@@ -285,10 +335,13 @@ def cycleExample7():
 
     hg.draw()
 
-    msg = MessagePasser(hg,generic2DParameters)
+    if(isHidden):
+        msg = HiddenMarkovModelMessagePasser(hg,generic2DParameters)
+    else:
+        msg = MarkovModelMessagePasser(hg,generic2DParameters)
     return hg,msg
 
-def disjointExample():
+def disjointExample(isHidden=True):
     hg = MessagePassingHG(2)
 
     n1 = hg.addNode(1)
@@ -323,15 +376,19 @@ def disjointExample():
 
     hg.draw()
 
-    msg = MessagePasser(hg,generic2DParameters)
+    if(isHidden):
+        msg = HiddenMarkovModelMessagePasser(hg,generic2DParameters)
+    else:
+        msg = MarkovModelMessagePasser(hg,generic2DParameters)
     return hg,msg
 
 
-hg,msg = pedigreeExample()
-# hg,msg = cycleExample4()
-# hg,msg = cycleExample5()
+# hg,msg = pedigreeExample()
+# hg,msg = cycleExample4(False)
+# hg,msg = cycleExample5(False)
+hg,msg = cycleExample5_1(False)
 # hg,msg = cycleExample6()
-# hg,msg = cycleExample7()
+# hg,msg = cycleExample7(False)
 # hg,msg = disjointExample()
 # hg,msg = pedigreeExample()
 
@@ -344,51 +401,24 @@ hg,msg = pedigreeExample()
 # print(val0+val1)
 # print(str0)
 # assert 0
-start = time.time()
-msg.preprocess()
-end = time.time()
-print('Preprocess time: '+str(end-start))
-msg.aTest()
-# print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
-# print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
-# print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
-# print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
-start = time.time()
-msg.getStats()
-end = time.time()
-print('Traversal time: '+str(end-start))
-msg.aTest()
-assert 0
+def HMMTest():
+    start = time.time()
+    msg.preprocess()
+    end = time.time()
+    print('Preprocess time: '+str(end-start))
+    msg.aTest()
+    start = time.time()
+    msg.getStats()
+    end = time.time()
+    print('Traversal time: '+str(end-start))
+    msg.aTest()
 
+def MMTest():
 
-for nodes in BFSHypergraph(hg):
-    for node in nodes:
-        # if('8' not in str(node._id)):
-        #     continue
-        print('currentNode: '+str(node._id)+' '),
-        total = LogVar(0)
+    for node in msg.nodes:
         for i in range(node.N):
-            w = msg.getW(node,i)
-            total += w
-            print(str(w)+' '),
-        print
+            comp = msg.getW(node,i)
+            bf = msg.getWBruteForce([node],[i])
+            print(comp._logVal - bf._logVal)
 
-# for t in msg.traverseOrder:
-#     print(t)
-
-print('total size of wstack is: '+str(len(msg._WStack[-1].keys())))
-
-def bruteForce():
-
-    for n in sorted(hg._nodes):
-        print('n'+str(n._id)+' - [ '),
-        for i in range(n.N):
-            val,string = msg._getWBruteForce([n],[i])
-            print(str(val)+' '),
-        print(']')
-        # print(string)
-
-bruteForce()
-n2 = hg.addNode(2)
-n7 = hg.addNode(7)
-val,string = msg._getWBruteForce([n2,n7],[1,1])
+MMTest()

@@ -1,9 +1,7 @@
 from HypergraphBase import *
 from pyLogVar import *
 from cycleDetector import *
-from HypergraphIterator import BFSHypergraph
 import numpy as np
-np.random.seed(10)
 
 def calcN(person):
     return 2
@@ -453,7 +451,7 @@ class MessagePassingHG(BaseHyperGraph):
         N = self.N
         return super(MessagePassingHG,self).addNode(ID,y,N)
 
-class MessagePasser():
+class HiddenMarkovModelMessagePasser():
 
     def __init__(self,hg,hgParamFunction):
 
@@ -851,3 +849,5 @@ class MessagePasser():
                 if(len(n._parents) > 0):
                     for X in itertools.product(*[range(p.N) for p in sorted(n._parents)]):
                         genProb = self.probOfParentsProducingNode(n,X,i)
+
+

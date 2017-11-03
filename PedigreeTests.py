@@ -11,8 +11,7 @@ from model import *
 from PedigreeHypergraph import *
 from AutosomalDistribution import *
 
-from HHMMUpDown9 import *
-from HypergraphIterator import BFSHypergraph
+from HHMMUpDown import *
 
 
 
@@ -49,7 +48,7 @@ def allPedigrees():
     ans = []
     for name,hg in allPedigrees.items():
         hg.initHyperParams('autosome','dominant',1000)
-        msg = MessagePasser(hg,sampleHyperGraphParameters)
+        msg = HiddenMarkovModelMessagePasser(hg,sampleHyperGraphParameters)
         ans.append({'name':name,'hg':hg,'msg':msg})
 
     return ans

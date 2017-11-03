@@ -1,13 +1,4 @@
-# from HHMMUpDown4 import *
-from HHMMUpDown9 import *
-# from HHMMUpDown8 import *
-# from HHMMUpDown7 import *
-# from HHMMUpDown6 import *
-# from HHMMUpDown5 import *
-# from HHMMLoopy import *
-# from HHMMUpDown3 import *
-# from HHMMUpDown2 import *
-# from HHMMUpDown import *
+from HHMMUpDown import *
 from AutosomalDistribution import *
 
 class PedigreeHG(MessagePassingHG):

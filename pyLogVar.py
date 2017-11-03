@@ -1,10 +1,10 @@
 from __future__ import division
 import numpy as np
+
 ZERO = 'ZERO'
 UNDERFLOW = 500
 
 def logAdd(log_a,log_b):
-
     if(log_a == ZERO):
         return log_b
     if(log_b == ZERO):
