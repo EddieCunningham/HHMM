@@ -1,8 +1,8 @@
-# from HypergraphBase import *
 from HypergraphBaseFast import Node,Edge,BaseHyperGraph
 from LogVar import LogVar
 from cycleDetector import *
 import numpy as np
+import graphviz
 from functools import reduce
 
 def addIt(x,y):
@@ -125,7 +125,7 @@ class NodeForHMM(Node):
         """ All nodes down from this node but not down edge """
         if(len(self._downEdges) > 1):
             a_ *= reduce(mulIt, map(lambda e: self.getV(e,i,conditioning), filter(lambda e:e!=edge,self._downEdges)))
-            self._aDeps |= self._VDeps
+        self._aDeps |= self._VDeps
 
         return a_
 
@@ -187,28 +187,22 @@ class NodeForHMM(Node):
         b_ = LogVar(0)
         if(len(self._downEdges) > 0):
 
-            for k in self._getN(self,conditioning):
-
-                _prod = LogVar(1)
-
+            def f(k):
                 """ Prob of this sibling """
-                _prod *= self._trans(self._parents,self,X,k) * self._L(self,k)
+                _prod = LogVar(self._trans(self._parents,self,X,k)) * self._L(self,k)
 
                 """ Branch down from sibling """
                 _prod *= reduce(mulIt,map(lambda e:self.getV(e,k,conditioning),self._downEdges))
                 self._bDeps |= self._VDeps
 
-                b_ += _prod
+                return _prod
         else:
 
-            for k in self._getN(self,conditioning):
-
-                _prod = LogVar(1)
-
+            def f(k):
                 """ Prob of this sibling """
-                _prod *= self._trans(self._parents,self,X,k) * self._L(self,k)
+                return self._trans(self._parents,self,X,k) * self._L(self,k)
 
-                b_ += _prod
+        b_ = reduce(addIt,map(f,self._getN(self,conditioning)))
 
         return b_
 
@@ -261,8 +255,6 @@ class NodeForHMM(Node):
 
     def _computeU(self,i,conditioning):
 
-        u = LogVar(0)
-
         parents = self._parents
         if(len(parents) == 0 or self.inFBS):
 
@@ -279,12 +271,10 @@ class NodeForHMM(Node):
 
         else:
 
-            for X in itertools.product(*[self._getN(p,conditioning) for p in parents]):
-
-                prod = LogVar(1)
+            def f(X):
 
                 """ Prob of this node """
-                prod *= LogVar(self._trans(parents,self,X,i))
+                prod = LogVar(self._trans(parents,self,X,i))
 
                 """ Branch out from each parent """
                 for parent,j in zip(parents,X):
@@ -292,12 +282,15 @@ class NodeForHMM(Node):
                     self._UDeps |= parent._aDeps
 
                 """ Branch out from each sibling """
-                for sibling in [x for x in self._upEdge._children if x!=self]:
+                for sibling in self._upEdge._children:
+                    if(sibling==self):continue
 
                     prod *= sibling.getB(X,conditioning)
                     self._UDeps |= sibling._bDeps
 
-                u += prod
+                return prod
+
+            u = reduce(addIt,map(f,itertools.product(*[self._getN(p,conditioning) for p in parents])))
 
             u *= self._L(self,i)
 
@@ -359,14 +352,8 @@ class NodeForHMM(Node):
         if(self.inFBS or len(self._downEdges) == 0):
             return LogVar(1)
 
-        v = LogVar(0)
-
-        assert self in edge._parents
-
-        mates = [x for x in edge._parents if x != self]
-        for X_,X in zip(itertools.product(*[self._getN(m,conditioning) for m in mates]),\
-            itertools.product(*[self._getN(m,conditioning) if m!=self else [i] for m in edge._parents])):
-
+        def f(X_X):
+            X_,X = X_X
             prod = LogVar(1)
 
             """ Branch out from each mate """
@@ -379,8 +366,11 @@ class NodeForHMM(Node):
             for child in edge._children:
                 prod *= child.getB(X,conditioning)
                 self._VDeps |= child._bDeps
+            return prod
 
-            v += prod
+        mates = [x for x in edge._parents if x != self]
+        v = reduce(addIt,map(f,zip(itertools.product(*[self._getN(m,conditioning) for m in mates]),\
+            itertools.product(*[self._getN(m,conditioning) if m!=self else [i] for m in edge._parents]))))
 
         return v
 
@@ -465,6 +455,23 @@ class MessagePassingHG(BaseHyperGraph):
             e._children = tuple(sorted(e._children))
 
         super(MessagePassingHG,self).initialize()
+
+    def draw(self):
+
+        assert self._initialized, 'call the function \'hypergraph.initialize()\''
+
+        """ Draws the hypergraph using graphviz """
+        d = graphviz.Digraph()
+        for e in self._edges:
+            eId = e._id
+            for p in e._parents:
+                pId = p._id
+                d.edge('n('+str(pId)+')','E('+str(eId)+')')
+            for c in e._children:
+                cId = c._id
+                d.edge('E('+str(eId)+')','n('+str(cId)+')')
+        d.render()
+        return d
 
 class HiddenMarkovModelMessagePasser():
 
@@ -655,7 +662,6 @@ class HiddenMarkovModelMessagePasser():
         """ Prob of this node """
         prob *= self._trans(parents,node,X,i) * self._L(node,i)
 
-
         def f1(S):
             familyInFBS = {n:s for n,s in zip(nodesInFBS,S)}
 
@@ -761,7 +767,6 @@ class HiddenMarkovModelMessagePasser():
                 if(len(n._parents) > 0):
                     for X in itertools.product(*[range(p.N) for p in n._parents]):
                         genProb = self.probOfParentsProducingNode(n,X,i)
-
 
 
     """ -------------------------------------------------------------------------------------- """
