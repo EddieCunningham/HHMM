@@ -1,3 +1,8 @@
 *.pyc
 *.gv
 *.pdf
+*.so
+*.ipynb
+build/*
+.ipynb_checkpoints/*
+.DS_Store
