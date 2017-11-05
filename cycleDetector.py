@@ -1,4 +1,3 @@
-import graphviz
 import itertools
 import random
 import operator

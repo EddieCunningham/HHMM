@@ -1,4 +1,5 @@
-from HHMMUpDown import *
+# from HHMMUpDownFast import HiddenMarkovModelMessagePasser,MessagePassingHG
+from HHMMUpDown import HiddenMarkovModelMessagePasser,MessagePassingHG
 from AutosomalDistribution import *
 
 class PedigreeHG(MessagePassingHG):
@@ -11,6 +12,8 @@ class PedigreeHG(MessagePassingHG):
         self._addedNodes = set()
 
     def checkNode(self,person):
+        if(len(person.parents + person.mateKids) == 0):
+            return False
         if(self.hasNode(person.Id)):
             currentNode = super(PedigreeHG,self).getNode(person.Id)
         else:
@@ -31,17 +34,39 @@ class PedigreeHG(MessagePassingHG):
 
         for person in pedigree.family:
 
+            if(len(person.parents + person.mateKids) == 0):
+                continue
+
             personNode = self.checkNode(person)
+            if(not personNode): continue
 
             for mate,children in person.mateKids:
 
+                if(len(mate.parents + mate.mateKids) == 0):
+                    mate.parents = person.parents
+                    mate.mateKids = [person,children]
+
                 mateNode = self.checkNode(mate)
+                if(not mateNode): continue
                 familyEdge = self.checkEdge([personNode,mateNode])
 
                 for child in children:
 
+                    if(len(child.parents + child.mateKids) == 0):
+                        continue
+
                     childNode = self.checkNode(child)
+                    if(not childNode): continue
                     familyEdge.addChild(childNode)
+
+        # for node in sorted(self._nodes):
+        #     print('\n')
+        #     print(node)
+        #     print(node._upEdge)
+        #     print(node._downEdges)
+        #     assert len(node._downEdges) > 0 or node._upEdge
+
+        # assert 0
 
         super(PedigreeHG,self).initialize()
 

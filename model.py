@@ -19,7 +19,7 @@ def defaultAffFunc(person_obj):
     try:
         return len(person_obj.diagnoses) and person_obj.diagnoses[0][0] == person_obj.pedigree.probandDisease[0][0]
     except:
-        print 'error calling the affected property of Person object'
+        print('error calling the affected property of Person object')
 
 
 def isfloat(value):
@@ -250,7 +250,7 @@ class Person:
             assert 0,'wat is going on '+str([x for x in mates if x!=negID])
         other = idToPerson([x for x in mates if x!=negID][0],self.pedigree)
 
-        # the person should have already been made, so just update 
+        # the person should have already been made, so just update
         # the shape name and the mateKids
         if(other.Id < 0):
             # then both parents are negative, so just make this person a female
@@ -278,14 +278,14 @@ class Person:
                         elif(int(parent2)<0):
                             self.workForNegPerson(parent2,self.jsonObject['parents'].split(','))
                         self._parents = [idToPerson(int(parent1),self.pedigree),idToPerson(int(parent2),self.pedigree)]
-                    
+
             return self._parents
         def fset(self, value):
             self._parents = value
         def fdel(self):
             del self._parents
         return locals()
-    parents = property(**parents())        
+    parents = property(**parents())
 
     def adoptiveParents():
         doc = "The adoptiveParents property."
@@ -316,7 +316,7 @@ class Person:
         doc = "The mateKids property."
         def fget(self):
             if(self.verifyAttribute('mateKids')):
-                self._mateKids = []                
+                self._mateKids = []
                 splitUp = [x for x in self.jsonObject['mateKids'][1:-1].split('~') if x != '']
                 for x in splitUp:
                     # if the mateId is negative, then the work should have been handled by the parents/adopted parents function
@@ -345,13 +345,13 @@ class Person:
         if(otherParent not in self.mates):
             assert 0,'This person did not have kids with this other person'
         return [x[1] for x in self.mateKids if x[0] == otherParent][0]
-    
+
     def diagnoses():
         doc = "The diagnoses property."
         def fget(self):
             if('_diagnoses' not in dir(self)):
                 if(self.verifyAttribute('diagnosis')):
-                    self._diagnoses = [x.split(',') for x in self.jsonObject['diagnosis'].split('~~') if len(x)>0]                    
+                    self._diagnoses = [x.split(',') for x in self.jsonObject['diagnosis'].split('~~') if len(x)>0]
             return self._diagnoses
         def fset(self, value):
             self._diagnoses = value
@@ -388,7 +388,7 @@ class Person:
                     else:
                         numbers = [s for s in self.jsonObject['ageAtVisit'].strip(';').strip('?').split(' ') if (isfloat(s[:-1]) or isfloat(s))]
                         if(len(numbers)==0):
-                            numbers = [s for s in self.jsonObject['ageAtVisit'].strip(';').strip('?').split('-') if (isfloat(s[:-1]) or isfloat(s))]                        
+                            numbers = [s for s in self.jsonObject['ageAtVisit'].strip(';').strip('?').split('-') if (isfloat(s[:-1]) or isfloat(s))]
                         if(not isfloat(numbers[0])):
                             self._age = float(numbers[0][:-1])+5
                         else:
@@ -400,7 +400,7 @@ class Person:
             del self._age
         return locals()
     age = property(**age())
-        
+
     def otherInfo():
         doc = "The otherInfo property."
         def fget(self):
@@ -414,7 +414,7 @@ class Person:
             del self._otherInfo
         return locals()
     otherInfo = property(**otherInfo())
-       
+
     def divorcedList():
         doc = "The divorcedList property."
         def fget(self):
@@ -427,7 +427,7 @@ class Person:
         def fdel(self):
             del self._divorcedList
         return locals()
-    divorcedList = property(**divorcedList()) 
+    divorcedList = property(**divorcedList())
 
     def consanguinityList():
         doc = "The consanguinityList property."
@@ -461,7 +461,7 @@ class Person:
         def fdel(self):
             del self._zygoticList
         return locals()
-    zygoticList = property(**zygoticList())        
+    zygoticList = property(**zygoticList())
 
     def noKids():
         doc = "The noKids property."
@@ -475,7 +475,7 @@ class Person:
         def fdel(self):
             del self._noKids
         return locals()
-    noKids = property(**noKids())        
+    noKids = property(**noKids())
 
     def infertile():
         doc = "The infertile property."
@@ -489,7 +489,7 @@ class Person:
         def fdel(self):
             del self._infertile
         return locals()
-    infertile = property(**infertile())        
+    infertile = property(**infertile())
 
     def dead():
         doc = "The dead property."
@@ -503,8 +503,8 @@ class Person:
         def fdel(self):
             del self._dead
         return locals()
-    dead = property(**dead())        
-    
+    dead = property(**dead())
+
     def ageOfDeath():
         doc = "The ageOfDeath property."
         def fget(self):
@@ -528,7 +528,7 @@ class Person:
         def fdel(self):
             del self._ageOfDeath
         return locals()
-    ageOfDeath = property(**ageOfDeath())        
+    ageOfDeath = property(**ageOfDeath())
 
     def stillBirth():
         doc = "The stillBirth property."
@@ -559,7 +559,7 @@ class Person:
         def fdel(self):
             del self._ageOfStillBirth
         return locals()
-    ageOfStillBirth = property(**ageOfStillBirth())        
+    ageOfStillBirth = property(**ageOfStillBirth())
 
     def prematureDeath():
         doc = "The prematureDeath property."
@@ -567,13 +567,13 @@ class Person:
             if('_prematureDeath' not in dir(self)):
                 if(self.verifyAttribute('prematureDeath')):
                     self._prematureDeath = self.jsonObject['prematureDeath'] == "true"
-            return self._prematureDeath  
+            return self._prematureDeath
         def fset(self, value):
             self._prematureDeath = value
         def fdel(self):
             del self._prematureDeath
         return locals()
-    prematureDeath = property(**prematureDeath())          
+    prematureDeath = property(**prematureDeath())
 
     def typeOfPrematureDeath():
         doc = "The typeOfPrematureDeath property."
@@ -587,7 +587,7 @@ class Person:
         def fdel(self):
             del self._typeOfPrematureDeath
         return locals()
-    typeOfPrematureDeath = property(**typeOfPrematureDeath())        
+    typeOfPrematureDeath = property(**typeOfPrematureDeath())
 
     def unknownFamilyHistory():
         doc = "The unknownFamilyHistory property."
@@ -601,7 +601,7 @@ class Person:
         def fdel(self):
             del self._unknownFamilyHistory
         return locals()
-    unknownFamilyHistory = property(**unknownFamilyHistory())        
+    unknownFamilyHistory = property(**unknownFamilyHistory())
 
     def proband():
         doc = "The proband property."
@@ -615,7 +615,7 @@ class Person:
         def fdel(self):
             del self._proband
         return locals()
-    proband = property(**proband())        
+    proband = property(**proband())
 
     def consultand():
         doc = "The consultand property."
@@ -629,7 +629,7 @@ class Person:
         def fdel(self):
             del self._consultand
         return locals()
-    consultand = property(**consultand())        
+    consultand = property(**consultand())
 
     def carrier():
         doc = "The carrier property."
@@ -643,7 +643,7 @@ class Person:
         def fdel(self):
             del self._carrier
         return locals()
-    carrier = property(**carrier())        
+    carrier = property(**carrier())
 
     def pregnant():
         doc = "The pregnant property."
@@ -651,13 +651,13 @@ class Person:
             if('_pregnant' not in dir(self)):
                 if(self.verifyAttribute('pregnant')):
                     self._pregnant = self.jsonObject['pregnant'] == "true"
-            return self._pregnant 
+            return self._pregnant
         def fset(self, value):
             self._pregnant = value
         def fdel(self):
             del self._pregnant
         return locals()
-    pregnant = property(**pregnant())          
+    pregnant = property(**pregnant())
 
     def surrogate():
         doc = "The surrogate property."
@@ -671,7 +671,7 @@ class Person:
         def fdel(self):
             del self._surrogate
         return locals()
-    surrogate = property(**surrogate())        
+    surrogate = property(**surrogate())
 
     def donor():
         doc = "The donor property."
@@ -686,7 +686,7 @@ class Person:
             del self._donor
         return locals()
     donor = property(**donor())
-        
+
 class Pedigree:
 
     def __init__(self,allJSON):
@@ -746,7 +746,7 @@ class Pedigree:
             adding = addPerson(self,currentJSON)
             if(adding.proband == True):
                 if not len(adding.diagnoses):
-                    print 'error: proband does not have a disease selected'
+                    print('error: proband does not have a disease selected')
                     assert 0
                 self.probandDisease = adding.diagnoses
                 # print('adding the proband disease here  '+str(self.probandDisease))
@@ -809,7 +809,7 @@ class Pedigree:
         def fdel(self):
             del self._studyID
         return locals()
-    studyID = property(**studyID())        
+    studyID = property(**studyID())
 
     def ethnicity1():
         doc = "The ethnicity1 property."
@@ -822,7 +822,7 @@ class Pedigree:
         def fdel(self):
             del self._ethnicity1
         return locals()
-    ethnicity1 = property(**ethnicity1())        
+    ethnicity1 = property(**ethnicity1())
 
     def ethnicity2():
         doc = "The ethnicity2 property."
@@ -835,7 +835,7 @@ class Pedigree:
         def fdel(self):
             del self._ethnicity2
         return locals()
-    ethnicity2 = property(**ethnicity2())        
+    ethnicity2 = property(**ethnicity2())
 
     def inheritancePattern():
         doc = "The inheritancePattern property."
@@ -848,7 +848,7 @@ class Pedigree:
         def fdel(self):
             del self._inheritancePattern
         return locals()
-    inheritancePattern = property(**inheritancePattern())        
+    inheritancePattern = property(**inheritancePattern())
 
     def other():
         doc = "The other property."
@@ -862,4 +862,4 @@ class Pedigree:
             del self._other
         return locals()
     other = property(**other())
-    
+

@@ -1,5 +1,5 @@
 from HypergraphBase import *
-from pyLogVar import *
+from LogVar import LogVar
 from cycleDetector import *
 import numpy as np
 

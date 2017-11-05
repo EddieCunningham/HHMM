@@ -1,31 +1,32 @@
-# import graphviz
-import itertools
-import random
-import operator
+cdef class Node:
 
-class Node(object):
+    cdef public set _parents
+    cdef public dict _childrenForEdge
+    cdef public Edge _upEdge
+    cdef public set _downEdges
+    cdef public int _id
+    cdef public bint isRoot
+    cdef public bint isLeaf
+
     def __init__(self):
         self._parents = set()
         self._childrenForEdge = {}
         self._upEdge = None
         self._downEdges = set()
-        self._id = -1
-
-        self._cycleHeads = set()
-        self._cycleBases = set()
 
         self.isRoot = False
         self.isLeaf = False
 
-    def addUpEdge(self,edge):
+    def __hash__(self):
+        return hash('n'+str(self._id))
+
+    cpdef addUpEdge(self,Edge edge):
         """ Add edge to upEdges and add self to edge's children """
-        if(self._upEdge != None):
-            assert self._upEdge == edge, 'Edge before: '+str(self._upEdge)+' but tried setting: '+str(edge)
-            return
+        if(self._upEdge != None): return
         self._upEdge = edge
         edge._children.add(self)
 
-    def addDownEdge(self,edge):
+    cpdef addDownEdge(self,Edge edge):
         """ Add edge to downEdges and add self to edge's parents """
         if(edge not in self._downEdges):
             self._downEdges.add(edge)
@@ -35,29 +36,58 @@ class Node(object):
     def __repr__(self):
         return str(self._id)
 
-    def __lt__(self,other):
-        return self._id < other._id
+    def __richcmp__(self,other,op):
+        if(op == 0):
+            return hash(self._id) < hash(other._id)
+        elif(op == 1):
+            return hash(self._id) <= hash(other._id)
+        elif(op == 2):
+            return hash(self._id) == hash(other._id)
+        elif(op == 3):
+            return hash(self._id) != hash(other._id)
+        elif(op == 4):
+            return hash(self._id) > hash(other._id)
+        elif(op == 5):
+            return hash(self._id) >= hash(other._id)
 
-class Edge(object):
+
+cdef class Edge:
+    cdef public set _parents
+    cdef public set _children
+    cdef public int _id
+
     def __init__(self):
         self._parents = set()
         self._children = set()
-        self._id = -1
 
-    def addParent(self,node):
+    def __hash__(self):
+        return hash('e'+str(self._id))
+
+    cpdef addParent(self,Node node):
         for child in self._children:
             child._parents.add(node)
         node.addDownEdge(self)
         node._childrenForEdge[self] |= self._children
 
-    def addChild(self,node):
+    cpdef addChild(self,Node node):
         node._parents |= self._parents
         node.addUpEdge(self)
 
     def __repr__(self):
         return str(self._id)
 
-class BaseHyperGraph(object):
+cdef class BaseHyperGraph:
+
+    cdef public set _nodes
+    cdef public set _leaves
+    cdef public set _roots
+    cdef public set _edges
+    cdef public bint _initialized
+    cdef public object _NodeType
+    cdef public object _EdgeType
+    cdef public dict _nodeIDs
+    cdef public dict _edgeIDs
+
     def __init__(self):
         self._nodes = set()
         self._leaves = set()
@@ -121,19 +151,3 @@ class BaseHyperGraph(object):
 
     def draw(self):
         return
-
-        # assert self._initialized, 'call the function \'hypergraph.initialize()\''
-
-        # """ Draws the hypergraph using graphviz """
-        # d = graphviz.Digraph()
-        # for e in self._edges:
-        #     eId = e._id
-        #     for p in e._parents:
-        #         pId = p._id
-        #         d.edge('n('+str(pId)+')','E('+str(eId)+')')
-        #     for c in e._children:
-        #         cId = c._id
-        #         d.edge('E('+str(eId)+')','n('+str(cId)+')')
-        # d.render()
-        # return d
-

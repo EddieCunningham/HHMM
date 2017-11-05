@@ -4,7 +4,6 @@ import numpy as np
 import time
 from scipy.special import digamma
 import matplotlib.pyplot as plt
-from pyLogVar import LogVar
 import json
 import itertools
 from model import *
@@ -21,7 +20,8 @@ def allPedigrees():
 
     # 3239PB, 3818J, 5092AD, 5546EL, 5596IN, 5712CS, 5713BS, 5865MH, 5992VM, 5992VM, 6050MM
     weird = ['5777AH','235TL','3239PB','5092AD','5546EL',\
-    '5596IN','5712CS','5713BS','5865MH','5992VM','5992VM','6050MM']
+    '5596IN','5712CS','5713BS','5865MH','5992VM','5992VM','6050MM',\
+    '273PA','277DP','3204RS','3743MH','3843AH_2']
 
     pedigreeNames = []
     for filename in os.listdir(pedigreeFolderName):
@@ -44,6 +44,9 @@ def allPedigrees():
         hg = PedigreeHG(name)
         hg.initialize(pedigree)
         allPedigrees[name] = hg
+
+        if(name == '3818J'):
+            break
 
     ans = []
     for name,hg in allPedigrees.items():
@@ -69,6 +72,7 @@ for it in range(10):
 
     for i in range(len(allObjs)):
         allObjs[i]['msg'].getStats()
+        allObjs[i]['msg'].aTest(False)
 
     end = time.time()
     print('\nBatch test time: '+str(end-start))

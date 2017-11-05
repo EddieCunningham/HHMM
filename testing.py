@@ -1,15 +1,16 @@
 import scipy.stats
 import numpy as np
-
+import os
 import time
 from scipy.special import digamma
 import matplotlib.pyplot as plt
-from pyLogVar import LogVar
+from LogVar import LogVar
 import json
 import itertools
 from model import Pedigree
 from PedigreeHypergraph import PedigreeHG
 from AutosomalDistribution import *
+# from HHMMUpDownFast import HiddenMarkovModelMessagePasser,MessagePassingHG
 from HHMMUpDown import HiddenMarkovModelMessagePasser,MessagePassingHG
 from MMUpDown import MarkovModelMessagePasser
 
@@ -19,22 +20,10 @@ def printListOfNodes(nodes):
         print(str(node._id)+' '),
     print(']')
 
-def pedigreeExample():
+def pedigreeExample(name):
     pedigreeFolderName = '/Users/Eddie/kec-bot/app/pedigreeDataOLDBUTWORKS/'
 
-
-    # 3239PB, 3818J, 5092AD, 5546EL, 5596IN, 5712CS, 5713BS, 5865MH, 5992VM, 5992VM, 6050MM
-    weird = ['5777AH','235TL','3239PB','5092AD','5546EL',\
-    '5596IN','5712CS','5713BS','5865MH','5992VM','5992VM','6050MM']
-
-    # pedigreeNames = []
-    # for filename in os.listdir(pedigreeFolderName):
-    #     if('json' in filename and 'test' not in filename):
-    #         if(filename.strip('.json') in weird):
-    #             continue
-    #         pedigreeNames.append(filename.strip('.json'))
-
-    pedigreeNames = ['3818J']
+    pedigreeNames = [name]
 
     allPedigrees = {}
     for name in pedigreeNames:
@@ -51,7 +40,7 @@ def pedigreeExample():
         hg.initialize(pedigree)
         allPedigrees[name] = hg
 
-    hg = allPedigrees['3818J']
+    hg = allPedigrees[name]
 
     hg.draw()
     hg.initHyperParams('autosome','dominant',1000)
@@ -384,13 +373,12 @@ def disjointExample(isHidden=True):
 
 
 # hg,msg = pedigreeExample()
-# hg,msg = cycleExample4(False)
-# hg,msg = cycleExample5(False)
-hg,msg = cycleExample5_1(False)
+# hg,msg = cycleExample4(True)
+# hg,msg = cycleExample5(True)
+# hg,msg = cycleExample5_1(True)
 # hg,msg = cycleExample6()
-# hg,msg = cycleExample7(False)
+# hg,msg = cycleExample7(True)
 # hg,msg = disjointExample()
-# hg,msg = pedigreeExample()
 
 # print('Feedback set: '+str(msg._feedbackSet))
 # print('Feedback set: '+str(msg._feedbackStack))
@@ -401,14 +389,15 @@ hg,msg = cycleExample5_1(False)
 # print(val0+val1)
 # print(str0)
 # assert 0
-def HMMTest():
+def HMMTest(msg):
     start = time.time()
     msg.preprocess()
     end = time.time()
-    print('Preprocess time: '+str(end-start))
-    msg.aTest()
+    print('\nPreprocess time: '+str(end-start))
+    msg.aTest(False)
     start = time.time()
-    msg.getStats()
+    for _ in range(10):
+        msg.getStats()
     end = time.time()
     print('Traversal time: '+str(end-start))
     msg.aTest()
@@ -418,7 +407,15 @@ def MMTest():
     for node in msg.nodes:
         for i in range(node.N):
             comp = msg.getW(node,i)
-            bf = msg.getWBruteForce([node],[i])
-            print(comp._logVal - bf._logVal)
+            bf = LogVar(0)#msg.getWBruteForce([node],[i])
+            print(comp)
 
-MMTest()
+HMMTest(cycleExample1(True)[1])
+HMMTest(cycleExample2(True)[1])
+HMMTest(cycleExample3(True)[1])
+HMMTest(cycleExample4(True)[1])
+HMMTest(cycleExample5(True)[1])
+HMMTest(cycleExample5_1(True)[1])
+HMMTest(cycleExample6(True)[1])
+HMMTest(cycleExample7(True)[1])
+HMMTest(pedigreeExample('3818J')[1])

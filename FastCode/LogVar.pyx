@@ -1,24 +1,28 @@
 from __future__ import division
-import numpy as np
+from libc.math cimport exp,log
+cimport scipy.special.cython_special as csc
+
 ZERO = 'ZERO'
-UNDERFLOW = 500
+UNDERFLOW_CUTOFF = 500
 
-def logAdd(log_a,log_b):
+cdef _logAdd(float log_a,float log_b):
+    if(log_a - log_b > UNDERFLOW_CUTOFF):
+        return log_a
+    elif(log_b - log_a > UNDERFLOW_CUTOFF):
+        return log_b
 
+    if(log_b < log_a):
+        return log_a+csc.log1p(exp(log_b-log_a))
+    else:
+        return log_b+csc.log1p(exp(log_a-log_b))
+
+def logAdd(log_a, log_b):
     if(log_a == ZERO):
         return log_b
     if(log_b == ZERO):
         return log_a
 
-    if(log_a - log_b > UNDERFLOW):
-        return log_a
-    elif(log_b - log_a > UNDERFLOW):
-        return log_b
-
-    if(log_b < log_a):
-        return log_a+np.log1p(np.exp(log_b-log_a))
-    else:
-        return log_b+np.log1p(np.exp(log_a-log_b))
+    return _logAdd(<float>log_a,<float>log_b)
 
 def logMul(log_a,log_b):
     if(log_a == ZERO or log_b == ZERO):
@@ -32,21 +36,25 @@ def logDiv(log_a,log_b):
         assert 0
     return log_a - log_b
 
-def extractVal(val):
-    if('LogVar' in str(type(val)) or 'instance' in str(type(val))):
+cpdef extractVal(val):
+    if(isinstance(val,LogVar)):
         return val.logVal
     if(val == 0):
         return ZERO
-    return np.log(val)
+    return log(val)
 
-class LogVar():
+cdef class LogVar:
+
+    cdef public object logVal
+
     def __init__(self,val=None,isLog=False):
-        if(val == None):
-            self.logVal = ZERO
-        elif(isLog):
+        if(isLog):
             self.logVal = val
         else:
-            self.logVal = extractVal(val)
+            if(isinstance(val,type(None))):
+                self.logVal = ZERO
+            else:
+                self.logVal = extractVal(val)
 
     def __add__(self,other):
         otherVal = extractVal(other)
@@ -81,19 +89,27 @@ class LogVar():
         self.logVal = logDiv(self.logVal,otherVal)
         return self
 
-    def toFloat(self):
-        if(self.logVal == ZERO):
-            return 0
-        return np.exp(self.logVal)
-
-    def isZero(self):
-        return self.logVal == 'ZERO'
-
+    def __richcmp__(self,other,op):
+        otherVal = extractVal(other)
+        otherValCMP = -9999999999999.9999 if otherVal == 'ZERO' else otherVal
+        logValCMP = -9999999999999.9999 if self.logVal == 'ZERO' else self.logVal
+        if(op == 0):
+            return logValCMP < otherValCMP
+        elif(op == 1):
+            return logValCMP <= otherValCMP
+        elif(op == 2):
+            return logValCMP == otherValCMP
+        elif(op == 3):
+            return logValCMP != otherValCMP
+        elif(op == 4):
+            return logValCMP > otherValCMP
+        elif(op == 5):
+            return logValCMP >= otherValCMP
 
     def __float__(self):
         if(self.logVal == ZERO):
             return 0.
-        return np.exp(self.logVal)
+        return exp(self.logVal)
 
     def __int__(self):
         return int(float(self))
@@ -103,10 +119,3 @@ class LogVar():
 
     def __repr__(self):
         return str(self)
-
-def test():
-    val1 = LogVar(val=-100,isLog=True)
-    val2 = LogVar(val=-1000,isLog=True)
-    for i in range(100000):
-        val1 += val2
-        print(val1.logVal)

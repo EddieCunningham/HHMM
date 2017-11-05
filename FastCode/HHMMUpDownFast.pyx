@@ -1,14 +1,11 @@
+from LogVar import LogVar
+from cycleDetector import identifyCycles
+import numpy as np
+import itertools
+from functools import reduce
+import sys
 # from HypergraphBase import *
 from HypergraphBaseFast import Node,Edge,BaseHyperGraph
-from LogVar import LogVar
-from cycleDetector import *
-import numpy as np
-from functools import reduce
-
-def addIt(x,y):
-    return x+y
-def mulIt(x,y):
-    return x*y
 
 def calcN(person):
     return 2
@@ -27,6 +24,7 @@ def prettyPrint(d, indent=0):
             print('\t' * (indent+1) + str(value))
 
 class NodeForHMM(Node):
+
     def __init__(self,y,N=None):
         super(NodeForHMM,self).__init__()
         if(N == None):
@@ -44,6 +42,12 @@ class NodeForHMM(Node):
         self._bDeps = set([self])
 
         self.reset()
+
+    def __hash__(self):
+        return super(NodeForHMM,self).__hash__()
+
+    def __eq__(self,other):
+        return hash(self) == hash(other)
 
     def reset(self):
         self._U = {}
@@ -64,10 +68,8 @@ class NodeForHMM(Node):
         return range(node.N)
 
     def keyFromCond(self,conditioning):
-        return tuple(conditioning.items())
+        return tuple(sorted(conditioning.items()))
 
-    def getMarginalizedProb(self,f,margOut):
-        return reduce(addIt,map(f,[X for X in itertools.product(*[range(n.N) for n in margOut])]))
     """ ------------------------------------------------------------------------------------ """
 
     def aKey(self,conditioning):
@@ -75,18 +77,21 @@ class NodeForHMM(Node):
         key = self.keyFromCond(actualCond)
         return key
 
-    def needToComputeA(self,edge,i,key):
+    def needToComputeA(self,edge,i,conditioning):
+        key = self.aKey(conditioning)
         if(edge not in self._a or i not in self._a[edge] or key not in self._a[edge][i]):
             return True
         return False
 
-    def setAVal(self,edge,i,key,aVal):
+    def setAVal(self,edge,i,conditioning,aVal):
+        key = self.aKey(conditioning)
         if(edge not in self._a): self._a[edge] = {}
         if(i not in self._a[edge]): self._a[edge][i] = {}
         assert key not in self._a[edge][i]
         self._a[edge][i][key] = aVal
 
-    def getAVal(self,edge,i,key):
+    def getAVal(self,edge,i,conditioning):
+        key = self.aKey(conditioning)
         try:
             return LogVar(self._a[edge][i][key])
         except:
@@ -99,19 +104,17 @@ class NodeForHMM(Node):
 
     def getA(self,edge,i,conditioning):
 
-        key = self.aKey(conditioning)
-
         """ a_n_e(i) = P(Y\!(e,n),n_x=i) """
-        if(self.needToComputeA(edge,i,key)):
+        if(self.needToComputeA(edge,i,conditioning)):
 
             # if we don't have the right conditioning, add it
             aVal = self._computeA(edge,i,conditioning)
-            self.setAVal(edge,i,key,aVal)
+            self.setAVal(edge,i,conditioning,aVal)
 
             if(self._msg.preprocessing):
                 self._msg._traverseOrder.append(('a',self,edge,i,conditioning))
         else:
-            aVal = self.getAVal(edge,i,key)
+            aVal = self.getAVal(edge,i,conditioning)
         return aVal
 
     def _computeA(self,edge,i,conditioning):
@@ -123,23 +126,28 @@ class NodeForHMM(Node):
         self._aDeps |= self._UDeps
 
         """ All nodes down from this node but not down edge """
-        if(len(self._downEdges) > 1):
-            a_ *= reduce(mulIt, map(lambda e: self.getV(e,i,conditioning), filter(lambda e:e!=edge,self._downEdges)))
-            self._aDeps |= self._VDeps
+        for e in [x for x in self._downEdges if x!=edge]:
+            a_ *= self.getV(e,i,conditioning)
+        self._aDeps |= self._VDeps
 
         return a_
 
     def getMarginalizedA(self,edge,i,nodesToKeep,feedbackSet):
         # marginalize out the condition nodes that aren't
         # in nodesToKeep
-        margOut = filter(lambda n:n not in nodesToKeep and n in self._aDeps, feedbackSet)
+        assert len([n for n in nodesToKeep if n not in feedbackSet]) == 0
 
-        def f(X):
+        margOut = [n for n in feedbackSet if n not in nodesToKeep and n in self._aDeps]
+
+        total = LogVar(0)
+        for X in itertools.product(*[range(n.N) for n in margOut]):
+
             conditioning = {node:i for node,i in zip(margOut,X)}
             conditioning.update(nodesToKeep)
-            return self.getA(edge,i,conditioning)
 
-        return self.getMarginalizedProb(f,margOut)
+            total += self.getA(edge,i,conditioning)
+
+        return total
 
     """ ------------------------------------------------------------------------------------ """
 
@@ -148,16 +156,19 @@ class NodeForHMM(Node):
         key = self.keyFromCond(actualCond)
         return key
 
-    def needToComputeB(self,X,key):
+    def needToComputeB(self,X,conditioning):
+        key = self.bKey(conditioning)
         if(X not in self._b or key not in self._b[X]):
             return True
         return False
 
-    def setBVal(self,X,key,bVal):
+    def setBVal(self,X,conditioning,bVal):
+        key = self.bKey(conditioning)
         if(X not in self._b): self._b[X] = {}
         self._b[X][key] = bVal
 
-    def getBVal(self,X,key):
+    def getBVal(self,X,conditioning):
+        key = self.bKey(conditioning)
         try:
             return LogVar(self._b[X][key])
         except:
@@ -168,102 +179,106 @@ class NodeForHMM(Node):
 
     def getB(self,X,conditioning):
 
-        key = self.bKey(conditioning)
-
         """ B_n(X) = P(n_y,Y\^(n)_y|^(n)_x=X) """
-        if(self.needToComputeB(X,key)):
+        if(self.needToComputeB(X,conditioning)):
 
             bVal = self._computeB(X,conditioning)
-            self.setBVal(X,key,bVal)
+            self.setBVal(X,conditioning,bVal)
 
             if(self._msg.preprocessing):
                 self._msg._traverseOrder.append(('b',self,X,conditioning))
         else:
-            bVal = self.getBVal(X,key)
+            bVal = self.getBVal(X,conditioning)
         return bVal
 
     def _computeB(self,X,conditioning):
 
         b_ = LogVar(0)
-        if(len(self._downEdges) > 0):
 
-            for k in self._getN(self,conditioning):
+        for k in self._getN(self,conditioning):
 
-                _prod = LogVar(1)
+            _prod = LogVar(1)
 
-                """ Prob of this sibling """
-                _prod *= self._trans(self._parents,self,X,k) * self._L(self,k)
+            """ Prob of this sibling """
+            _prod *= self._trans(sorted(self._parents),self,X,k)
+            _prod *= self._L(self,k)
 
-                """ Branch down from sibling """
-                _prod *= reduce(mulIt,map(lambda e:self.getV(e,k,conditioning),self._downEdges))
+            """ Branch down from sibling """
+            for e in self._downEdges:
+                _prod *= self.getV(e,k,conditioning)
                 self._bDeps |= self._VDeps
 
-                b_ += _prod
-        else:
-
-            for k in self._getN(self,conditioning):
-
-                _prod = LogVar(1)
-
-                """ Prob of this sibling """
-                _prod *= self._trans(self._parents,self,X,k) * self._L(self,k)
-
-                b_ += _prod
+            b_ += _prod
 
         return b_
 
     def getMarginalizedB(self,X,nodesToKeep,feedbackSet):
         # marginalize out the condition nodes that aren't
         # in nodesToKeep
-        margOut = filter(lambda n:n not in nodesToKeep and n in self._bDeps, feedbackSet)
+        assert len([n for n in nodesToKeep if n not in feedbackSet]) == 0
 
-        def f(_X):
-            conditioning = {node:i for node,i in zip(margOut,X)}
+        margOut = [n for n in feedbackSet if n not in nodesToKeep and n in self._bDeps]
+
+        total = LogVar(0)
+        for _X in itertools.product(*[range(n.N) for n in margOut]):
+
+            conditioning = {node:i for node,i in zip(margOut,_X)}
             conditioning.update(nodesToKeep)
-            return self.getB(X,conditioning)
 
-        return self.getMarginalizedProb(f,margOut)
+            total += self.getB(X,conditioning)
+
+        return total
 
     """ ------------------------------------------------------------------------------------ """
 
     def UKey(self,conditioning):
+        print('\nIn ukey function')
+        print('conditioning: '+str(conditioning))
+        print('udeps: '+str(self._UDeps))
         actualCond = {k:v for k,v in conditioning.items() if k in self._UDeps}
+        print('actualCond: '+str(actualCond))
         key = self.keyFromCond(actualCond)
+        print('key: '+str(key))
+        print([k.__hash__() for k in conditioning.keys()])
+        print([k.__hash__() for k in self._UDeps])
+        print([type(k) for k in conditioning.keys()])
+        print([type(k) for k in self._UDeps])
         return key
 
-    def needToComputeU(self,i,key):
+    def needToComputeU(self,i,conditioning):
+        key = self.UKey(conditioning)
         if(i not in self._U or key not in self._U[i]):
             return True
         return False
 
-    def setUVal(self,i,key,uVal):
+    def setUVal(self,i,conditioning,uVal):
+        key = self.UKey(conditioning)
         if(i not in self._U): self._U[i] = {}
         self._U[i][key] = uVal
 
-    def getUVal(self,i,key):
+    def getUVal(self,i,conditioning):
+        key = self.UKey(conditioning)
         return LogVar(self._U[i][key])
 
     def getU(self,i,conditioning):
 
-        key = self.UKey(conditioning)
-
         """ U_n(i) = P(n_y,^(n)_y,n_x=i) """
-        if(self.needToComputeU(i,key)):
+        if(self.needToComputeU(i,conditioning)):
 
             uVal = self._computeU(i,conditioning)
-            self.setUVal(i,key,uVal)
+            self.setUVal(i,conditioning,uVal)
 
             if(self._msg.preprocessing):
                 self._msg._traverseOrder.append(('U',self,i,conditioning))
         else:
-            uVal = self.getUVal(i,key)
+            uVal = self.getUVal(i,conditioning)
         return uVal
 
     def _computeU(self,i,conditioning):
 
         u = LogVar(0)
 
-        parents = self._parents
+        parents = sorted(self._parents)
         if(len(parents) == 0 or self.inFBS):
 
             if(self.inFBS):
@@ -285,9 +300,11 @@ class NodeForHMM(Node):
 
                 """ Prob of this node """
                 prod *= LogVar(self._trans(parents,self,X,i))
+                prod *= LogVar(self._L(self,i))
 
                 """ Branch out from each parent """
                 for parent,j in zip(parents,X):
+
                     prod *= parent.getA(self._upEdge,j,conditioning)
                     self._UDeps |= parent._aDeps
 
@@ -299,21 +316,24 @@ class NodeForHMM(Node):
 
                 u += prod
 
-            u *= self._L(self,i)
-
         return u
 
     def getMarginalizedU(self,i,nodesToKeep,feedbackSet):
         # marginalize out the condition nodes that aren't
         # in nodesToKeep
-        margOut = filter(lambda n:n not in nodesToKeep and n in self._UDeps, feedbackSet)
+        assert len([n for n in nodesToKeep if n not in feedbackSet]) == 0
 
-        def f(X):
-            conditioning = {node:i for node,i in zip(margOut,X)}
+        margOut = [n for n in feedbackSet if n not in nodesToKeep and n in self._UDeps]
+
+        total = LogVar(0)
+        for X in itertools.product(*[range(n.N) for n in margOut]):
+
+            conditioning = {node:_i for node,_i in zip(margOut,X)}
             conditioning.update(nodesToKeep)
-            return self.getU(i,conditioning)
 
-        return self.getMarginalizedProb(f,margOut)
+            total += self.getU(i,conditioning)
+
+        return total
 
     """ ------------------------------------------------------------------------------------ """
 
@@ -322,39 +342,42 @@ class NodeForHMM(Node):
         key = self.keyFromCond(actualCond)
         return key
 
-    def needToComputeV(self,edge,i,key):
+    def needToComputeV(self,edge,i,conditioning):
+        key = self.VKey(conditioning)
         if(edge not in self._V or i not in self._V[edge] or key not in self._V[edge][i]):
             return True
         return False
 
-    def setVVal(self,edge,i,key,vVal):
+    def setVVal(self,edge,i,conditioning,vVal):
+        key = self.VKey(conditioning)
         if(edge not in self._V): self._V[edge] = {}
         if(i not in self._V[edge]): self._V[edge][i] = {}
         assert key not in self._V[edge][i]
         self._V[edge][i][key] = vVal
 
-    def getVVal(self,edge,i,key):
+    def getVVal(self,edge,i,conditioning):
+        key = self.VKey(conditioning)
         return LogVar(self._V[edge][i][key])
 
     def getV(self,edge,i,conditioning):
 
-        key = self.VKey(conditioning)
-
         """ V_n_e(i) = P(!(e,n)|n_x=i) """
-        if(self.needToComputeV(edge,i,key)):
+        if(self.needToComputeV(edge,i,conditioning)):
 
             # if we don't have the right conditioning, add it
             vVal = self._computeV(edge,i,conditioning)
 
-            self.setVVal(edge,i,key,vVal)
+            self.setVVal(edge,i,conditioning,vVal)
             if(self._msg.preprocessing):
 
                 self._msg._traverseOrder.append(('V',self,edge,i,conditioning))
         else:
-            vVal = self.getVVal(edge,i,key)
+            vVal = self.getVVal(edge,i,conditioning)
         return vVal
 
     def _computeV(self,edge,i,conditioning):
+
+
 
         if(self.inFBS or len(self._downEdges) == 0):
             return LogVar(1)
@@ -363,9 +386,9 @@ class NodeForHMM(Node):
 
         assert self in edge._parents
 
-        mates = [x for x in edge._parents if x != self]
+        mates = [x for x in sorted(edge._parents) if x != self]
         for X_,X in zip(itertools.product(*[self._getN(m,conditioning) for m in mates]),\
-            itertools.product(*[self._getN(m,conditioning) if m!=self else [i] for m in edge._parents])):
+            itertools.product(*[self._getN(m,conditioning) if m!=self else [i] for m in sorted(edge._parents)])):
 
             prod = LogVar(1)
 
@@ -377,24 +400,31 @@ class NodeForHMM(Node):
 
             """ Branch out from each child """
             for child in edge._children:
+
                 prod *= child.getB(X,conditioning)
                 self._VDeps |= child._bDeps
 
             v += prod
+
 
         return v
 
     def getMarginalizedV(self,edge,i,nodesToKeep,feedbackSet):
         # marginalize out the condition nodes that aren't
         # in nodesToKeep
-        margOut = filter(lambda n:n not in nodesToKeep and n in self._VDeps, feedbackSet)
+        assert len([n for n in nodesToKeep if n not in feedbackSet]) == 0, [n for n in nodesToKeep if n not in feedbackSet]
 
-        def f(X):
+        margOut = [n for n in feedbackSet if n not in nodesToKeep and n in self._VDeps]
+
+        total = LogVar(0)
+        for X in itertools.product(*[range(n.N) for n in margOut]):
+
             conditioning = {node:i for node,i in zip(margOut,X)}
             conditioning.update(nodesToKeep)
-            return self.getV(edge,i,conditioning)
 
-        return self.getMarginalizedProb(f,margOut)
+            total += self.getV(edge,i,conditioning)
+
+        return total
 
     """ ------------------------------------------------------------------------------------ """
 
@@ -403,40 +433,24 @@ class NodeForHMM(Node):
 
     def accumulateFullJoint(self,feedbackSet):
 
-        if(len(self._downEdges) > 0):
+        for i in range(self.N):
 
-            for i in range(self.N):
+            for X in itertools.product(*[range(n.N) for n in feedbackSet]):
+                conditioning = {node:i for node,i in zip(feedbackSet,X)}
 
-                def f(X):
-                    conditioning = {node:_i for node,_i in zip(feedbackSet,X)}
+                prod = LogVar(1)
 
-                    prod = LogVar(1)
+                u = self.getU(i,conditioning)
+                prod *= u
 
-                    prod *= self.getU(i,conditioning)
+                for edge in self._downEdges:
+                    v = self.getV(edge,i,conditioning)
+                    prod *= v
 
-                    prod *= reduce(mulIt,map(lambda edge:self.getV(edge,i,conditioning), self._downEdges))
+                sr = self.sortaRootProb(conditioning)
+                prod *= sr
 
-                    prod *= self.sortaRootProb(conditioning)
-
-                    return prod
-
-                self._fullJoint[i] = reduce(addIt,map(f,itertools.product(*[range(n.N) for n in feedbackSet])))
-        else:
-
-            for i in range(self.N):
-
-                def f(X):
-                    conditioning = {node:_i for node,_i in zip(feedbackSet,X)}
-
-                    prod = LogVar(1)
-
-                    prod *= self.getU(i,conditioning)
-
-                    prod *= self.sortaRootProb(conditioning)
-
-                    return prod
-
-                self._fullJoint[i] = reduce(addIt,map(f,itertools.product(*[range(n.N) for n in feedbackSet])))
+                self.updateFullJoint(i,prod)
 
     def getFullJoint(self,i):
         return self._fullJoint[i]
@@ -455,16 +469,6 @@ class MessagePassingHG(BaseHyperGraph):
         y = getY(ID)
         N = self.N
         return super(MessagePassingHG,self).addNode(ID,y,N)
-
-    def initialize(self):
-        for n in self._nodes:
-            n._parents = tuple(sorted(n._parents))
-
-        for e in self._edges:
-            e._parents = tuple(sorted(e._parents))
-            e._children = tuple(sorted(e._children))
-
-        super(MessagePassingHG,self).initialize()
 
 class HiddenMarkovModelMessagePasser():
 
@@ -516,30 +520,77 @@ class HiddenMarkovModelMessagePasser():
 
     """ -------------------------------------------------------------------------------------- """
 
+    def getStats(self):
+
+        for node in self.nodes:
+            node.reset()
+
+        for thing in self._traverseOrder:
+
+            theType = thing[0]
+            args = thing[1:]
+
+            if(theType == 'a'):
+                node,edge,i,conditioning = args
+                node.getA(edge,i,conditioning)
+
+            elif(theType == 'b'):
+                node,X,conditioning = args
+                node.getB(X,conditioning)
+
+            elif(theType == 'U'):
+                node,i,conditioning = args
+                node.getU(i,conditioning)
+
+            elif(theType == 'V'):
+                node,edge,i,conditioning = args
+                node.getV(edge,i,conditioning)
+
+        for node in self.nodes:
+            if(node in self._feedbackSet): continue
+
+            node.accumulateFullJoint(self._feedbackSet)
+
+        # compute the probs for the fbs
+        aLeaf = self._hyperGraph._leaves.__iter__().__next__()
+        self._srp = {}
+
+        for X in itertools.product(*[range(n.N) for n in self._feedbackSet]):
+
+            conditioning = {node:i for node,i in zip(self._feedbackSet,X)}
+
+            for i in range(aLeaf.N):
+                val = aLeaf.getUVal(i,conditioning)
+                sr = self.sortaRootProb(conditioning)
+
+                for node,x in zip(self._feedbackSet,X):
+                    node.updateFullJoint(x,val*sr)
+
+        for node in self._feedbackSet:
+            total = LogVar(0)
+            for i in range(node.N):
+                total += node._fullJoint[i]
+
+
     def sortaRootProb(self,conditioning):
 
-        key = tuple(conditioning.items())
+        key = tuple(sorted(conditioning))
         if(key in self._srp):
             return self._srp[key]
 
-        def f(sortaRoot):
+        prod = LogVar(1)
+        for sortaRoot in self._sortaRootDeps:
             j = conditioning[sortaRoot]
-            prod = LogVar(self._L(sortaRoot,j))
-
+            prod *= self._L(sortaRoot,j)
             if(len(sortaRoot._parents) == 0):
                 prod *= self._pi(sortaRoot,j)
             else:
-                parents = sortaRoot._parents
+                parents = sorted(sortaRoot._parents)
                 X_ = [conditioning[p] for p in parents]
                 prod *= self._trans(parents,sortaRoot,X_,j)
-            return prod
-
-        prod = reduce(mulIt,map(f,self._sortaRootDeps)) if len(self._sortaRootDeps) > 0 else LogVar(1)
 
         self._srp[key] = prod
         return prod
-
-    """ -------------------------------------------------------------------------------------- """
 
     def computeForPreprocessing(self):
 
@@ -578,193 +629,6 @@ class HiddenMarkovModelMessagePasser():
             total = LogVar(0)
             for i in range(node.N):
                 total += node._fullJoint[i]
-
-    """ -------------------------------------------------------------------------------------- """
-
-    def getCounts(self):
-
-        for node in self.nodes:
-            node.reset()
-
-        for thing in self._traverseOrder:
-
-            theType = thing[0]
-            args = thing[1:]
-
-            if(theType == 'a'):
-                node,edge,i,conditioning = args
-                node.getA(edge,i,conditioning)
-
-            elif(theType == 'b'):
-                node,X,conditioning = args
-                node.getB(X,conditioning)
-
-            elif(theType == 'U'):
-                node,i,conditioning = args
-                node.getU(i,conditioning)
-
-            elif(theType == 'V'):
-                node,edge,i,conditioning = args
-                node.getV(edge,i,conditioning)
-
-        for node in self.nodes:
-            if(node in self._feedbackSet): continue
-
-            node.accumulateFullJoint(self._feedbackSet)
-
-        # compute the probs for the fbs
-        aLeaf = self._hyperGraph._leaves.__iter__().__next__()
-        self._srp = {}
-
-        def f(X):
-
-            conditioning = {node:i for node,i in zip(self._feedbackSet,X)}
-
-            def g(i):
-                val = aLeaf.getU(i,conditioning)
-                sr = self.sortaRootProb(conditioning)
-                [node.updateFullJoint(x,val*sr) for node,x in zip(self._feedbackSet,X)]
-
-            [g(i) for i in range(aLeaf.N)]
-
-        [f(X) for X in itertools.product(*[range(n.N) for n in self._feedbackSet])]
-
-
-        for node in self._feedbackSet:
-            total = reduce(addIt,node._fullJoint)
-
-
-    def probOfParentsProducingNode(self,node,X,i,totalProb=None):
-
-        if(node in self._sortaRootDeps):
-            return self.isolatedParentJoint(node,X,i,totalProb)
-
-        parents = node._parents
-
-        # make sure we sum over all of the possible nodes in the fbs
-        latentRanges = [range(n.N) for n in self._feedbackSet]
-        nodesInFBS = [n for n in self._feedbackSet]
-        for p,j in zip(parents,X):
-            if(p.inFBS):
-                latentRanges[nodesInFBS.index(p)] = [j]
-        if(node.inFBS):
-            latentRanges[nodesInFBS.index(node)] = [i]
-
-        prob = LogVar(1)
-
-        """ Prob of this node """
-        prob *= self._trans(parents,node,X,i) * self._L(node,i)
-
-
-        def f1(S):
-            familyInFBS = {n:s for n,s in zip(nodesInFBS,S)}
-
-            """ Down this node """
-            _prob = reduce(mulIt,map(lambda e:node.getMarginalizedV(e,i,familyInFBS,self._feedbackSet),node._downEdges))
-
-            """ Out from each sibling """
-            _prob *= reduce(mulIt,map(lambda sibling:sibling.getMarginalizedB(X,familyInFBS,self._feedbackSet),filter(lambda sibling:sibling!=node,node._upEdge._children)))
-
-            """ Out from each parent """
-            for parent,j in zip(parents,X):
-                if(parent.inFBS): continue
-
-                _prob *= parent.getMarginalizedA(node._upEdge,j,familyInFBS,self._feedbackSet)
-
-            _prob *= self.sortaRootProb(familyInFBS)
-            return _prob
-
-        def f2(S):
-            familyInFBS = {n:s for n,s in zip(nodesInFBS,S)}
-
-            """ Down this node """
-            _prob = reduce(mulIt,map(lambda e:node.getMarginalizedV(e,i,familyInFBS,self._feedbackSet),node._downEdges))
-
-            """ Out from each parent """
-            for parent,j in zip(parents,X):
-                if(parent.inFBS): continue
-
-                _prob *= parent.getMarginalizedA(node._upEdge,j,familyInFBS,self._feedbackSet)
-
-            _prob *= self.sortaRootProb(familyInFBS)
-            return _prob
-
-        def f3(S):
-            """ Down this node """
-            return reduce(mulIt,map(lambda e:node.getMarginalizedV(e,i,familyInFBS,self._feedbackSet),node._downEdges))
-
-        def f4(S):
-            familyInFBS = {n:s for n,s in zip(nodesInFBS,S)}
-
-            """ Out from each sibling """
-            _prob = reduce(mulIt,map(lambda sibling:sibling.getMarginalizedB(X,familyInFBS,self._feedbackSet),filter(lambda sibling:sibling!=node,node._upEdge._children)))
-
-            """ Out from each parent """
-            for parent,j in zip(parents,X):
-                if(parent.inFBS): continue
-
-                _prob *= parent.getMarginalizedA(node._upEdge,j,familyInFBS,self._feedbackSet)
-
-            _prob *= self.sortaRootProb(familyInFBS)
-            return _prob
-
-        def f5(S):
-            familyInFBS = {n:s for n,s in zip(nodesInFBS,S)}
-
-            _prob = LogVar(1)
-
-            """ Out from each parent """
-            for parent,j in zip(parents,X):
-                if(parent.inFBS): continue
-
-                _prob *= parent.getMarginalizedA(node._upEdge,j,familyInFBS,self._feedbackSet)
-
-            _prob *= self.sortaRootProb(familyInFBS)
-            return _prob
-
-        if(len(node._downEdges) > 0):
-            if(node._upEdge):
-                if(len(node._upEdge._children) > 1):
-                    total = reduce(addIt,map(f1,itertools.product(*latentRanges)))
-                else:
-                    total = reduce(addIt,map(f2,itertools.product(*latentRanges)))
-            else:
-                total = reduce(addIt,map(f3,itertools.product(*latentRanges)))
-        else:
-            if(node._upEdge):
-                if(len(node._upEdge._children) > 1):
-                    total = reduce(addIt,map(f4,itertools.product(*latentRanges)))
-                else:
-                    total = reduce(addIt,map(f5,itertools.product(*latentRanges)))
-            else:
-                total = LogVar(1)
-
-
-        prob *= total
-
-        """ Normalize """
-        if(totalProb):
-            prob /= totalProb
-
-        return prob
-
-    def getStats(self):
-
-        self.getCounts()
-
-        for node in self.nodes:
-            for i in range(node.N):
-                uVal = node.getFullJoint(i)
-
-        for n in self.nodes:
-            for i in range(n.N):
-                if(len(n._parents) > 0):
-                    for X in itertools.product(*[range(p.N) for p in n._parents]):
-                        genProb = self.probOfParentsProducingNode(n,X,i)
-
-
-
-    """ -------------------------------------------------------------------------------------- """
 
     def probOfAllNodeObservations(self):
 
@@ -855,7 +719,7 @@ class HiddenMarkovModelMessagePasser():
                 if(len(n._parents) > 0):
 
                     shouldEqualProb = LogVar(0)
-                    for X in itertools.product(*[range(p.N) for p in n._parents]):
+                    for X in itertools.product(*[range(p.N) for p in sorted(n._parents)]):
 
                         prob2 = self.probOfParentsProducingNode(n,X,i,correct)
                         total2 += prob2
@@ -894,7 +758,7 @@ class HiddenMarkovModelMessagePasser():
         # compute the probs for the fbs
         aLeaf = list(self._hyperGraph._leaves)[0]
 
-        parents = node._parents
+        parents = sorted(node._parents)
         jointProb = LogVar(0)
 
         margOut = [n for n in self._feedbackSet if n!=node and n not in parents]
@@ -906,7 +770,7 @@ class HiddenMarkovModelMessagePasser():
             conditioning[node] = i
 
             for j in range(aLeaf.N):
-                val = aLeaf.getU(j,conditioning)
+                val = aLeaf.getUVal(j,conditioning)
                 sr = self.sortaRootProb(conditioning)
                 jointProb += val*sr
 
@@ -915,6 +779,85 @@ class HiddenMarkovModelMessagePasser():
         return jointProb
 
 
+    def probOfParentsProducingNode(self,node,X,i,totalProb=None):
+
+        if(node in self._sortaRootDeps):
+            return self.isolatedParentJoint(node,X,i,totalProb)
+
+        parents = sorted(node._parents)
+
+        # make sure we sum over all of the possible nodes in the fbs
+        latentRanges = [range(n.N) for n in self._feedbackSet]
+        nodesInFBS = [n for n in self._feedbackSet]
+        for p,j in zip(parents,X):
+            if(p.inFBS):
+                latentRanges[nodesInFBS.index(p)] = [j]
+        if(node.inFBS):
+            latentRanges[nodesInFBS.index(node)] = [i]
+
+        prob = LogVar(1)
+
+        """ Prob of this node """
+        transProb = self._trans(parents,node,X,i)
+        emissionProb = self._L(node,i)
+        prob *= transProb
+        prob *= emissionProb
+
+        total = LogVar(0)
+        for S in itertools.product(*latentRanges):
+
+            familyInFBS = {n:s for n,s in zip(nodesInFBS,S)}
+
+            _prob = LogVar(1)
+
+            """ Down this node """
+            for e in node._downEdges:
+                if(node.inFBS): continue
+
+                v_ = node.getMarginalizedV(e,i,familyInFBS,self._feedbackSet)
+                _prob *= v_
+
+            """ Out from each sibling """
+            if(node._upEdge):
+
+                if(len(node._upEdge._children) > 1):
+
+                    for sibling in node._upEdge._children:
+                        if(sibling == node):continue
+                        _prob *= sibling.getMarginalizedB(X,familyInFBS,self._feedbackSet)
+
+                """ Out from each parent """
+                for parent,j in zip(parents,X):
+                    if(parent.inFBS): continue
+
+                    _prob *= parent.getMarginalizedA(node._upEdge,j,familyInFBS,self._feedbackSet)
+
+                _prob *= self.sortaRootProb(familyInFBS)
+
+                total += _prob
+
+        prob *= total
+
+
+
+
+        """ Normalize """
+        if(totalProb):
+            prob /= totalProb
+
+        return prob
+
+    def getStats(self):
+
+        for node in self.nodes:
+            for i in range(node.N):
+                uVal = node.getFullJoint(i)
+
+        for n in self.nodes:
+            for i in range(n.N):
+                if(len(n._parents) > 0):
+                    for X in itertools.product(*[range(p.N) for p in sorted(n._parents)]):
+                        genProb = self.probOfParentsProducingNode(n,X,i)
 
 
 
