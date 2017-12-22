@@ -4,17 +4,24 @@
 #include "HypergraphBase.h"
 #include "LogVar.h"
 
-#define MPNW MessagePassingNodeWrapper< EmissionType >
+#define MPNW     MessagePassingNodeWrapper< EmissionType >
 #define MPNW_ptr MessagePassingNodeWrapper< EmissionType >*
+
+#define MPHGW     MessagePassingHyperGraphWrapper< EmissionType >
+#define MPHGW_ptr MessagePassingHyperGraphWrapper< EmissionType >*
 
 typedef std::string                          condKey;
 typedef std::unordered_map< MPNW_ptr, uint > conditioning;
 typedef std::vector< uint >                  parentStates;
 
+class MessagePassingNodeWrapper;
+class MessagePassingHyperGraphWrapper;
 
 template < typename EmissionType >
 class MessagePassingNodeWrapper : public Node {
 private:
+
+    MessagePassingHyperGraphWrapper* _msg;
 
     map< Edge_ptr    , map< uint   , map< condKey, LogVar > > > _a;
     map< parentStates, map< condKey, LogVar > >                 _b;
@@ -68,7 +75,7 @@ private:
     void   _accumulateFullJoint( const set<MPNW_ptr>& feedbackSet );
     void   _updateFullJoint    ( uint i, LogVar val               );
 
-    uint _getN( MPNW_ptr node , conditioning cond );
+    std::pair< uint, uint > _getN( MPNW_ptr node , const conditioning& cond );
 
 public:
 
@@ -83,18 +90,22 @@ public:
 };
 
 
-class MessagePassingHyperGraphWrapper {
+template < typename EmissionType >
+class MessagePassingHyperGraphWrapper : public HyperGraph {
 private:
 
-    HyperGraph*              _hyperGraph;
-    conditioning             _conditioning;
-    map< condKey, LogVar > > _sortaRootProbs;
+    HyperGraph*            _hyperGraph;
+    conditioning           _conditioning;
+    map< condKey, LogVar > _sortaRootProbs;
+    set< MPNW_ptr >        _sortaRootDeps;
+    bool                   _preprocessing;
 
-    LogVar _sortaRootProb         ( const conditioning& cond );
-    void  _computeForPreprocessing(                   );
-    void  _getCounts              (                   );
+    void   _computeForPreprocessing(                          );
+    LogVar _sortaRootProb          ( const conditioning& cond );
 
 public:
+
+    set< MPNW_ptr > feedbackSet;
 
     void   preprocess                (                                       );
     LogVar isolatedParentJoint       ( Node_ptr node, parentStates X, uint i );
@@ -102,6 +113,7 @@ public:
     void   getStats                  (                                       );
     LogVar probOfAllNodeObservations (                                       );
     bool   test                      (                                       );
+    void   getCounts                 (                                       );
 
 };
 

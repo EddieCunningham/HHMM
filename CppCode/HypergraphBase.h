@@ -2,7 +2,9 @@
 #define __HYPERGRAPH_H__
 
 #define notInSet( s, x ) s.find( x ) == s.end()
-#define inSet( s, x ) s.find( x ) != s.end()
+#define inSet   ( s, x ) s.find( x ) != s.end()
+#define notInVector( v, x ) std::find( v.begin(), v.end(), x ) == v.end()
+#define inVector   ( v, x ) std::find( v.begin(), v.end(), x ) != v.end()
 
 #include <iostream>
 #include <vector>
@@ -65,10 +67,12 @@ public:
 class HyperGraph {
 public:
 
-    map< int,Node > nodeIds;
-    map< int,Edge > edgeIds;
-    set< Node_ptr > leaves;
-    set< Node_ptr > roots;
+    map< int, Node > nodeIds;
+    map< int, Edge > edgeIds;
+    set< Node_ptr >  leaves;
+    set< Node_ptr >  roots;
+    set< Node_ptr >  nodes;
+    set< Node_ptr >  edges;
 
     bool initialized = false;
 

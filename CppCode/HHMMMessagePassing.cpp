@@ -16,11 +16,11 @@ public:
         _X = parentStates( 0, nodes.size() );
     }
 
+    /* Increment the product by 1 */
     bool next() {
 
         for( int i = 0; i < _nodes.size(); ++i ) {
             uint& val = _X.at( i );
-
             val += 1;
             if( val == _nodes.at( i )->N ) {
                 val = 0;
@@ -32,12 +32,12 @@ public:
         return false;
     }
 
+    /* Return a map with the nodes and their current value */
     conditioning getConditioning() {
 
         conditioning cond = conditioning();
-
         for( int i = 0; i < _nodes.size(); ++i ) {
-            cond.insert( {{ _nodes.at( i ), _X.at( i ) }} );
+            cond.emplace( _nodes.at( i ), _X.at( i ) );
         }
         return cond;
     }
@@ -47,21 +47,32 @@ public:
     }
 };
 
+/* Like Conditioning Product, but allows
+   some values to be constant
+*/
 class CartesianNodeProduct {
 private:
-    parentStates _X;
+    parentStates        _X;
     std::vector< uint > _maxVals;
+    std::vector< uint > _constIndices;
 public:
-    CartesianNodeProduct( const std::vector< uint >& maxVals, uint index = -1, uint constVal = -1 ):
+    CartesianNodeProduct( const std::vector< uint >& maxVals, const std::vector< std::pair< uint, uint > >& constValues ):
     _maxVals( maxVals ) {
-        _X = parentStates( 0, maxVals.size() );
+
+        _X = parentStates( 0, maxVals.size() + constValues.size() );
+        for( std::pair< uint, uint >& val : constValues ) {
+            _X.at( val.first ) = val.second;
+            _constIndices.push_back( val.first );
+        }
     }
 
     bool next() {
 
-        for( int i = 0; i < _maxVals.size(); ++i ) {
+        for( int i = 0; i < _X.size(); ++i ) {
+            if( inVector( _constIndices, i ) ) {
+                continue;
+            }
             uint& val = _X.at( i );
-
             val += 1;
             if( val == _maxVals.at( i )->N ) {
                 val = 0;
@@ -73,20 +84,36 @@ public:
         return false;
     }
 
+    parentStates getNonConstStates( uint index = -1 ) {
+
+        parentStates X = parentStates();
+        for( uint i = 0; i < _X.size(); ++i ) {
+
+            if( index == -1 ) {
+                if( inVector( _constIndices, i ) ) {
+                    continue;
+                }
+            }
+            else {
+                if( i == index ) {
+                    continue;
+                }
+            }
+            X.push_back( _X.at( i ) );
+        }
+        return X;
+    }
+
     parentStates getParentStates() {
         return _X;
     }
-
-    parentStates getExtendedParentStates() {
-        if( index == -1 ) {
-            assert( 0 );
-        }
-        parentStates X = parentStates(_X.begin(), _X.end());
-        X.insert( X.begin() + index, constVal );
-        return X;
-    }
 };
 
+/* Simulates
+    a = set(...)
+    b = set(...)
+    a |= b
+*/
 template < typename T >
 void inplace_set_union( set<T>& a, const set<T>& b ) {
     for( T& elt : b ) {
@@ -94,11 +121,15 @@ void inplace_set_union( set<T>& a, const set<T>& b ) {
     }
 }
 
+/* A key for a node that will be conditioned on */
 std::string keyString( MPNW_ptr node, uint state ) {
     return std::to_string( node->_node->id ) +":"+ std::string( state );
 }
 
-condKey getKey( const conditioning& cond, set deps ) {
+/* Get the key for condition nodes in cond.  We only need to condition
+   on nodes that are in deps
+*/
+condKey getKey( const conditioning& cond, const set< MPNW_ptr >& deps ) {
 
     std::string tmpString;
     std::vector< std::string > keyBuffer = std::vector< std::string >();
@@ -119,7 +150,7 @@ condKey getKey( const conditioning& cond, set deps ) {
         }
     }
 
-    /* Sort the key buffer */
+    /* Sort the key buffer for consistency */
     std::sort( keyBuffer.begin(), keyBuffer.end() );
 
     condKey = "";
@@ -130,11 +161,41 @@ condKey getKey( const conditioning& cond, set deps ) {
     return key;
 }
 
-uint MPNW::_getN( MPNW_ptr node , conditioning cond ) {
-    if( inSet( cond, node ) ) {
-        return cond.at(node);
+/* Get the key without restricting to deps */
+condKey getKey( const conditioning& cond ) {
+
+    std::string tmpString;
+    std::vector< std::string > keyBuffer = std::vector< std::string >();
+
+    for( std::pair< const MPNW_ptr, uint > &c : cond ) {
+
+        MPNW_ptr node = c.first;
+        uint state    = c.second;
+
+        /* Build the key string for this node and */
+        /* add it to the key buffer               */
+        tmpString = keyString( node, state );
+        keyBuffer.push_back( tmpString );
     }
-    return node->N;
+
+    /* Sort the key buffer */
+    std::sort( keyBuffer.begin(), keyBuffer.end() );
+
+    condKey = "";
+    for( std::string &keySegment : keyBuffer ) {
+        key += keySegment+" ";
+    }
+    return key;
+}
+
+/* Get the range of latent states node can have when conditioned
+   on cond
+*/
+std::pair< uint, uint > MPNW::_getN( MPNW_ptr node , const conditioning& cond ) {
+    if( inSet( cond, node ) ) {
+        return std::make_pair( cond.at(node), cond.at(node) );
+    }
+    return std::make_pair( 0, node->N) ;
 }
 
 /* ------------------------------------------------------------------------- */
@@ -186,6 +247,7 @@ LogVar MPNW::_getA( Edge_ptr edge, uint i, const conditioning& cond ) {
     else {
         aVal = _getAVal( edge, i, key );
     }
+
     return aVal;
 }
 
@@ -208,11 +270,13 @@ LogVar MPNW::_computeA( Edge_ptr edge, uint i, const conditioning& cond ) {
         }
         inplace_set_union( _aDependencies, _VDependencies );
     }
+
     return aVal;
 }
 
 LogVar MPNW::_getMarginalizedA( Edge_ptr edge, uint i, const conditioning& nodesToKeep, const set<MPNW_ptr>& feedbackSet ) {
 
+    /* Marginalize out all of the nodes in the feedback set */
     std::vector< MPNW_ptr > toMarginalizeOut = std::vector< MPNW_ptr >();
     for( MPNW_ptr& node : feedbackSet ) {
         if( notInSet( nodesToKeep, node ) && inSet( _aDependencies, node ) ) {
@@ -223,12 +287,13 @@ LogVar MPNW::_getMarginalizedA( Edge_ptr edge, uint i, const conditioning& nodes
     LogVar aVal( 0 );
 
     ConditioningProduct xIter = ConditioningProduct( toMarginalizeOut );
-    while( xIter.next() ) {
+    do {
         conditioning cond = xIter.getConditioning();
         cond.insert( nodesToKeep.begin(), nodesToKeep.end() );
 
         aVal += _getA( edge, i, cond );
-    }
+    } while( xIter.next() );
+
     return aVal;
 }
 
@@ -284,7 +349,8 @@ LogVar MPNW::_computeB( parentStates X, const conditioning& cond ) {
 
     LogVar bVal( 0 );
 
-    for( uint k = 0; k < _getN( this, cond ); ++k ) {
+    std::pair< uint, uint > startAndEnd = _getN( this, cond );
+    for( uint k = startAndEnd.first; k < startAndEnd.second; ++k ) {
 
         LogVar prod( 1 );
 
@@ -318,12 +384,12 @@ LogVar MPNW::_getMarginalizedB( parentStates X, const conditioning& nodesToKeep,
     LogVar bVal( 0 );
 
     ConditioningProduct xIter = ConditioningProduct( toMarginalizeOut );
-    while( xIter.next() ) {
+    do {
         conditioning cond = xIter.getConditioning();
         cond.insert( nodesToKeep.begin(), nodesToKeep.end() );
 
         bVal += _getB( X, cond );
-    }
+    } while( xIter.next() );
     return bVal;
 }
 
@@ -386,20 +452,38 @@ LogVar MPNW::_computeU( uint i, const conditioning& cond ) {
             uVal = LogVar( ( uint )( i == conditioning.at( this ) ) );
         }
         else {
-            LogVar rootProb     = LogVar( ( *_pi )( k ) );
-            LogVar emissionProb = LogVar( ( *_L ).operator()< EmissionType >( k ) );
+            /* Root probability */
+            LogVar rootProb     = LogVar( ( *_pi )( i ) );
+            LogVar emissionProb = LogVar( ( *_L ).operator()< EmissionType >( i ) );
             uVal = rootProb * emissionProb;
         }
     }
     else {
 
         std::vector< uint > maxVals = std::vector< uint >();
+        std::vector< std::pair< uint, uint > > constValues;
+
+        uint j = 0;
+        /* Determine what parent latent states to sum over */
         for( MPNW_ptr& parent : _parents ) {
-            maxVals.push_back( _getN( parent, cond ) );
+            std::pair< uint, uint > startAndEnd = _getN( this, cond );
+
+            /* If we are conditioning on this node, then it will be */
+            /* constant in the loop                                 */
+            if( startAndEnd.first == startAndEnd.second ) {
+                constValues.push_back( std::make_pair( j, startAndEnd.first ) );
+            }
+            /* Otherwise add the max value to maxVals so that we can */
+            /* iterate over range(N)                                 */
+            else {
+                maxVals.push_back( startAndEnd.first );
+            }
+            ++j;
         }
 
-        CartesianNodeProduct xIter = CartesianNodeProduct( maxVals );
-        while( xIter.next() ) {
+        /* Sum over all of the parent latent states */
+        CartesianNodeProduct xIter = CartesianNodeProduct( maxVals, constValues );
+        do {
             parentStates X = xIter.getParentStates();
 
             LogVar prod( 1 );
@@ -408,8 +492,11 @@ LogVar MPNW::_computeU( uint i, const conditioning& cond ) {
             LogVar transProb = LogVar( ( *_trans )( X, i ) );
 
             /* Branch out from each parent */
+            uint j = 0;
             for( MPNW_ptr& parent : _parents ) {
-                prod *= parent->_getA( _upEdge, j, cond );
+                prod *= parent->_getA( _upEdge, X.at( j ), cond );
+                inplace_set_union( _UDependencies, _aDependencies );
+                ++j;
             }
 
             /* Branch out from each sibling */
@@ -420,7 +507,8 @@ LogVar MPNW::_computeU( uint i, const conditioning& cond ) {
                 inplace_set_union( _UDependencies, _bDependencies );
             }
             uVal += prod;
-        }
+        } while( xIter.next() );
+
         uVal *= LogVar( ( *_L ).operator()< EmissionType >( i ) );
     }
     return uVal;
@@ -438,12 +526,12 @@ LogVar MPNW::_getMarginalizedU( uint i, const conditioning& nodesToKeep, const s
     LogVar uVal( 0 );
 
     ConditioningProduct xIter = ConditioningProduct( toMarginalizeOut );
-    while( xIter.next() ) {
+    do {
         conditioning cond = xIter.getConditioning();
         cond.insert( nodesToKeep.begin(), nodesToKeep.end() );
 
         uVal += _getU( i, cond );
-    }
+    } while( xIter.next() );
     return uVal;
 }
 
@@ -507,42 +595,65 @@ LogVar MPNW::_computeV( Edge_ptr edge, uint i, const conditioning& cond ) {
 
     uint index = -1;
     std::vector< MPNW_ptr > mates = std::vector< MPNW_ptr >();
-    std::vector< uint > mateRanges = std::vector< uint >();
+
+    std::vector< uint > maxVals = std::vector< uint >();
+    std::vector< std::pair< uint, uint > > constValues;
+
     for( int j = 0; j < parents.size(); ++j ) {
 
         MPNW_ptr mate = parents.at( j );
+
+        /* We want to condition on this mate so mark that */
+        /* the constant index j has value i               */
         if( mate == this ) {
+            constValues.push_back( std::make_pair( j, i ) );
             index = j;
             continue;
         }
-        mateRanges.push_back( _getN( mate, cond ) );
+
+        /* Update mates */
+        mates.push_back( mate );
+
+        std::pair< uint, uint > startAndEnd = _getN( mate, cond );
+
+        /* If we are conditioning on this node, then it will be */
+        /* constant in the loop                                 */
+        if( startAndEnd.first == startAndEnd.second ) {
+            constValues.push_back( std::make_pair( j, startAndEnd.first ) );
+        }
+        /* Otherwise add the max value to maxVals so that we can */
+        /* iterate over range(N)                                 */
+        else {
+            maxVals.push_back( startAndEnd.first );
+        }
     }
 
     vVal = LogVar( 0 );
 
-    ConditioningProduct xIter = ConditioningProduct( mateRanges, index, i );
-    while( xIter.next() ) {
+    CartesianNodeProduct xIter = CartesianNodeProduct( maxVals, constValues );
+    do {
+
+        /* X is X_ without mate's latent state value */
+        parentStates X_ = xIter.getNonConstStates( index );
         parentStates X = xIter.getParentStates();
-        parentStates X_ = xIter.getExtendedParentStates();
 
         LogVar prod = LogVar( 1 );
 
         /* Branch out from each mate */
-        for( int j = 0; j < X.size(); ++j ) {
+        for( int j = 0; j < X_.size(); ++j ) {
 
             MPNW_ptr mate = mates.at( j );
-            prod *= mate->_getA( edge, j, cond );
+            prod *= mate->_getA( edge, X_.at( j ), cond );
             inplace_set_union( _VDependencies, mate->_aDependencies );
         }
 
         /* Branch out from each child */
         for( MPNW_ptr& child : edge->children ) {
-
-            prod *= child->_getB( X_, cond );
+            prod *= child->_getB( X, cond );
             inplace_set_union( _VDependencies, child->_bDependencies );
         }
         vVal += prod;
-    }
+    } while( xIter.next() );
     return vVal;
 }
 
@@ -558,23 +669,326 @@ LogVar MPNW::_getMarginalizedV( Edge_ptr edge, uint i, const conditioning& nodes
     LogVar vVal(0);
 
     ConditioningProduct xIter = ConditioningProduct( toMarginalizeOut );
-    while( xIter.next() ) {
+    do {
         conditioning cond = xIter.getConditioning();
         cond.insert( nodesToKeep.begin(), nodesToKeep.end() );
 
         vVal += _getV( edge, i, cond );
-    }
+    } while( xIter.next() );
     return vVal;
 }
 
 /* ------------------------------------------------------------------------------------ */
 
 
+LogVar MPNW::_sortaRootProb( const conditioning& cond ) {
+    return _msg->sortaRootProb( cond );
+}
 
+void MPNW::_accumulateFullJoint( const set<MPNW_ptr>& feedbackSet ) {
 
+    for( uint i = 0; i < this->N; ++i ) {
 
+        LogVar total( 0 );
 
+        ConditioningProduct xIter = ConditioningProduct( feedbackSet );
+        do {
+            conditioning cond = xIter.getConditioning();
 
+            LogVar prod( 1 );
 
+            prod *= _getU( i, cond );
 
+            for( Edge_ptr& edge : _downEdges ) {
+                prod *= _getV( edge, i, cond );
+            }
 
+            prod *= _sortaRootProb( cond );
+            total += prod;
+        } while( xIter.next() );
+
+        _fullJoint.at( i ) = total;
+    }
+}
+
+LogVar MPNW::getFullJoint( uint i ) {
+    return _fullJoint.at( i );
+}
+
+void MPNW::_updateFullJoint( uint i, LogVar val ) {
+    if( notInVector( _fullJoint, i ) ) {
+        _fullJoint.at( i ) = LogVar( 0 );
+    }
+    _fullJoint.at( i ) += val;
+}
+
+/* ------------------------------------------------------------------------------------ */
+
+LogVar MPHGW::_sortaRootProb( const conditioning& cond ) {
+
+    condKey key = getKey( cond );
+
+    if( inSet( _sortaRootProbs, key ) ) {
+        return _sortaRootProbs.at( key );
+    }
+
+    LogVar prod( 1 );
+
+    if( _sortaRootDeps.size() > 0 ) {
+
+        for( MPNW_ptr& sortaRoot : _sortaRootDeps ) {
+
+            uint j = cond.at( sortaRoot );
+            LogVar innerProd = LogVar( ( *_L ).operator()< EmissionType >( j ) );
+
+            if( sortaRoot->parents.size() == 0 ) {
+                innerProd *= LogVar( ( *_pi )( j ) );
+            }
+            else {
+                parentStates X = parentStates();
+                for( std::pair< const MPNW_ptr, uint > &c : cond ) {
+                    X.push_back( c.second );
+                }
+                innerProd *= LogVar( ( *_trans )( X, j ) );
+            }
+            prod *= innerProd;
+        }
+    }
+    _sortaRootProbs.at( key ) = prod;
+    return prod;
+}
+
+void MPHGW::_computeForPreprocessing() {
+
+    for( MPNW_ptr& node : nodes ) {
+
+        if( node->inFeedbackSet ) {
+            continue;
+        }
+
+        ConditioningProduct xIter = ConditioningProduct( feedbackSet );
+        do {
+            conditioning cond = xIter.getConditioning();
+
+            for( uint i = 0; i < node->N; ++ i ) {
+
+                node->_getU( i, cond );
+
+                for( Edge_ptr& edge : node.downEdges ) {
+
+                    node->_getV( edge, i, cond );
+                }
+            }
+        } while( xIter.next() );
+    }
+    for( MPNW_ptr& node : nodes ) {
+
+        if( node->inFeedbackSet ) { continue; }
+
+        node._accumulateFullJoint( feedbackSet );
+    }
+
+    MPNW_ptr aLeaf = *( leaves.begin() );
+
+    _sortaRootProbs = map< condKey, LogVar >();
+
+    ConditioningProduct xIter = ConditioningProduct( feedbackSet );
+
+    do {
+        conditioning cond = xIter.getConditioning();
+        parentStates X = xIter.getParentStates();
+
+        for( uint i = 0; i < aLeaf->N; ++i ) {
+            LogVar val = aLeaf->_getU( i, cond );
+            LogVar srProb = _sortaRootProb( cond );
+
+            for( uint j = 0; j < feedbackSet.size(); ++j ) {
+
+                MPNW_ptr node = feedbackSet.at( j );
+                uint x = X.at( j );
+                node->updateFullJoint( x, val * srProb );
+            }
+        }
+    } while( xIter.next() );
+
+    for( MPNW_ptr& node : feedbackSet ) {
+        LogVar total( 0 );
+        for( uint i = 0; i < node->N; ++i ) {
+            total += node->_fullJoint.at( i );
+        }
+    }
+}
+
+/* ------------------------------------------------------------------------------------ */
+
+void MPHGW::preprocess( set< MPNW_ptr > feedbackSet ) {
+    this->feedbackSet = feedbackSet;
+
+    for( MPNW_ptr& node : nodes ) {
+        node->_msg = this;
+    }
+
+    _sortaRootDeps = set< MPNW_ptr >();
+    for( MPNW_ptr& node : feedbackSet ) {
+        if( node->parents.size() == 0 ) {
+            _sortaRootDeps.insert( node );
+            continue;
+        }
+
+        bool notSRP = false;
+        for( MPNW_ptr& parent : node->parents ) {
+            if( notInSet( feedbackSet, parent ) ) {
+                notSRP = true;
+                break;
+            }
+        }
+        if( notSRP ) {
+            continue;
+        }
+        for( MPNW_ptr& sibling : node->upEdge->children ) {
+            if( notInSet( feedbackSet, sibling ) ) {
+                notSRP = true;
+                break;
+            }
+        }
+        if( notSRP ) {
+            continue;
+        }
+        _sortaRootDeps.insert( node );
+    }
+
+    for( MPNW_ptr& node : nodes ) {
+        if( inSet( feedbackSet, node ) ) {
+            node->inFeedbackSet = true;
+        }
+    }
+
+    _preprocessing = true;
+    _computeForPreprocessing();
+    _preprocessing = false;
+}
+
+void MPHGW::getCounts() {
+
+    for( MPNW_ptr& node : nodes ) {
+        node->reset();
+    }
+
+    // make this a true message passing
+    // algorithm later!
+    preprocess( feedbackSet );
+}
+
+LogVar MPHGW::isolatedParentJoint( Node_ptr node, parentStates X, uint i ) {
+
+    MPNW_ptr aLeaf = *( leaves.begin() );
+
+    LogVar jointProb( 0 );
+
+    std::vector< MPNW_ptr > toMarginalizeOut = std::vector< MPNW_ptr >();
+    for( MPNW_ptr& _node : feedbackSet ) {
+        if( node != _node ) && notInSet( node->parents, _node ) ) {
+            toMarginalizeOut.push_back( node->N );
+        }
+    }
+
+    conditioning parentCond = conditioning();
+    for( uint j = 0; j < node->parents.size(); ++j ) {
+        parentCond.emplace( node->parents.at( j ), X.at( j ) );
+    }
+
+    ConditioningProduct xIter = ConditioningProduct( toMarginalizeOut );
+    do {
+        conditioning cond = xIter.getConditioning();
+        cond.insert( parentCond.begin(), parentCond.end() );
+        cond.emplace( node, i );
+
+        for( uint j = 0; j < aLeaf->N; ++j ) {
+            LogVar val = aLeaf->_getU( j, cond );
+            LogVar srProb = sortaRootProb( cond );
+            jointProb += val * srProb;
+        }
+    } while( xIter.next() );
+
+    return jointProb;
+}
+
+LogVar MPHGW::probOfParentsProducingNode( Node_ptr node, parentStates X, uint i ) {
+
+    if( inSet( _sortaRootDeps, node ) ) {
+        return isolatedParentJoint( node, X, i );
+    }
+
+    std::vector< uint > fbsNotInParents = std::std::vector< uint >();
+    std::vector< std::pair< uint, uint > > constValues = std::vector< std::pair< uint, uint > >();
+
+    uint k = 0;
+    for( MPNW_ptr& fbsNode : feedbackSet ) {
+        if( inSet( node->parents, fbsNode ) ) {
+            constValues.push_back( std::make_pair( k, X.at( indexOf( node->parents, fbsNode ) ) ) );
+        }
+        else {
+            fbsNotInParents.push_back( fbsNode->N );
+        }
+        if( fbsNode == node ) {
+            constValues.push_back( std::make_pair( k, i ) );
+        }
+        ++k;
+    }
+
+    LogVar prob( 0 );
+
+    CartesianNodeProduct latentRanges = CartesianNodeProduct( fbsNotInParents, fbsInParentsAndNode );
+    do {
+        parentStates _X = latentRanges.getParentStates();
+        conditioning cond = conditioning();
+        for( int k = 0; k < feedbackSet.size(); ++k ) { cond.insert( {{ feedbackSet.at( k ), _X.at( k ) }} ); }
+
+        LogVar prod( 1 );
+        for( Edge_ptr& edge : node->downEdges ) {
+            prod *= node->_getMarginalizedV( edge, i, cond, feedbackSet );
+        }
+
+        for( MPNW_ptr& sibling : node->_upEdge->children ) {
+            if( sibling == node ) {
+                continue;
+            }
+            prod *= sibling->_getMarginalizedB( X, cond, feedbackSet );
+        }
+
+        for( uint j = 0; j < node->parents.size(); ++j ) {
+            prod *= node->parents.at( j )._getMarginalizedA( node->upEdge, X.at( j ), cond, feedbackSet );
+        }
+
+        prod *= sortaRootProb( cond );
+        prob += prod;
+
+    } while( latentRanges.next() );
+
+    LogVar transProb    = LogVar( ( *_trans )( parentStates, k ) );
+    LogVar emissionProb = LogVar( ( *_L ).operator()< EmissionType >( k ) );
+    prob *= transProb * emissionProb;
+
+    return prob;
+}
+
+void MPHGW::getStats() {
+
+    getCounts();
+
+    for( MPNW_ptr& node : nodes ) {
+        for( uint i = 0; i < node->N; ++i ) {
+        }
+    }
+}
+
+LogVar MPHGW::probOfAllNodeObservations() {
+
+    MPNW_ptr aLeaf = *( leaves.begin() );
+
+    LogVar total( 0 );
+    for( uint i = 0; i < aLeaf->N; ++i ) {
+        total += aLeaf->getFullJoint( i );
+    }
+    return total;
+}

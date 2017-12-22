@@ -60,6 +60,7 @@ Node_ptr HyperGraph::addNode( int id ) {
     node.id   = id;
 
     this->nodeIds.insert( std::make_pair( id, node ) );
+    this->nodes.insert( &node );
     return &this->nodeIds.at( id );
 }
 
@@ -86,6 +87,7 @@ Edge_ptr HyperGraph::addEdge( const std::vector< Node_ptr > & parents, int id ) 
         edge.addParent( parent );
     }
     this->edgeIds.insert( std::make_pair( id, edge ) );
+    this->edges.insert( &edge );
     return &this->edgeIds.at( id );
 }
 
@@ -113,6 +115,5 @@ void HyperGraph::initialize() {
             n->isLeaf = true;
         }
     }
-
     this->initialized = true;
 }
