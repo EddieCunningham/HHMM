@@ -189,17 +189,17 @@ def generic2DParameters(hyperGraph):
     #                          [ \
     #                              [ \
     #                                [[
-    #                                 [[0.9,0.1],[0.9,0.1]], \
-    #                                  [[0.9,0.1],[0.9,0.1]]], \
-    #                                 [[[0.9,0.1],[0.9,0.1]], \
-    #                                  [[0.9,0.1],[0.9,0.1]]]] \
+    #                                  [[1.0,0.0],[1.0,0.0]], \
+    #                                  [[0.0,1.0],[0.0,1.0]]], \
+    #                                 [[[1.0,0.0],[1.0,0.0]], \
+    #                                  [[0.0,1.0],[0.0,1.0]]]] \
     #                             ]
     #                         ]
     #                     ])
 
 
     def rootDistFunction(person,i):
-        theDist = np.array([[0.1,0.9] for _ in hyperGraph._roots])
+        theDist = np.array([[1.0,0.0] for _ in hyperGraph._roots])
         index = sorted(hyperGraph._roots).index(person)
         return theDist[index][i]
 
@@ -215,7 +215,7 @@ def generic2DParameters(hyperGraph):
         return theDist[i]
 
     def emissionDistFunction(person,i):
-        theDist = np.array([[0.3],[0.7]])
+        theDist = np.array([[0.1],[0.9]])
         return theDist[i][person.y]
 
     return {

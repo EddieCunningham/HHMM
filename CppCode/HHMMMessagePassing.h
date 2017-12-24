@@ -10,21 +10,40 @@
 #define MPHGW     MessagePassingHyperGraphWrapper< EmissionType >
 #define MPHGW_ptr MessagePassingHyperGraphWrapper< EmissionType >*
 
-typedef std::string                          condKey;
-typedef std::unordered_map< MPNW_ptr, uint > conditioning;
-typedef std::vector< uint >                  parentStates;
+#define conditioning std::unordered_map< MPNW_ptr, uint >
 
+template < class EmissionType >
 class MessagePassingNodeWrapper;
+
+template < class EmissionType >
 class MessagePassingHyperGraphWrapper;
 
-template < typename EmissionType >
+
+typedef std::string                          condKey;
+// typedef std::unordered_map< MPNW_ptr, uint > conditioning;
+typedef std::vector< uint >                  parentStates;
+
+
+typedef struct {
+    /* Hash function taken from                                                       */
+    /* https://stackoverflow.com/questions/20511347/a-good-hash-function-for-a-vector */
+    std::size_t operator()( std::vector<uint32_t> const& vec ) const {
+        std::size_t seed = vec.size();
+        for( auto& i : vec ) {
+            seed ^= i + 0x9e3779b9 + ( seed << 6 ) + ( seed >> 2 );
+        }
+        return seed;
+    }
+} stateHash;
+
+template < class EmissionType >
 class MessagePassingNodeWrapper : public Node {
 private:
 
-    MessagePassingHyperGraphWrapper* _msg;
+    MessagePassingHyperGraphWrapper< EmissionType >* _msg;
 
     map< Edge_ptr    , map< uint   , map< condKey, LogVar > > > _a;
-    map< parentStates, map< condKey, LogVar > >                 _b;
+    map< parentStates, map< condKey, LogVar >, stateHash >      _b;
     map< uint        , map< condKey, LogVar > >                 _U;
     map< Edge_ptr    , map< uint   , map< condKey, LogVar > > > _V;
 
@@ -55,7 +74,7 @@ private:
     LogVar  _computeB        ( parentStates X, const conditioning& cond                                           );
     LogVar  _getMarginalizedB( parentStates X, const conditioning& nodesToKeep, const set<MPNW_ptr>& feedbackSet );
 
-    condKey _uKey            ( const conditioning& cond                                                   );
+    condKey _UKey            ( const conditioning& cond                                                   );
     bool    _needToComputeU  ( uint i, condKey key                                                        );
     void    _setUVal         ( uint i, condKey key, LogVar uVal                                           );
     LogVar  _getUVal         ( uint i, condKey key                                                        );
@@ -63,7 +82,7 @@ private:
     LogVar  _computeU        ( uint i, const conditioning& cond                                           );
     LogVar  _getMarginalizedU( uint i, const conditioning& nodesToKeep, const set<MPNW_ptr>& feedbackSet );
 
-    condKey _vKey            ( const conditioning& cond                                                                  );
+    condKey _VKey            ( const conditioning& cond                                                                  );
     bool    _needToComputeV  ( Edge_ptr edge, uint i, condKey key                                                        );
     void    _setVVal         ( Edge_ptr edge, uint i, condKey key, LogVar vVal                                           );
     LogVar  _getVVal         ( Edge_ptr edge, uint i, condKey key                                                        );
@@ -84,13 +103,13 @@ public:
     EmissionType y;
     bool         inFeedbackSet;
 
-    MessagePassingNodeWrapper( Node_ptr node , uint N );
+    MessagePassingNodeWrapper( MPNW_ptr node , uint N );
     void    reset            (                        );
     LogVar  getFullJoint     ( uint i                 );
 };
 
 
-template < typename EmissionType >
+template < class EmissionType >
 class MessagePassingHyperGraphWrapper : public HyperGraph {
 private:
 
@@ -100,6 +119,10 @@ private:
     set< MPNW_ptr >        _sortaRootDeps;
     bool                   _preprocessing;
 
+    LogVar ( *_pi    )( uint               );
+    LogVar ( *_L     )( uint               );
+    LogVar ( *_trans )( parentStates, uint );
+
     void   _computeForPreprocessing(                          );
     LogVar _sortaRootProb          ( const conditioning& cond );
 
@@ -107,13 +130,14 @@ public:
 
     set< MPNW_ptr > feedbackSet;
 
-    void   preprocess                (                                       );
-    LogVar isolatedParentJoint       ( Node_ptr node, parentStates X, uint i );
-    LogVar probOfParentsProducingNode( Node_ptr node, parentStates X, uint i );
-    void   getStats                  (                                       );
-    LogVar probOfAllNodeObservations (                                       );
-    bool   test                      (                                       );
-    void   getCounts                 (                                       );
+    void   preprocess                  ( const set< MPNW_ptr >& feedbackSet    );
+    LogVar isolatedParentJoint         ( MPNW_ptr node, parentStates X, uint i );
+    LogVar probOfParentsProducingNode  ( MPNW_ptr node, parentStates X, uint i );
+    void   getStats                    (                                       );
+    LogVar probOfAllNodeObservations   (                                       );
+    float  logProbOfAllNodeObservations(                                       );
+    bool   test                        (                                       );
+    void   getCounts                   (                                       );
 
 };
 

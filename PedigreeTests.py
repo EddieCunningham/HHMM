@@ -6,10 +6,10 @@ from scipy.special import digamma
 import matplotlib.pyplot as plt
 import json
 import itertools
-from model import *
-from PedigreeHypergraph import *
+from model import Pedigree
+from PedigreeHypergraph import PedigreeHG
 from AutosomalDistribution import *
-
+import os
 from HHMMUpDown import *
 
 

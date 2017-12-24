@@ -1,4 +1,4 @@
-# from HHMMUpDownFast import HiddenMarkovModelMessagePasser,MessagePassingHG
+# from CythonCode.HHMMUpDownFast import HiddenMarkovModelMessagePasser,MessagePassingHG
 from HHMMUpDown import HiddenMarkovModelMessagePasser,MessagePassingHG
 from AutosomalDistribution import *
 

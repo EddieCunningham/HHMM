@@ -1,7 +1,6 @@
 import itertools
 import random
 import operator
-from HypergraphBase import *
 
 
 class Block(object):

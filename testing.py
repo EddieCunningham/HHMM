@@ -4,15 +4,15 @@ import os
 import time
 from scipy.special import digamma
 import matplotlib.pyplot as plt
-from LogVar import LogVar
+# from CythonCode.LogVarCode import LogVar
 import json
 import itertools
 from model import Pedigree
 from PedigreeHypergraph import PedigreeHG
 from AutosomalDistribution import *
-# from HHMMUpDownFast import HiddenMarkovModelMessagePasser,MessagePassingHG
+# from CythonCode.HHMMUpDownFast import HiddenMarkovModelMessagePasser,MessagePassingHG
 from HHMMUpDown import HiddenMarkovModelMessagePasser,MessagePassingHG
-from MMUpDown import MarkovModelMessagePasser
+# from MMUpDown import MarkovModelMessagePasser
 
 def printListOfNodes(nodes):
     print('[ '),
@@ -330,6 +330,30 @@ def cycleExample8(isHidden=True):
         msg = MarkovModelMessagePasser(hg,generic2DParameters)
     return hg,msg
 
+def cycleExample9(isHidden=True):
+    hg = MessagePassingHG(2)
+    n0 = hg.addNode(0)
+    n1 = hg.addNode(1)
+    n2 = hg.addNode(2)
+    n3 = hg.addNode(3)
+
+    e1 = hg.addEdge(set([n0]),1)
+    e1.addChild(n1)
+    e1.addChild(n2)
+
+    e2 = hg.addEdge(set([n0,n1,n2]),2)
+    e2.addChild(n3)
+
+    hg.initialize()
+
+    hg.draw()
+
+    if(isHidden):
+        msg = HiddenMarkovModelMessagePasser(hg,generic2DParameters)
+    else:
+        msg = MarkovModelMessagePasser(hg,generic2DParameters)
+    return hg,msg
+
 def disjointExample(isHidden=True):
     hg = MessagePassingHG(2)
 
@@ -396,7 +420,7 @@ def HMMTest(msg):
     print('\nPreprocess time: '+str(end-start))
     msg.aTest(True)
     start = time.time()
-    for _ in range(10):
+    for _ in range(1):
         msg.getStats()
     end = time.time()
     print('Traversal time: '+str(end-start))
@@ -410,12 +434,16 @@ def MMTest():
             bf = LogVar(0)#msg.getWBruteForce([node],[i])
             print(comp)
 
-# HMMTest(cycleExample1(True)[1])
-# HMMTest(cycleExample2(True)[1])
-# HMMTest(cycleExample3(True)[1])
-# HMMTest(cycleExample4(True)[1])
-# HMMTest(cycleExample5(True)[1])
-# HMMTest(cycleExample5_1(True)[1])
-# HMMTest(cycleExample6(True)[1])
-# HMMTest(cycleExample7(True)[1])
+# hg,msg = cycleExample2(True)
+# hg,msg = cycleExample5(True)
+# hg,msg = cycleExample9(True)
+# hg.draw()
+# HMMTest(msg)
+HMMTest(cycleExample1(True)[1])
+HMMTest(cycleExample3(True)[1])
+HMMTest(cycleExample4(True)[1])
+HMMTest(cycleExample5(True)[1])
+HMMTest(cycleExample5_1(True)[1])
+HMMTest(cycleExample6(True)[1])
+HMMTest(cycleExample7(True)[1])
 HMMTest(pedigreeExample('3818J')[1])

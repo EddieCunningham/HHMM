@@ -3,7 +3,7 @@
 
 #define ZERO true
 #define NOTZERO false
-#define UNDERFLOW 500
+#define LOG_UNDERFLOW 500
 #define EQUAL_TOLERANCE 1e-5
 
 #include <iostream>
@@ -67,6 +67,8 @@ public:
     LogVar& operator /=( lvFloat a       );
 
     lvFloat toFloat() const;
+
+    lvFloat logValue() const;
 };
 
 LogVar        operator + ( lvFloat a, const LogVar& b         );

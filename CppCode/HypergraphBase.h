@@ -2,20 +2,20 @@
 #define __HYPERGRAPH_H__
 
 #define notInSet( s, x ) s.find( x ) == s.end()
-#define inSet   ( s, x ) s.find( x ) != s.end()
+#define inSet( s, x )    s.find( x ) != s.end()
 #define notInVector( v, x ) std::find( v.begin(), v.end(), x ) == v.end()
-#define inVector   ( v, x ) std::find( v.begin(), v.end(), x ) != v.end()
+#define inVector( v, x )    std::find( v.begin(), v.end(), x ) != v.end()
 
 #include <iostream>
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
 
+#define map std::unordered_map
+#define set std::unordered_set
+
 class Node;
 class Edge;
-
-typedef std::unordered_map map;
-typedef std::unordered_set set;
 
 typedef Node* Node_ptr;
 typedef Edge* Edge_ptr;
@@ -28,7 +28,7 @@ public:
     Edge_ptr                         upEdge;
     set< Edge_ptr >                  downEdges;
 
-    int  id     = -1;
+    uint  id     = -1;
     bool isRoot = false;
     bool isLeaf = false;
 
@@ -51,7 +51,7 @@ public:
     set< Node_ptr > parents;
     set< Node_ptr > children;
 
-    int id = -1;
+    uint id = -1;
 
     Edge():
             parents (),
@@ -67,33 +67,33 @@ public:
 class HyperGraph {
 public:
 
-    map< int, Node > nodeIds;
-    map< int, Edge > edgeIds;
+    map< uint, Node > nodeIds;
+    map< uint, Edge > edgeIds;
     set< Node_ptr >  leaves;
     set< Node_ptr >  roots;
     set< Node_ptr >  nodes;
-    set< Node_ptr >  edges;
+    set< Edge_ptr >  edges;
 
     bool initialized = false;
 
-    Node_ptr addNode( int id );
-    bool     hasNode( int id );
-    Node_ptr getNode( int id );
+    HyperGraph() {}
 
-    Edge_ptr addEdge( const std::vector< Node_ptr > & parents, int id );
-    bool     hasEdge( int id );
-    Edge_ptr getEdge( int id );
+    Node_ptr addNode( uint id );
+    bool     hasNode( uint id );
+    Node_ptr getNode( uint id );
+
+    Edge_ptr addEdge( const std::vector< Node_ptr > & parents, uint id );
+    bool     hasEdge( uint id );
+    Edge_ptr getEdge( uint id );
 
     void initialize();
+
+    void addNodeId( uint id );
+    void addEdgeId( const std::vector< uint > & parents, uint id );
 };
 
-std::ostream& operator<<( std::ostream &os, const Node& node ) {
-    return os << node.id;
-}
-
-std::ostream& operator<<( std::ostream &os, const Edge& edge ) {
-    return os << edge.id;
-}
+std::ostream& operator<<( std::ostream &os, const Node& node );
+std::ostream& operator<<( std::ostream &os, const Edge& edge );
 
 
 

@@ -1,6 +1,8 @@
-from HypergraphBase import *
-from LogVar import LogVar
-from cycleDetector import *
+# from CythonCode.HypergraphBaseFast import NodeBase,EdgeBase,BaseHyperGraph
+from HypergraphBase import NodeBase,EdgeBase,BaseHyperGraph
+from pyLogVar import LogVar
+# from CythonCode.LogVarCode import LogVar
+from cycleDetector import identifyCycles
 import numpy as np
 
 class MarkovModelMessagePasser():

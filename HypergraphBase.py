@@ -1,9 +1,9 @@
-# import graphviz
+import graphviz
 import itertools
 import random
 import operator
 
-class Node(object):
+class NodeBase(object):
     def __init__(self):
         self._parents = set()
         self._childrenForEdge = {}
@@ -38,7 +38,7 @@ class Node(object):
     def __lt__(self,other):
         return self._id < other._id
 
-class Edge(object):
+class EdgeBase(object):
     def __init__(self):
         self._parents = set()
         self._children = set()
@@ -64,8 +64,8 @@ class BaseHyperGraph(object):
         self._roots = set()
         self._edges = set()
         self._initialized = False
-        self._NodeType = Node
-        self._EdgeType = Edge
+        self._NodeType = NodeBase
+        self._EdgeType = EdgeBase
         self._nodeIDs = {}
         self._edgeIDs = {}
 
@@ -118,6 +118,14 @@ class BaseHyperGraph(object):
             if(len(n._downEdges) == 0):
                 self._leaves.add(n)
                 n.isLeaf = True
+
+
+        for n in self._nodes:
+            n._parents = tuple(sorted(n._parents,key=lambda x:x._id))
+
+        for e in self._edges:
+            e._parents = tuple(sorted(e._parents,key=lambda x:x._id))
+            e._children = tuple(sorted(e._children,key=lambda x:x._id))
 
     def draw(self):
         return

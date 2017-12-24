@@ -15,8 +15,8 @@ lv LogVar::_logAdd( lv logX, lv logY ) {
     if( logY.i == ZERO ) { return logX; }
 
     /* Don't do computations for adding what is practically 0 */
-    if( logX.f - logY.f > UNDERFLOW ) { return logX; }
-    if( logY.f - logX.f > UNDERFLOW ) { return logY; }
+    if( logX.f - logY.f > LOG_UNDERFLOW ) { return logX; }
+    if( logY.f - logX.f > LOG_UNDERFLOW ) { return logY; }
 
     /* To make sure we'd get underflow instead of overflow */
     /* in the event that |logY.f - logX.f| is large        */
@@ -246,6 +246,14 @@ lvFloat LogVar::toFloat() const {
         return 0.0;
     }
     return exp( _logVal.f );
+}
+
+lvFloat LogVar::logValue() const {
+    if( _logVal.i == ZERO ) {
+        assert( 0 );
+        return 0;
+    }
+    return _logVal.f;
 }
 
 /* -------------------------------------------------------------- */
