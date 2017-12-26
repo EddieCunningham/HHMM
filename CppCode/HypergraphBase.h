@@ -8,11 +8,11 @@
 
 #include <iostream>
 #include <vector>
-#include <unordered_set>
+#include <set>
 #include <unordered_map>
 
 #define map std::unordered_map
-#define set std::unordered_set
+#define set std::set
 
 class Node;
 class Edge;
@@ -28,15 +28,15 @@ public:
     Edge_ptr                         upEdge;
     set< Edge_ptr >                  downEdges;
 
-    uint  id     = -1;
+    uint  id    = -1;
     bool isRoot = false;
     bool isLeaf = false;
 
     Node():
-          parents(),
-          childrenForEdge(),
-          upEdge(nullptr),
-          downEdges() {}
+          parents( set< Node_ptr >() ),
+          childrenForEdge( map< Edge_ptr, set< Node_ptr > >() ),
+          upEdge( nullptr ),
+          downEdges( set< Edge_ptr >() ) {}
 
     void addUpEdge  ( Edge_ptr edge );
     void addDownEdge( Edge_ptr edge );
@@ -54,8 +54,8 @@ public:
     uint id = -1;
 
     Edge():
-            parents (),
-            children() {}
+        parents ( set< Node_ptr >() ),
+        children( set< Node_ptr >() ) {}
 
     void addParent( Node_ptr node );
     void addChild ( Node_ptr node );
@@ -76,7 +76,13 @@ public:
 
     bool initialized = false;
 
-    HyperGraph() {}
+    HyperGraph():
+        nodeIds( map< uint, Node >() ),
+        edgeIds( map< uint, Edge >() ),
+        leaves( set< Node_ptr >() ),
+        roots( set< Node_ptr >() ),
+        nodes( set< Node_ptr >() ),
+        edges( set< Edge_ptr >() ) {}
 
     Node_ptr addNode( uint id );
     bool     hasNode( uint id );
@@ -87,14 +93,9 @@ public:
     Edge_ptr getEdge( uint id );
 
     void initialize();
-
-    void addNodeId( uint id );
-    void addEdgeId( const std::vector< uint > & parents, uint id );
 };
 
 std::ostream& operator<<( std::ostream &os, const Node& node );
 std::ostream& operator<<( std::ostream &os, const Edge& edge );
-
-
 
 #endif

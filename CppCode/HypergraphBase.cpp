@@ -59,13 +59,14 @@ Node_ptr HyperGraph::addNode( uint id ) {
     Node node = Node();
     node.id   = id;
 
-    this->nodeIds.insert( std::make_pair( id, node ) );
-    this->nodes.insert( &node );
-    return &this->nodeIds.at( id );
+    this->nodeIds.emplace( id, node );
+    Node_ptr node_ref = &( this->nodeIds.at( id ) );
+    this->nodes.insert( node_ref );
+    return node_ref;
 }
 
 bool HyperGraph::hasNode( uint id ) {
-    return notInSet( this->nodeIds, id );
+    return inSet( this->nodeIds, id );
 }
 
 Node_ptr HyperGraph::getNode( uint id ) {
@@ -86,13 +87,13 @@ Edge_ptr HyperGraph::addEdge( const std::vector< Node_ptr > & parents, uint id )
     for( Node_ptr parent : parents ) {
         edge.addParent( parent );
     }
-    this->edgeIds.insert( std::make_pair( id, edge ) );
-    this->edges.insert( &edge );
-    return &this->edgeIds.at( id );
+    this->edgeIds.emplace( id, edge );
+    Edge_ptr edge_ref = &( this->edgeIds.at( id ) );
+    return edge_ref;
 }
 
 bool HyperGraph::hasEdge( uint id ) {
-    return notInSet( this->edgeIds, id );
+    return inSet( this->edgeIds, id );
 }
 
 Edge_ptr HyperGraph::getEdge( uint id ) {
@@ -117,20 +118,6 @@ void HyperGraph::initialize() {
     }
     this->initialized = true;
 }
-
-void HyperGraph::addNodeId( uint id ) {
-    addNode( id );
-}
-
-void HyperGraph::addEdgeId( const std::vector< uint > & parents, uint id ) {
-
-    std::vector< Node_ptr > parentNodes = std::vector< Node_ptr >();
-    for( uint _id : parents ) {
-        parentNodes.push_back( getNode( _id ) );
-    }
-    addEdge( parentNodes, id );
-}
-
 
 std::ostream& operator<<( std::ostream &os, const Node& node ) {
     return os << node.id;

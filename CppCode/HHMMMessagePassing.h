@@ -4,46 +4,38 @@
 #include "HypergraphBase.h"
 #include "LogVar.h"
 
-#define MPNW     MessagePassingNodeWrapper< EmissionType >
-#define MPNW_ptr MessagePassingNodeWrapper< EmissionType >*
+#define MPNW     MessagePassingNodeWrapper
+#define MPNW_ptr MessagePassingNodeWrapper*
 
-#define MPHGW     MessagePassingHyperGraphWrapper< EmissionType >
-#define MPHGW_ptr MessagePassingHyperGraphWrapper< EmissionType >*
+#define MPHGW     MessagePassingHyperGraphWrapper
+#define MPHGW_ptr MessagePassingHyperGraphWrapper*
 
-#define conditioning std::unordered_map< MPNW_ptr, uint >
-
-template < class EmissionType >
 class MessagePassingNodeWrapper;
-
-template < class EmissionType >
 class MessagePassingHyperGraphWrapper;
 
-
 typedef std::string                          condKey;
-// typedef std::unordered_map< MPNW_ptr, uint > conditioning;
+typedef std::unordered_map< MPNW_ptr, uint > conditioning;
 typedef std::vector< uint >                  parentStates;
 
-
 typedef struct {
-    /* Hash function taken from                                                       */
+    /* Hash function for vectors of uints taken from                                  */
     /* https://stackoverflow.com/questions/20511347/a-good-hash-function-for-a-vector */
-    std::size_t operator()( std::vector<uint32_t> const& vec ) const {
+    std::size_t operator()( std::vector< uint > const& vec ) const {
         std::size_t seed = vec.size();
         for( auto& i : vec ) {
             seed ^= i + 0x9e3779b9 + ( seed << 6 ) + ( seed >> 2 );
         }
         return seed;
     }
-} stateHash;
+} StateHash;
 
-template < class EmissionType >
 class MessagePassingNodeWrapper : public Node {
 private:
 
-    MessagePassingHyperGraphWrapper< EmissionType >* _msg;
+    MessagePassingHyperGraphWrapper* _msg;
 
     map< Edge_ptr    , map< uint   , map< condKey, LogVar > > > _a;
-    map< parentStates, map< condKey, LogVar >, stateHash >      _b;
+    map< parentStates, map< condKey, LogVar >, StateHash >      _b;
     map< uint        , map< condKey, LogVar > >                 _U;
     map< Edge_ptr    , map< uint   , map< condKey, LogVar > > > _V;
 
@@ -98,22 +90,21 @@ private:
 
 public:
 
+    uint N;
+    uint y;
+    bool inFeedbackSet;
 
-    uint         N;
-    EmissionType y;
-    bool         inFeedbackSet;
+    MessagePassingNodeWrapper(        );
+    void    reset            (        );
+    LogVar  getFullJoint     ( uint i );
 
-    MessagePassingNodeWrapper( MPNW_ptr node , uint N );
-    void    reset            (                        );
-    LogVar  getFullJoint     ( uint i                 );
+    friend class MessagePassingHyperGraphWrapper;
 };
 
 
-template < class EmissionType >
 class MessagePassingHyperGraphWrapper : public HyperGraph {
 private:
 
-    HyperGraph*            _hyperGraph;
     conditioning           _conditioning;
     map< condKey, LogVar > _sortaRootProbs;
     set< MPNW_ptr >        _sortaRootDeps;
@@ -129,16 +120,31 @@ private:
 public:
 
     set< MPNW_ptr > feedbackSet;
+    uint N;
 
-    void   preprocess                  ( const set< MPNW_ptr >& feedbackSet    );
-    LogVar isolatedParentJoint         ( MPNW_ptr node, parentStates X, uint i );
-    LogVar probOfParentsProducingNode  ( MPNW_ptr node, parentStates X, uint i );
-    void   getStats                    (                                       );
-    LogVar probOfAllNodeObservations   (                                       );
-    float  logProbOfAllNodeObservations(                                       );
-    bool   test                        (                                       );
-    void   getCounts                   (                                       );
+    MessagePassingHyperGraphWrapper(){}
 
+    MessagePassingHyperGraphWrapper( uint latentStateSize ):
+        _conditioning(),
+        _sortaRootProbs(),
+        _sortaRootDeps(),
+        feedbackSet(),
+        N( latentStateSize ) {}
+
+    void addNodeId( uint id, uint y );
+    void addEdgeId( const std::vector< uint > & parents, const std::vector< uint > & children, uint id );
+
+    void     preprocess                  ( const set< MPNW_ptr >& feedbackSet     );
+    LogVar   isolatedParentJoint         ( MPNW_ptr node, parentStates X, uint i  );
+    LogVar   probOfParentsProducingNode  ( MPNW_ptr node, parentStates X, uint i  );
+    void     getStats                    (                                        );
+    LogVar   probOfAllNodeObservations   (                                        );
+    float    logProbOfAllNodeObservations(                                        );
+    void     getCounts                   (                                        );
+    void     preprocessWithInt           ( const std::vector< uint >& feedbackSet );
+    float    logFullJoint                ( uint nodeId, uint i                    );
+
+    friend class MessagePassingNodeWrapper;
 };
 
 #endif
