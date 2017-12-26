@@ -3,6 +3,9 @@
 *.pdf
 *.so
 *.ipynb
-build/*
+*build/*
 .ipynb_checkpoints/*
 .DS_Store
+*HHMMTest*
+*.out
+*.o

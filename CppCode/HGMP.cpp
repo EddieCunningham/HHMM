@@ -4,7 +4,7 @@
 {
     "distutils": {
         "depends": [
-            "HHMMMessagePassing.h"
+            "HHMM.h"
         ],
         "extra_compile_args": [
             "-std=c++11",
@@ -22,8 +22,10 @@
         "sources": [
             "HGMP.pyx",
             "LogVar.cpp",
-            "HypergraphBase.cpp",
-            "HHMMMessagePassing.cpp"
+            "Node.cpp",
+            "Edge.cpp",
+            "HyperGraph.cpp",
+            "util.cpp"
         ]
     },
     "module_name": "HGMP"
@@ -528,7 +530,7 @@ static CYTHON_INLINE float __PYX_NAN() {
 #include "new"
 #include "stdexcept"
 #include "typeinfo"
-#include "HHMMMessagePassing.h"
+#include "HHMM.h"
 #ifdef _OPENMP
 #include <omp.h>
 #endif /* _OPENMP */
@@ -741,11 +743,11 @@ struct __pyx_obj_4HGMP_MessagePasser;
  * 
  * cdef class MessagePasser:             # <<<<<<<<<<<<<<
  * 
- *     cdef MessagePassingHyperGraphWrapper mp
+ *     cdef HyperGraph mp
  */
 struct __pyx_obj_4HGMP_MessagePasser {
   PyObject_HEAD
-  MessagePassingHyperGraphWrapper mp;
+  HyperGraph mp;
 };
 
 
@@ -1044,10 +1046,10 @@ static PyObject *__pyx_tuple__3;
 static PyObject *__pyx_tuple__4;
 
 /* "HGMP.pyx":24
- *     cdef MessagePassingHyperGraphWrapper mp
+ *     cdef HyperGraph mp
  * 
  *     def __init__( self, latentStateSize ):             # <<<<<<<<<<<<<<
- *         self.mp = MessagePassingHyperGraphWrapper( latentStateSize )
+ *         self.mp = HyperGraph( latentStateSize )
  * 
  */
 
@@ -1105,19 +1107,19 @@ static int __pyx_pf_4HGMP_13MessagePasser___init__(struct __pyx_obj_4HGMP_Messag
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   unsigned int __pyx_t_1;
-  MessagePassingHyperGraphWrapper __pyx_t_2;
+  HyperGraph __pyx_t_2;
   __Pyx_RefNannySetupContext("__init__", 0);
 
   /* "HGMP.pyx":25
  * 
  *     def __init__( self, latentStateSize ):
- *         self.mp = MessagePassingHyperGraphWrapper( latentStateSize )             # <<<<<<<<<<<<<<
+ *         self.mp = HyperGraph( latentStateSize )             # <<<<<<<<<<<<<<
  * 
  *     def initialize( self ):
  */
   __pyx_t_1 = __Pyx_PyInt_As_unsigned_int(__pyx_v_latentStateSize); if (unlikely((__pyx_t_1 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(1, 25, __pyx_L1_error)
   try {
-    __pyx_t_2 = MessagePassingHyperGraphWrapper(__pyx_t_1);
+    __pyx_t_2 = HyperGraph(__pyx_t_1);
   } catch(...) {
     __Pyx_CppExn2PyErr();
     __PYX_ERR(1, 25, __pyx_L1_error)
@@ -1125,10 +1127,10 @@ static int __pyx_pf_4HGMP_13MessagePasser___init__(struct __pyx_obj_4HGMP_Messag
   __pyx_v_self->mp = __pyx_t_2;
 
   /* "HGMP.pyx":24
- *     cdef MessagePassingHyperGraphWrapper mp
+ *     cdef HyperGraph mp
  * 
  *     def __init__( self, latentStateSize ):             # <<<<<<<<<<<<<<
- *         self.mp = MessagePassingHyperGraphWrapper( latentStateSize )
+ *         self.mp = HyperGraph( latentStateSize )
  * 
  */
 
@@ -1144,7 +1146,7 @@ static int __pyx_pf_4HGMP_13MessagePasser___init__(struct __pyx_obj_4HGMP_Messag
 }
 
 /* "HGMP.pyx":27
- *         self.mp = MessagePassingHyperGraphWrapper( latentStateSize )
+ *         self.mp = HyperGraph( latentStateSize )
  * 
  *     def initialize( self ):             # <<<<<<<<<<<<<<
  *         self.mp.initialize()
@@ -1179,7 +1181,7 @@ static PyObject *__pyx_pf_4HGMP_13MessagePasser_2initialize(struct __pyx_obj_4HG
   __pyx_v_self->mp.initialize();
 
   /* "HGMP.pyx":27
- *         self.mp = MessagePassingHyperGraphWrapper( latentStateSize )
+ *         self.mp = HyperGraph( latentStateSize )
  * 
  *     def initialize( self ):             # <<<<<<<<<<<<<<
  *         self.mp.initialize()
@@ -1996,7 +1998,7 @@ static PyObject *__pyx_tp_new_4HGMP_MessagePasser(PyTypeObject *t, CYTHON_UNUSED
   }
   if (unlikely(!o)) return 0;
   p = ((struct __pyx_obj_4HGMP_MessagePasser *)o);
-  new((void*)&(p->mp)) MessagePassingHyperGraphWrapper();
+  new((void*)&(p->mp)) HyperGraph();
   return o;
 }
 

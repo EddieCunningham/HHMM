@@ -3,8 +3,10 @@ from Cython.Build import cythonize
 
 setup(ext_modules = cythonize(Extension("HGMP",\
            sources=["HGMP.pyx", "LogVar.cpp", \
-                             "HypergraphBase.cpp", \
-                             "HHMMMessagePassing.cpp"],\
+                                "Node.cpp", \
+                                "Edge.cpp", \
+                                "HyperGraph.cpp", \
+                                "util.cpp"], \
            include_dirs = ["/usr/local/include","."],\
            library_dirs = ["/usr/local/lib"],\
            language = "c++",\

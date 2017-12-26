@@ -8,9 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		2C28B6241FF1D6610042EA9F /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2C28B61D1FF1D6610042EA9F /* test.cpp */; };
-		2C28B6251FF1D6610042EA9F /* HHMMMessagePassing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2C28B61E1FF1D6610042EA9F /* HHMMMessagePassing.cpp */; };
-		2C28B6261FF1D6610042EA9F /* HypergraphBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2C28B6201FF1D6610042EA9F /* HypergraphBase.cpp */; };
 		2C28B6271FF1D6610042EA9F /* LogVar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2C28B6221FF1D6610042EA9F /* LogVar.cpp */; };
+		2C28B62D1FF1F9A10042EA9F /* Edge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2C28B6281FF1F9A10042EA9F /* Edge.cpp */; };
+		2C28B62E1FF1F9A10042EA9F /* HyperGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2C28B62A1FF1F9A10042EA9F /* HyperGraph.cpp */; };
+		2C28B62F1FF1F9A10042EA9F /* Node.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2C28B62B1FF1F9A10042EA9F /* Node.cpp */; };
+		2C28B6301FF1F9A10042EA9F /* util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2C28B62C1FF1F9A10042EA9F /* util.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,12 +30,13 @@
 /* Begin PBXFileReference section */
 		2C28B6131FF1D6090042EA9F /* HHMMTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = HHMMTest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C28B61D1FF1D6610042EA9F /* test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test.cpp; path = ../CppCode/test.cpp; sourceTree = "<group>"; };
-		2C28B61E1FF1D6610042EA9F /* HHMMMessagePassing.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HHMMMessagePassing.cpp; path = ../CppCode/HHMMMessagePassing.cpp; sourceTree = "<group>"; };
-		2C28B61F1FF1D6610042EA9F /* HHMMMessagePassing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HHMMMessagePassing.h; path = ../CppCode/HHMMMessagePassing.h; sourceTree = "<group>"; };
-		2C28B6201FF1D6610042EA9F /* HypergraphBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HypergraphBase.cpp; path = ../CppCode/HypergraphBase.cpp; sourceTree = "<group>"; };
-		2C28B6211FF1D6610042EA9F /* HypergraphBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HypergraphBase.h; path = ../CppCode/HypergraphBase.h; sourceTree = "<group>"; };
 		2C28B6221FF1D6610042EA9F /* LogVar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LogVar.cpp; path = ../CppCode/LogVar.cpp; sourceTree = "<group>"; };
 		2C28B6231FF1D6610042EA9F /* LogVar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LogVar.h; path = ../CppCode/LogVar.h; sourceTree = "<group>"; };
+		2C28B6281FF1F9A10042EA9F /* Edge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Edge.cpp; path = ../CppCode/Edge.cpp; sourceTree = "<group>"; };
+		2C28B6291FF1F9A10042EA9F /* HHMM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HHMM.h; path = ../CppCode/HHMM.h; sourceTree = "<group>"; };
+		2C28B62A1FF1F9A10042EA9F /* HyperGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HyperGraph.cpp; path = ../CppCode/HyperGraph.cpp; sourceTree = "<group>"; };
+		2C28B62B1FF1F9A10042EA9F /* Node.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Node.cpp; path = ../CppCode/Node.cpp; sourceTree = "<group>"; };
+		2C28B62C1FF1F9A10042EA9F /* util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = util.cpp; path = ../CppCode/util.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,11 +53,12 @@
 		2C28B60A1FF1D6090042EA9F = {
 			isa = PBXGroup;
 			children = (
+				2C28B6291FF1F9A10042EA9F /* HHMM.h */,
+				2C28B62B1FF1F9A10042EA9F /* Node.cpp */,
+				2C28B6281FF1F9A10042EA9F /* Edge.cpp */,
+				2C28B62A1FF1F9A10042EA9F /* HyperGraph.cpp */,
+				2C28B62C1FF1F9A10042EA9F /* util.cpp */,
 				2C28B61D1FF1D6610042EA9F /* test.cpp */,
-				2C28B61E1FF1D6610042EA9F /* HHMMMessagePassing.cpp */,
-				2C28B61F1FF1D6610042EA9F /* HHMMMessagePassing.h */,
-				2C28B6201FF1D6610042EA9F /* HypergraphBase.cpp */,
-				2C28B6211FF1D6610042EA9F /* HypergraphBase.h */,
 				2C28B6221FF1D6610042EA9F /* LogVar.cpp */,
 				2C28B6231FF1D6610042EA9F /* LogVar.h */,
 				2C28B6151FF1D6090042EA9F /* HHMMTest */,
@@ -134,10 +138,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2C28B6261FF1D6610042EA9F /* HypergraphBase.cpp in Sources */,
 				2C28B6271FF1D6610042EA9F /* LogVar.cpp in Sources */,
+				2C28B6301FF1F9A10042EA9F /* util.cpp in Sources */,
+				2C28B62D1FF1F9A10042EA9F /* Edge.cpp in Sources */,
+				2C28B62F1FF1F9A10042EA9F /* Node.cpp in Sources */,
+				2C28B62E1FF1F9A10042EA9F /* HyperGraph.cpp in Sources */,
 				2C28B6241FF1D6610042EA9F /* test.cpp in Sources */,
-				2C28B6251FF1D6610042EA9F /* HHMMMessagePassing.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -264,6 +270,7 @@
 				2C28B61C1FF1D6090042EA9F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -3,12 +3,12 @@
 from libcpp cimport bool
 from libcpp.vector cimport vector
 
-cdef extern from "HHMMMessagePassing.h":
+cdef extern from "HHMM.h":
 
-    cdef cppclass MessagePassingHyperGraphWrapper:
+    cdef cppclass HyperGraph:
 
-        MessagePassingHyperGraphWrapper() except +
-        MessagePassingHyperGraphWrapper( unsigned int latentStateSize ) except +
+        HyperGraph() except +
+        HyperGraph( unsigned int latentStateSize ) except +
         void initialize()
         void addNodeId( unsigned int _id, unsigned int y )
         void addEdgeId( vector[ unsigned int ] parents, vector[ unsigned int ] children, unsigned int _id )
@@ -19,10 +19,10 @@ cdef extern from "HHMMMessagePassing.h":
 
 cdef class MessagePasser:
 
-    cdef MessagePassingHyperGraphWrapper mp
+    cdef HyperGraph mp
 
     def __init__( self, latentStateSize ):
-        self.mp = MessagePassingHyperGraphWrapper( latentStateSize )
+        self.mp = HyperGraph( latentStateSize )
 
     def initialize( self ):
         self.mp.initialize()
