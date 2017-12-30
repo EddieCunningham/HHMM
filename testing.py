@@ -354,6 +354,148 @@ def cycleExample9(isHidden=True):
         msg = MarkovModelMessagePasser(hg,generic2DParameters)
     return hg,msg
 
+
+def cycleExample10(isHidden=True):
+    hg = MessagePassingHG(2)
+    n0 = hg.addNode(0)
+    n1 = hg.addNode(1)
+    n2 = hg.addNode(2)
+    n3 = hg.addNode(3)
+    n4 = hg.addNode(4)
+    n5 = hg.addNode(5)
+    n6 = hg.addNode(6)
+    n7 = hg.addNode(7)
+    n8 = hg.addNode(8)
+    n9 = hg.addNode(9)
+    n10 = hg.addNode(10)
+    n11 = hg.addNode(11)
+    n12 = hg.addNode(12)
+    n13 = hg.addNode(13)
+    n14 = hg.addNode(14)
+    n15 = hg.addNode(15)
+    n16 = hg.addNode(16)
+    n17 = hg.addNode(17)
+    n18 = hg.addNode(18)
+    n19 = hg.addNode(19)
+    n20 = hg.addNode(20)
+
+    e1 = hg.addEdge(set([n1,n0]),1)
+    e1.addChild(n2)
+    e1.addChild(n3)
+    e1.addChild(n9)
+
+    e2 = hg.addEdge(set([n2,n3]),2)
+    e2.addChild(n4)
+
+    e3 = hg.addEdge(set([n4,n8,n2,n3,n1]),3)
+    e3.addChild(n5)
+    e3.addChild(n6)
+
+    e4 = hg.addEdge(set([n5,n6,n1,n2,n4,n6,n9]),4)
+    e4.addChild(n7)
+    e4.addChild(n10)
+
+    e5 = hg.addEdge(set([n10]),5)
+    e5.addChild(n11)
+
+    e6 = hg.addEdge(set([n11]),6)
+    e6.addChild(n12)
+
+    e7 = hg.addEdge(set([n12]),7)
+    e7.addChild(n13)
+
+    e8 = hg.addEdge(set([n13]),8)
+    e8.addChild(n14)
+
+    e9 = hg.addEdge(set([n14,n0]),9)
+    e9.addChild(n15)
+    e9.addChild(n16)
+    e9.addChild(n17)
+
+    e10 = hg.addEdge(set([n1,n2,n3]),10)
+    e10.addChild(n18)
+
+    e11 = hg.addEdge(set([n11,n12,n13]),11)
+    e11.addChild(n19)
+
+    e12 = hg.addEdge(set([n9,n19]),12)
+    e12.addChild(n20)
+
+    hg.initialize()
+
+    hg.draw()
+
+    if(isHidden):
+        msg = HiddenMarkovModelMessagePasser(hg,generic2DParameters)
+    else:
+        msg = MarkovModelMessagePasser(hg,generic2DParameters)
+    return hg,msg
+
+
+def cycleExample11(isHidden=True):
+    hg = MessagePassingHG(2)
+    n0 = hg.addNode(0)
+    n1 = hg.addNode(1)
+    n2 = hg.addNode(2)
+    n3 = hg.addNode(3)
+    n4 = hg.addNode(4)
+    n5 = hg.addNode(5)
+    n6 = hg.addNode(6)
+    n7 = hg.addNode(7)
+    n8 = hg.addNode(8)
+    n9 = hg.addNode(9)
+    n10 = hg.addNode(10)
+    n11 = hg.addNode(11)
+    n12 = hg.addNode(12)
+    n13 = hg.addNode(13)
+    n14 = hg.addNode(14)
+    n15 = hg.addNode(15)
+    n16 = hg.addNode(16)
+    n17 = hg.addNode(17)
+
+    e1 = hg.addEdge(set([n1,n0]),1)
+    e1.addChild(n2)
+    e1.addChild(n3)
+    e1.addChild(n9)
+
+    e2 = hg.addEdge(set([n2,n3]),2)
+    e2.addChild(n4)
+
+    e3 = hg.addEdge(set([n4,n8,n2,n3,n1]),3)
+    e3.addChild(n5)
+    e3.addChild(n6)
+
+    e4 = hg.addEdge(set([n5,n6,n1,n2,n4,n6,n9]),4)
+    e4.addChild(n7)
+    e4.addChild(n10)
+
+    e5 = hg.addEdge(set([n10]),5)
+    e5.addChild(n11)
+
+    e6 = hg.addEdge(set([n11]),6)
+    e6.addChild(n12)
+
+    e7 = hg.addEdge(set([n12]),7)
+    e7.addChild(n13)
+
+    e8 = hg.addEdge(set([n13]),8)
+    e8.addChild(n14)
+
+    e9 = hg.addEdge(set([n14,n0]),9)
+    e9.addChild(n15)
+    e9.addChild(n16)
+    e9.addChild(n17)
+
+    hg.initialize()
+
+    hg.draw()
+
+    if(isHidden):
+        msg = HiddenMarkovModelMessagePasser(hg,generic2DParameters)
+    else:
+        msg = MarkovModelMessagePasser(hg,generic2DParameters)
+    return hg,msg
+
 def disjointExample(isHidden=True):
     hg = MessagePassingHG(2)
 
@@ -384,6 +526,30 @@ def disjointExample(isHidden=True):
 
     e5 = hg.addEdge(set([n4]),5)
     e5.addChild(n10)
+
+    hg.initialize()
+
+    hg.draw()
+
+    if(isHidden):
+        msg = HiddenMarkovModelMessagePasser(hg,generic2DParameters)
+    else:
+        msg = MarkovModelMessagePasser(hg,generic2DParameters)
+    return hg,msg
+
+def nonCycle(isHidden=True):
+    hg = MessagePassingHG(1)
+    n0 = hg.addNode(0)
+    n1 = hg.addNode(1)
+    n2 = hg.addNode(2)
+    n3 = hg.addNode(3)
+
+    e1 = hg.addEdge(set([n0]),1)
+    e1.addChild(n1)
+    e1.addChild(n2)
+
+    e2 = hg.addEdge(set([n2]),2)
+    e2.addChild(n3)
 
     hg.initialize()
 
@@ -434,16 +600,19 @@ def MMTest():
             bf = LogVar(0)#msg.getWBruteForce([node],[i])
             print(comp)
 
+# hg,msg = nonCycle(True)
 # hg,msg = cycleExample2(True)
-# hg,msg = cycleExample5(True)
+hg,msg = cycleExample5(True)
 # hg,msg = cycleExample9(True)
-# hg.draw()
-# HMMTest(msg)
-HMMTest(cycleExample1(True)[1])
-HMMTest(cycleExample3(True)[1])
-HMMTest(cycleExample4(True)[1])
-HMMTest(cycleExample5(True)[1])
-HMMTest(cycleExample5_1(True)[1])
-HMMTest(cycleExample6(True)[1])
-HMMTest(cycleExample7(True)[1])
-HMMTest(pedigreeExample('3818J')[1])
+# hg,msg = cycleExample10(True)
+# hg,msg = cycleExample11(True)
+hg.draw()
+HMMTest(msg)
+# HMMTest(cycleExample1(True)[1])
+# HMMTest(cycleExample3(True)[1])
+# HMMTest(cycleExample4(True)[1])
+# HMMTest(cycleExample5(True)[1])
+# HMMTest(cycleExample5_1(True)[1])
+# HMMTest(cycleExample6(True)[1])
+# HMMTest(cycleExample7(True)[1])
+# HMMTest(pedigreeExample('3818J')[1])

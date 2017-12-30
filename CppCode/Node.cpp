@@ -222,8 +222,8 @@ LogVar Node::_computeB( parentStates X, const conditioning& cond ) {
         LogVar prod( 1 );
 
         /* Prob of this sibling */
-        LogVar transProb    = LogVar( ( *_trans )( X, k ) );
-        LogVar emissionProb = LogVar( ( *_L )( k ) );
+        LogVar transProb    = transFunc( X, k );
+        LogVar emissionProb = emissionFunc( k );
 
         prod *= transProb * emissionProb;
 
@@ -325,8 +325,8 @@ LogVar Node::_computeU( uint i, const conditioning& cond ) {
         }
         else {
             /* Root probability */
-            LogVar rootProb     = LogVar( ( *_pi )( i ) );
-            LogVar emissionProb = LogVar( ( *_L )( i ) );
+            LogVar rootProb     = rootFunc( i );
+            LogVar emissionProb = emissionFunc( i );
             uVal = rootProb * emissionProb;
         }
     }
@@ -361,7 +361,7 @@ LogVar Node::_computeU( uint i, const conditioning& cond ) {
             parentStates X = xIter.getParentStates();
 
             /* Prob of this node */
-            LogVar prod = LogVar( ( *_trans )( X, i ) );
+            LogVar prod = transFunc( X, i );
 
             /* Branch out from each parent */
             uint j = 0;
@@ -384,7 +384,7 @@ LogVar Node::_computeU( uint i, const conditioning& cond ) {
             uVal += prod;
         } while( xIter.next() );
 
-        uVal *= LogVar( ( *_L )( i ) );
+        uVal *= emissionFunc( i );
     }
     return uVal;
 }
@@ -616,3 +616,20 @@ void Node::reset() {
     _V         = map< Edge_ptr    , map< uint   , map< condKey, LogVar > > >();
     _fullJoint = std::vector< LogVar >();
 }
+
+LogVar Node::transFunc( const parentStates& X, uint k ) {
+    /* Assume that there are only 2 parents */
+    return _msg->trans.at( X.at( 0 ) ).at( X.at( 1 ) ).at( k );
+}
+
+LogVar Node::emissionFunc( uint i ) {
+    return _msg->L.at( i );
+}
+
+LogVar Node::rootFunc( uint i ) {
+    uint rootIndex = _msg->indexOfRoot( id );
+    return _msg->_pi.at( rootIndex ).at( i );
+}
+
+
+

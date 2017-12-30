@@ -100,40 +100,40 @@ private:
 
     std::vector< LogVar > _fullJoint;
 
-    LogVar ( *_pi    )( uint               );
-    LogVar ( *_L     )( uint               );
-    LogVar ( *_trans )( parentStates, uint );
+    LogVar transFunc   ( const parentStates& X, uint k );
+    LogVar emissionFunc( uint i                        );
+    LogVar rootFunc    ( uint i                        );
 
-    condKey _aKey            ( const conditioning& cond                                                                  );
-    bool    _needToComputeA  ( Edge_ptr edge, uint i, condKey key                                                        );
-    void    _setAVal         ( Edge_ptr edge, uint i, condKey key, LogVar aVal                                           );
-    LogVar  _getAVal         ( Edge_ptr edge, uint i, condKey key                                                        );
-    LogVar  _getA            ( Edge_ptr edge, uint i, const conditioning& cond                                           );
-    LogVar  _computeA        ( Edge_ptr edge, uint i, const conditioning& cond                                           );
+    condKey _aKey            ( const conditioning& cond                                                                 );
+    bool    _needToComputeA  ( Edge_ptr edge, uint i, condKey key                                                       );
+    void    _setAVal         ( Edge_ptr edge, uint i, condKey key, LogVar aVal                                          );
+    LogVar  _getAVal         ( Edge_ptr edge, uint i, condKey key                                                       );
+    LogVar  _getA            ( Edge_ptr edge, uint i, const conditioning& cond                                          );
+    LogVar  _computeA        ( Edge_ptr edge, uint i, const conditioning& cond                                          );
     LogVar  _getMarginalizedA( Edge_ptr edge, uint i, const conditioning& nodesToKeep, const set<Node_ptr>& feedbackSet );
 
-    condKey _bKey            ( const conditioning& cond                                                           );
-    bool    _needToComputeB  ( parentStates X, condKey key                                                        );
-    void    _setBVal         ( parentStates X, condKey key, LogVar bVal                                           );
-    LogVar  _getBVal         ( parentStates X, condKey key                                                        );
-    LogVar  _getB            ( parentStates X, const conditioning& cond                                           );
-    LogVar  _computeB        ( parentStates X, const conditioning& cond                                           );
+    condKey _bKey            ( const conditioning& cond                                                          );
+    bool    _needToComputeB  ( parentStates X, condKey key                                                       );
+    void    _setBVal         ( parentStates X, condKey key, LogVar bVal                                          );
+    LogVar  _getBVal         ( parentStates X, condKey key                                                       );
+    LogVar  _getB            ( parentStates X, const conditioning& cond                                          );
+    LogVar  _computeB        ( parentStates X, const conditioning& cond                                          );
     LogVar  _getMarginalizedB( parentStates X, const conditioning& nodesToKeep, const set<Node_ptr>& feedbackSet );
 
-    condKey _UKey            ( const conditioning& cond                                                   );
-    bool    _needToComputeU  ( uint i, condKey key                                                        );
-    void    _setUVal         ( uint i, condKey key, LogVar uVal                                           );
-    LogVar  _getUVal         ( uint i, condKey key                                                        );
-    LogVar  _getU            ( uint i, const conditioning& cond                                           );
-    LogVar  _computeU        ( uint i, const conditioning& cond                                           );
+    condKey _UKey            ( const conditioning& cond                                                  );
+    bool    _needToComputeU  ( uint i, condKey key                                                       );
+    void    _setUVal         ( uint i, condKey key, LogVar uVal                                          );
+    LogVar  _getUVal         ( uint i, condKey key                                                       );
+    LogVar  _getU            ( uint i, const conditioning& cond                                          );
+    LogVar  _computeU        ( uint i, const conditioning& cond                                          );
     LogVar  _getMarginalizedU( uint i, const conditioning& nodesToKeep, const set<Node_ptr>& feedbackSet );
 
-    condKey _VKey            ( const conditioning& cond                                                                  );
-    bool    _needToComputeV  ( Edge_ptr edge, uint i, condKey key                                                        );
-    void    _setVVal         ( Edge_ptr edge, uint i, condKey key, LogVar vVal                                           );
-    LogVar  _getVVal         ( Edge_ptr edge, uint i, condKey key                                                        );
-    LogVar  _getV            ( Edge_ptr edge, uint i, const conditioning& cond                                           );
-    LogVar  _computeV        ( Edge_ptr edge, uint i, const conditioning& cond                                           );
+    condKey _VKey            ( const conditioning& cond                                                                 );
+    bool    _needToComputeV  ( Edge_ptr edge, uint i, condKey key                                                       );
+    void    _setVVal         ( Edge_ptr edge, uint i, condKey key, LogVar vVal                                          );
+    LogVar  _getVVal         ( Edge_ptr edge, uint i, condKey key                                                       );
+    LogVar  _getV            ( Edge_ptr edge, uint i, const conditioning& cond                                          );
+    LogVar  _computeV        ( Edge_ptr edge, uint i, const conditioning& cond                                          );
     LogVar  _getMarginalizedV( Edge_ptr edge, uint i, const conditioning& nodesToKeep, const set<Node_ptr>& feedbackSet );
 
     LogVar _sortaRootProb      ( const conditioning& cond         );
@@ -154,14 +154,14 @@ public:
     bool isLeaf = false;
 
     Node():
-        parents( set< Node_ptr >() ),
-        childrenForEdge( map< Edge_ptr, set< Node_ptr > >() ),
-        upEdge( nullptr ),
-        downEdges( set< Edge_ptr >() ),
         _aDependencies(),
         _bDependencies(),
         _UDependencies(),
-        _VDependencies() {
+        _VDependencies(),
+        parents( set< Node_ptr >() ),
+        childrenForEdge( map< Edge_ptr, set< Node_ptr > >() ),
+        upEdge( nullptr ),
+        downEdges( set< Edge_ptr >() ) {
             reset();
         }
 
@@ -212,9 +212,9 @@ private:
     set< Node_ptr >        _sortaRootDeps;
     bool                   _preprocessing;
 
-    LogVar ( *_pi    )( uint               );
-    LogVar ( *_L     )( uint               );
-    LogVar ( *_trans )( parentStates, uint );
+    std::vector< std::vector< float > > pi;
+    std::vector< std::vector< float > > L;
+    std::vector< std::vector< std::vector < float > > > trans;
 
     void   _computeForPreprocessing(                          );
     LogVar _sortaRootProb          ( const conditioning& cond );
@@ -234,30 +234,33 @@ public:
     bool initialized = false;
 
     HyperGraph():
+        _conditioning(),
+        _sortaRootProbs(),
+        _sortaRootDeps(),
         nodeIds( map< uint, Node >() ),
         edgeIds( map< uint, Edge >() ),
         leaves( set< Node_ptr >() ),
         roots( set< Node_ptr >() ),
         nodes( set< Node_ptr >() ),
         edges( set< Edge_ptr >() ),
-        _conditioning(),
-        _sortaRootProbs(),
-        _sortaRootDeps(),
         feedbackSet(),
         N( -1 ) {}
 
     HyperGraph( uint latentStateSize ):
+        _conditioning(),
+        _sortaRootProbs(),
+        _sortaRootDeps(),
         nodeIds( map< uint, Node >() ),
         edgeIds( map< uint, Edge >() ),
         leaves( set< Node_ptr >() ),
         roots( set< Node_ptr >() ),
         nodes( set< Node_ptr >() ),
         edges( set< Edge_ptr >() ),
-        _conditioning(),
-        _sortaRootProbs(),
-        _sortaRootDeps(),
         feedbackSet(),
         N( latentStateSize ) {}
+
+    uint indexOfNode( uint id );
+    uint indexOfRoot( uint id );
 
     Node_ptr addNode( uint id );
     bool     hasNode( uint id );
@@ -282,6 +285,11 @@ public:
     void     getCounts                   (                                        );
     void     preprocessWithInt           ( const std::vector< uint >& feedbackSet );
     float    logFullJoint                ( uint nodeId, uint i                    );
+
+
+    void setPi   ( std::vector< std::vector< float > > _pi );
+    void setL    ( std::vector< float > _L  );
+    void setTrans( std::vector< std::vector< std::vector < float > > > _trans );
 
     friend class Node;
     friend class Edge;

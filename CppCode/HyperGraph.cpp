@@ -424,3 +424,27 @@ void HyperGraph::addEdgeId( const std::vector< uint > & parents, const std::vect
         edge->addChild( node );
     }
 }
+
+void HyperGraph::setPi( std::vector< std::vector< float > > _pi ) {
+    pi = _pi;
+}
+
+void HyperGraph::setL( std::vector< std::vector< float > > _L ) {
+    L  = _L ;
+}
+
+void HyperGraph::setTrans( std::vector< std::vector< std::vector < float > > > _trans ) {
+    trans = _trans;
+}
+
+uint HyperGraph::indexOfNode( uint id ) {
+    Node_ptr node = getNode( id );
+    uint index = std::distance( nodes.begin(), std::find( nodes.begin(), nodes.end(), node ) );
+    return index;
+}
+
+uint HyperGraph::indexOfRoot( uint id ) {
+    Node_ptr root = getNode( id );
+    uint index = std::distance( roots.begin(), std::find( roots.begin(), roots.end(), root ) );
+    return index;
+}

@@ -1,5 +1,6 @@
 from distutils.core import setup, Extension
 from Cython.Build import cythonize
+import numpy
 
 setup(ext_modules = cythonize(Extension("HGMP",\
            sources=["HGMP.pyx", "LogVar.cpp", \

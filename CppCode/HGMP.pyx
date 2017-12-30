@@ -5,6 +5,8 @@ from libcpp.vector cimport vector
 
 cdef extern from "HHMM.h":
 
+    ctypedef vector[ unsigned int ] parentStates
+
     cdef cppclass HyperGraph:
 
         HyperGraph() except +
@@ -13,9 +15,15 @@ cdef extern from "HHMM.h":
         void addNodeId( unsigned int _id, unsigned int y )
         void addEdgeId( vector[ unsigned int ] parents, vector[ unsigned int ] children, unsigned int _id )
         void preprocessWithInt( vector[ unsigned int ] fbs )
-        float logProbOfAllNodeObservations();
-        void getStats();
+        float logProbOfAllNodeObservations()
+        void getStats()
         float logFullJoint( unsigned int _id, unsigned int i )
+
+        unsigned int indexOfRoot( unsigned int id )
+
+        void setPi( np.ndarray[ unsigned int, ndim=2 ] pi )
+        void setL( np.ndarray[ unsigned int, ndim=1 ] L )
+        void setTrans( np.ndarray[ unsigned int, ndim=3 ] trans )
 
 cdef class MessagePasser:
 
@@ -34,6 +42,15 @@ cdef class MessagePasser:
         if( edgeId == -1 ):
             assert 0
         self.mp.addEdgeId( parentIds, childIds, edgeId )
+
+    cpdef setRootDistribution( self, vector[ vector[ unsigned int ] ] rootDist ):
+        self.mp.setPi( rootDist )
+
+    cpdef setEmissionDistribution( self, vector[ unsigned int ] emissionDist ):
+        self.mp.setL( emissionDist )
+
+    cpdef setTransitionDistribution( self, vector[ vector[ vector[ unsigned int ] ] ] transDist ):
+        self.mp.setTrans( transDist )
 
     def preprocess( self, fbs ):
         self.mp.preprocessWithInt( fbs )

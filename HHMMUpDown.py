@@ -48,6 +48,52 @@ class NodeForHMM(NodeBase):
 
         self.reset()
 
+        self.doneUpEdge = {}
+        self.doneDownEdges = {}
+
+    def remainingUpEdges( self, conditioning ):
+
+        if( self.inFBS ):
+            return set()
+
+        key = self.UKey( conditioning )
+
+        if( key not in self.doneUpEdge ):
+            self.doneUpEdge[ key ] = set()
+
+        return set([ self._upEdge ]) - self.doneUpEdge[ key ]
+
+    def doneWithUpEdge( self, edge, conditioning ):
+
+        key = self.UKey( conditioning )
+
+        if( key not in self.doneUpEdge ):
+            self.doneUpEdge[ key ] = set()
+
+        self.doneUpEdge[ key ].add( edge )
+
+
+    def remainingDownEdges( self, conditioning ):
+
+        if( self.inFBS ):
+            return set()
+
+        key = self.VKey( conditioning )
+
+        if( key not in self.doneDownEdges ):
+            self.doneDownEdges[ key ] = set()
+
+        return self._downEdges - self.doneDownEdges[ key ]
+
+    def doneWithDownEdge( self, edge, conditioning ):
+
+        key = self.VKey( conditioning )
+
+        if( key not in self.doneDownEdges ):
+            self.doneDownEdges[ key ] = set()
+
+        self.doneDownEdges[ key ].add( edge )
+
     def reset(self):
         self._U = {}
         self._V = {}
@@ -96,15 +142,15 @@ class NodeForHMM(NodeBase):
             self._a[edge][i][key]
             assert 0
 
-    def getA(self,edge,i,conditioning):
+    def getA(self,edge,i,conditioning,depth=0):
 
         key = self.aKey(conditioning)
 
-        """ a_n_e(i) = P(Y\!(e,n),n_x=i) """
+        """ a_n_e( i ) = P( Y \ !( e, n ), n_x = i ) """
         if(self.needToComputeA(edge,i,key)):
 
             # if we don't have the right conditioning, add it
-            aVal = self._computeA(edge,i,conditioning)
+            aVal = self._computeA(edge,i,conditioning,depth)
             self.setAVal(edge,i,key,aVal)
 
             if(self._msg.preprocessing):
@@ -113,12 +159,12 @@ class NodeForHMM(NodeBase):
             aVal = self.getAVal(edge,i,key)
         return aVal
 
-    def _computeA(self,edge,i,conditioning):
+    def _computeA(self,edge,i,conditioning,depth=0):
 
         a_ = LogVar(1)
 
         """ All nodes up from this node """
-        a_ *= self.getU(i,conditioning)
+        a_ *= self.getU(i,conditioning,depth)
         self._aDeps |= self._UDeps
 
         """ All nodes down from this node but not down edge """
@@ -128,7 +174,7 @@ class NodeForHMM(NodeBase):
                 if(e == edge): continue
 
                 """ Down each mate branch """
-                a_ *= self.getV(e,i,conditioning)
+                a_ *= self.getV(e,i,conditioning,depth)
             self._aDeps |= self._VDeps
 
         return a_
@@ -142,6 +188,25 @@ class NodeForHMM(NodeBase):
             conditioning.update(nodesToKeep)
             a += self.getA(edge,i,conditioning)
         return a
+
+    def aReady( self, edge, i, conditioning ):
+
+        # only ready if U and V are ready
+        uKey = self.UKey( conditioning )
+        vKey = self.VKey( conditioning )
+
+        if( self.needToComputeU( i, uKey ) ):
+            print('Dont have U')
+            return False
+
+        for e in self._downEdges:
+            if(e == edge): continue
+
+            if( self.needToComputeV( e, i, vKey ) ):
+                print('Dont have V')
+                return False
+
+        return True
 
     """ ------------------------------------------------------------------------------------ """
 
@@ -166,14 +231,14 @@ class NodeForHMM(NodeBase):
             self._b[X][key]
             assert 0
 
-    def getB(self,X,conditioning):
+    def getB(self,X,conditioning,depth=0):
 
         key = self.bKey(conditioning)
 
-        """ B_n(X) = P(n_y,Y\^(n)_y|^(n)_x=X) """
+        """ B_n( X ) = P( n_y, Y \ ^(n)_y | ^(n)_x = X ) """
         if(self.needToComputeB(X,key)):
 
-            bVal = self._computeB(X,conditioning)
+            bVal = self._computeB(X,conditioning,depth)
             self.setBVal(X,key,bVal)
 
             if(self._msg.preprocessing):
@@ -182,7 +247,7 @@ class NodeForHMM(NodeBase):
             bVal = self.getBVal(X,key)
         return bVal
 
-    def _computeB(self,X,conditioning):
+    def _computeB(self,X,conditioning,depth=0):
 
         b_ = LogVar(0)
         if(len(self._downEdges) > 0):
@@ -194,7 +259,7 @@ class NodeForHMM(NodeBase):
 
                 """ Branch down from sibling """
                 for e in self._downEdges:
-                    _prod *= self.getV(e,k,conditioning)
+                    _prod *= self.getV(e,k,conditioning,depth)
 
                 b_ += _prod
 
@@ -219,6 +284,19 @@ class NodeForHMM(NodeBase):
             b += self.getB(X,conditioning)
         return b
 
+    def bReady( self, X, conditioning ):
+
+        # only ready if V is ready
+        vKey = self.VKey( conditioning )
+
+        for k in self._getN( self, conditioning ):
+            for e in self._downEdges:
+
+                if( self.needToComputeV( e, k, vKey ) ):
+                    return False
+
+        return True
+
     """ ------------------------------------------------------------------------------------ """
 
     def UKey(self,conditioning):
@@ -236,14 +314,16 @@ class NodeForHMM(NodeBase):
     def getUVal(self,i,key):
         return LogVar(self._U[i][key])
 
-    def getU(self,i,conditioning):
+    def getU(self,i,conditioning,depth=0):
+
+        # print(''.join(['\t' for _ in range(depth)])+'U value for depth is %d for node %s'%(depth,self))
 
         key = self.UKey(conditioning)
 
         """ U_n(i) = P(n_y,^(n)_y,n_x=i) """
         if(self.needToComputeU(i,key)):
 
-            uVal = self._computeU(i,conditioning)
+            uVal = self._computeU(i,conditioning,depth)
             self.setUVal(i,key,uVal)
 
             if(self._msg.preprocessing):
@@ -252,7 +332,7 @@ class NodeForHMM(NodeBase):
             uVal = self.getUVal(i,key)
         return uVal
 
-    def _computeU(self,i,conditioning):
+    def _computeU(self,i,conditioning,depth=0):
 
         parents = self._parents
         if(len(parents) == 0 or self.inFBS):
@@ -273,14 +353,14 @@ class NodeForHMM(NodeBase):
 
                 """ Branch out from each parent """
                 for parent,j in zip(parents,X):
-                    prod *= parent.getA(self._upEdge,j,conditioning)
+                    prod *= parent.getA(self._upEdge,j,conditioning,depth+1)
                     self._UDeps |= parent._aDeps
 
                 """ Branch out from each sibling """
                 for sibling in self._upEdge._children:
                     if(sibling==self):continue
 
-                    prod *= sibling.getB(X,conditioning)
+                    prod *= sibling.getB(X,conditioning,depth+1)
                     self._UDeps |= sibling._bDeps
 
                 u += prod
@@ -298,6 +378,28 @@ class NodeForHMM(NodeBase):
             conditioning.update(nodesToKeep)
             u += self.getU(i,conditioning)
         return u
+
+    def UReady( self, i, conditioning ):
+
+        parents = self._parents
+        if( len( parents ) == 0 or self.inFBS ):
+            return True
+        else:
+            for X in itertools.product( *[ self._getN( p, conditioning ) for p in parents ] ):
+
+                for parent, j in zip( parents, X ):
+
+                    if( parent.aReady( self._upEdge, j, conditioning ) == False ):
+                        print('Node %s is waiting on parent %s aReady( %s, %s, %s ) for UReady'%(self,parent,self._upEdge,str(j),conditioning))
+                        return False
+
+                for sibling in self._upEdge._children:
+                    if( sibling == self ):continue
+
+                    if( sibling.bReady( X, conditioning ) == False ):
+                        print('Node %s is waiting on sibling %s bReady( %s, %s ) for UReady'%(self,sibling,str(X),conditioning))
+                        return False
+        return True
 
     """ ------------------------------------------------------------------------------------ """
 
@@ -318,7 +420,9 @@ class NodeForHMM(NodeBase):
     def getVVal(self,edge,i,key):
         return LogVar(self._V[edge][i][key])
 
-    def getV(self,edge,i,conditioning):
+    def getV(self,edge,i,conditioning,depth=0):
+
+        # print(''.join(['\t' for _ in range(depth)])+'V value for depth is %d for node %s'%(depth,self))
 
         key = self.VKey(conditioning)
 
@@ -326,7 +430,7 @@ class NodeForHMM(NodeBase):
         if(self.needToComputeV(edge,i,key)):
 
             # if we don't have the right conditioning, add it
-            vVal = self._computeV(edge,i,conditioning)
+            vVal = self._computeV(edge,i,conditioning,depth)
 
             self.setVVal(edge,i,key,vVal)
             if(self._msg.preprocessing):
@@ -336,7 +440,7 @@ class NodeForHMM(NodeBase):
             vVal = self.getVVal(edge,i,key)
         return vVal
 
-    def _computeV(self,edge,i,conditioning):
+    def _computeV(self,edge,i,conditioning,depth=0):
 
         if(self.inFBS or len(self._downEdges) == 0):
             return LogVar(1)
@@ -352,12 +456,12 @@ class NodeForHMM(NodeBase):
             """ Branch out from each mate """
             for mate,j in zip(mates,X_):
 
-                prod *= mate.getA(edge,j,conditioning)
+                prod *= mate.getA(edge,j,conditioning,depth+1)
                 self._VDeps |= mate._aDeps
 
             """ Branch out from each child """
             for child in edge._children:
-                prod *= child.getB(X,conditioning)
+                prod *= child.getB(X,conditioning,depth+1)
                 self._VDeps |= child._bDeps
 
             v += prod
@@ -373,6 +477,30 @@ class NodeForHMM(NodeBase):
             conditioning.update(nodesToKeep)
             v += self.getV(edge,i,conditioning)
         return v
+
+    def VReady( self, edge, i, conditioning ):
+
+        if( self.inFBS or len( self._downEdges ) == 0 ):
+            return True
+
+        mates = [ x for x in edge._parents if x != self ]
+
+        v = LogVar( 0 )
+        for X_, X in zip( itertools.product( *[ self._getN( m, conditioning ) for m in mates ] ),\
+            itertools.product( *[ self._getN( m, conditioning ) if m != self else [ i ] for m in edge._parents ] ) ):
+
+            for mate, j in zip( mates, X_ ):
+
+                if( mate.aReady( edge, j, conditioning ) == False ):
+                    print('Node %s is waiting on mate %s aReady( %s, %s, %s ) for VReady'%(self,mate,edge,str(j),conditioning))
+                    return False
+
+            for child in edge._children:
+                if( child.bReady( X, conditioning ) == False ):
+                    print('Node %s is waiting on child %s bReady( %s, %s ) for VReady'%(self,child,str(X),conditioning))
+                    return False
+
+        return True
 
     """ ------------------------------------------------------------------------------------ """
 
@@ -476,6 +604,7 @@ class HiddenMarkovModelMessagePasser():
 
         self._blockManager = blockManager
         self._feedbackSet = sorted(feedbackSet,key=lambda x:x._id)
+        print('Feedback is: '+str(self._feedbackSet))
 
         # self._feedbackSet = [self._hyperGraph.getNode(4),self._hyperGraph.getNode(5)]
 
@@ -492,7 +621,7 @@ class HiddenMarkovModelMessagePasser():
         self._traverseOrder = []
 
         self.preprocessing = True
-        self.computeForPreprocessing()
+        # self.computeForPreprocessing()
         self.preprocessing = False
 
     """ -------------------------------------------------------------------------------------- """
@@ -699,7 +828,278 @@ class HiddenMarkovModelMessagePasser():
 
         return prob
 
+    def messagePasser3( self ):
+
+        for X in itertools.product(*[range(n.N) for n in self._feedbackSet]):
+            conditioning = {node:i for node,i in zip(self._feedbackSet,X)}
+
+
+            newRoots = []
+            for fbNode in self._feedbackSet:
+                for edge in fbNode._downEdges:
+                    newRoots.extend( edge._children )
+
+            newLeaves = []
+            for fbNode in self._feedbackSet:
+                newLeaves.extend( fbNode._parents )
+
+            # start at leaves / roots and work in
+            goingUp = list( set( list( self._hyperGraph._leaves ) + newLeaves ) - set( self._feedbackSet ) )
+            goingDown = list( set( list( self._hyperGraph._roots ) + newRoots ) - set( self._feedbackSet ) )
+
+            current = goingUp + goingDown
+            last = []
+
+            print('\n============\n============\n============\n')
+            print('STARTING WITH GOING UP: %s AND GOING DOWN: %s'%(str(goingUp),str(goingDown)))
+
+            while( len( current ) > 0 ):
+
+                nextCurrent = []
+
+                for node in current:
+
+                    for i in range( node.N ):
+
+                        if( node.UReady( i, conditioning ) ):
+                            node.getU( i, conditioning, 0 )
+
+                if( last == current ):
+                    print('\n\n\nFAILED WITH CURRENT: %s\n'%(str(current)))
+                    assert 0
+
+                last = current
+                current = nextCurrent
+
+
+
+    def messagePasser( self ):
+
+        for X in itertools.product(*[range(n.N) for n in self._feedbackSet]):
+            conditioning = {node:i for node,i in zip(self._feedbackSet,X)}
+
+            lastUp = []
+            lastDown = []
+
+            newRoots = []
+            for fbNode in self._feedbackSet:
+                for edge in fbNode._downEdges:
+                    newRoots.extend( edge._children )
+
+            newLeaves = []
+            for fbNode in self._feedbackSet:
+                newLeaves.extend( fbNode._parents )
+
+            # start at leaves / roots and work in
+            goingUp = list( set( list( self._hyperGraph._leaves ) + newLeaves ) - set( self._feedbackSet ) )
+            goingDown = list( set( list( self._hyperGraph._roots ) + newRoots ) - set( self._feedbackSet ) )
+
+            print('\n============\n============\n============\n')
+            print('STARTING WITH GOING UP: %s AND GOING DOWN: %s'%(str(goingUp),str(goingDown)))
+
+            while( len( goingUp ) + len( goingDown ) > 0 ):
+
+                print('\n=========\n=========\n')
+                print('\nGOING UP: %s AND GOING DOWN: %s'%(str(goingUp),str(goingDown)))
+                nextUp = []
+                nextDown = []
+
+                # Nodes going down
+                for node in goingDown:
+
+                    addChildren = False
+                    for i in range( node.N ):
+                        if( node.UReady( i, conditioning ) ):
+                            node.getU( i, conditioning, 0 )
+                            addChildren = True
+                        else:
+                            assert addChildren == False
+
+                    if( addChildren ):
+                        print('Computed U for node %s'%(node))
+                        for edge in node._downEdges:
+                            for child in edge._children:
+                                if( child.inFBS ):
+                                    continue
+                                print('ADDING %s TO GOING DOWN'%child)
+                                nextDown.append( child )
+                    else:
+                        print('READDING %s TO GOING DOWN'%node)
+                        nextDown.append( node )
+
+                #####################################################################################################
+
+                # Nodes going up
+                for node in goingUp:
+
+                    addParents = True
+                    if( len( node._downEdges ) > 0 ):
+                        for edge in node._downEdges:
+                            for i in range( node.N ):
+                                if( node.VReady( edge, i, conditioning ) ):
+                                    node.getV( edge, i, conditioning, 0 )
+                                else:
+                                    addParents = False
+
+                    if( addParents ):
+                        print('Computed V for node %s'%(node))
+                        for parent in node._parents:
+                            if( parent.inFBS ):
+                                continue
+                            print('ADDING %s TO GOING UP'%parent)
+                            nextUp.append( parent )
+                    else:
+                        print('READDING %s TO GOING UP'%node)
+                        nextUp.append( node )
+
+                if( lastUp == goingUp and lastDown == goingDown ):
+                    print('\n\n\nFAILED WITH GOING UP: %s AND GOING DOWN: %s\n'%(str(goingUp),str(goingDown)))
+                    assert 0
+
+                lastUp = goingUp
+                lastDown = goingDown
+
+                goingUp = list( set( nextUp ) )
+                goingDown = list( set( nextDown ) )
+
+
+    def messagePasser2( self ):
+
+        for X in itertools.product(*[range(n.N) for n in self._feedbackSet]):
+            conditioning = {node:i for node,i in zip(self._feedbackSet,X)}
+
+            lastUp = []
+            lastDown = []
+
+            # start at leaves / roots and work in
+            # goingUp = list( set( list( self._hyperGraph._leaves ) ) )
+            # goingDown = list( set( list( self._hyperGraph._roots ) ) )
+            goingUp = list( set( list( self._hyperGraph._leaves ) + list( self._feedbackSet ) ) )
+            goingDown = list( set( list( self._hyperGraph._roots ) + list( self._feedbackSet ) ) )
+
+            print('\n============\n============\n============\n\n\n\n\n')
+            print('STARTING WITH GOING UP: %s AND GOING DOWN: %s'%(str(goingUp),str(goingDown)))
+
+            while( len( goingUp ) + len( goingDown ) > 0 ):
+
+                nextUp = []
+                nextDown = []
+
+                print('\n\n==========================================\n\n')
+
+                #####################################################################################################
+
+                # Nodes going down
+                for node in goingDown:
+
+                    print('\nAttempting to compute U for node %s'%node)
+
+                    readyToCompute = True
+
+                    # compute the U values
+                    edge = node._upEdge
+
+                    # make sure that each parent has up and down done
+                    if( edge ):
+                        for parent in edge._parents:
+
+                            if( len( parent.remainingDownEdges( conditioning ) - set( [ edge ] ) ) != 0 or \
+                                len( parent.remainingUpEdges( conditioning )                     ) != 0 ):
+                                print('Failed to check (for U) parent %s for node %s and here are the up edges %s and down edges %s'%(parent,node,str(parent.remainingUpEdges( conditioning )),str(parent.remainingDownEdges( conditioning ))))
+                                readyToCompute = False
+
+                        # make sure that the sibling has up done
+                        for sibling in [ x for x in edge._children if x != node ]:
+                            if( len( sibling.remainingDownEdges( conditioning ) ) != 0 ):
+                                print('Failed to check (for U) sibling %s for node %s and here are the up edges %s and down edges %s'%(sibling,node,str(sibling.remainingUpEdges( conditioning )),str(sibling.remainingDownEdges( conditioning ))))
+                                readyToCompute = False
+
+                    if( readyToCompute ):
+                        for i in range( node.N ):
+                            node.getU( i, conditioning, 0 )
+
+                        node.doneWithUpEdge( edge, conditioning )
+
+                        # add children
+                        for edge in node._downEdges:
+                            for child in edge._children:
+                                if( edge in child.remainingDownEdges( conditioning ) ):
+                                    print('ADDING %s TO GOING DOWN'%child)
+                                    nextDown.append( child )
+                    else:
+                        print('READDING %s TO GOING DOWN'%node)
+                        nextDown.append( node )
+
+                #####################################################################################################
+
+                # Nodes going up
+                for node in goingUp:
+
+                    allReadyToCompute = True
+
+                    if( len( node._downEdges ) == 0):
+                        print('\nAttempting to compute V for node %s'%(node))
+                        pass
+
+                    # compute the V values
+                    for edge in node._downEdges:
+
+                        print('\nAttempting to compute V for node %s at edge %s'%(node,edge))
+
+                        readyToCompute = True
+
+                        # make sure that each mate has up and down done
+                        for mate in [ x for x in edge._parents if x != node ]:
+                            if( len( mate.remainingDownEdges( conditioning ) - set( [ edge ] ) ) != 0 or \
+                                len( mate.remainingUpEdges( conditioning )                     ) != 0 ):
+                                print('Failed to check (for V) mate %s for node %s'%(mate,node))
+                                readyToCompute = False
+
+                        # make sure that the child has up done
+                        for child in edge._children:
+                            if( len( child.remainingDownEdges( conditioning ) - set( [ edge ] ) ) != 0 ):
+                                print('Failed to check (for V) child %s for node %s'%(child,node))
+                                readyToCompute = False
+
+                        allReadyToCompute &= readyToCompute
+
+                        if( readyToCompute ):
+                            for i in range( node.N ):
+                                node.getV( edge, i, conditioning, 0 )
+
+                            node.doneWithDownEdge( edge, conditioning )
+
+                            # add parents
+                            for parent in node._parents:
+                                if( edge in parent.remainingDownEdges( conditioning ) ):
+                                    print('ADDING %s TO GOING UP'%parent)
+                                    nextUp.append( parent )
+
+                    if( not allReadyToCompute ):
+                        print('READDING %s TO GOING UP'%node)
+                        nextUp.append( node )
+
+                #####################################################################################################
+
+                if( lastUp == goingUp and lastDown == goingDown ):
+                    print('FAILED WITH GOING UP: %s AND GOING DOWN: %s'%(str(goingUp),str(goingDown)))
+                    assert 0
+
+                lastUp = goingUp
+                lastDown = goingDown
+
+                goingUp = list( set( nextUp ) )
+                goingDown = list( set( nextDown ) )
+
+            break
+
     def getStats(self):
+
+        # self.messagePasser()
+
+        # print('U GOOD')
+
+        # assert 0
 
         self.getCounts()
 
