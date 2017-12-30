@@ -590,7 +590,7 @@ def HMMTest(msg):
         msg.getStats()
     end = time.time()
     print('Traversal time: '+str(end-start))
-    msg.aTest()
+    msg.aTest(True)
 
 def MMTest():
 
@@ -606,7 +606,7 @@ def MMTest():
 # hg,msg = cycleExample9(True)
 # hg,msg = cycleExample10(True)
 hg,msg = cycleExample11(True)
-hg.draw()
+# hg.draw()
 HMMTest(msg)
 # HMMTest(cycleExample1(True)[1])
 # HMMTest(cycleExample3(True)[1])

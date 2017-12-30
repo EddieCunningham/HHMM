@@ -647,7 +647,10 @@ class HiddenMarkovModelMessagePasser():
         self._traverseOrder = []
 
         self.preprocessing = True
-        # self.computeForPreprocessing()
+
+        # self.recursiveMessagePasser()
+        self.messagePasser()
+
         self.preprocessing = False
 
     """ -------------------------------------------------------------------------------------- """
@@ -678,7 +681,7 @@ class HiddenMarkovModelMessagePasser():
 
     """ -------------------------------------------------------------------------------------- """
 
-    def computeForPreprocessing( self ):
+    def recursiveMessagePasser( self ):
 
         for node in self.nodes:
             if( node in self._feedbackSet ): continue
@@ -967,7 +970,6 @@ class HiddenMarkovModelMessagePasser():
                         restart = True
                         break
 
-
                     lastVList = currentVList
                     lastUList = currentUList
 
@@ -975,15 +977,35 @@ class HiddenMarkovModelMessagePasser():
                     currentUList = nextUList
 
 
+        for node in self.nodes:
+            if( node in self._feedbackSet ): continue
+
+            node.accumulateFullJoint( self._feedbackSet )
+
+        # compute the probs for the fbs
+        aLeaf = self._hyperGraph._leaves.__iter__().__next__()
+        self._srp = {}
+
+        for X in itertools.product( *[ range( n.N ) for n in self._feedbackSet ] ):
+
+            conditioning = {node:i for node, i in zip( self._feedbackSet, X )}
+
+            for i in range( aLeaf.N ):
+                val = aLeaf.getU( i, conditioning )
+                sr = self.sortaRootProb( conditioning )
+
+                for node, x in zip( self._feedbackSet, X ):
+                    node.updateFullJoint( x, val*sr )
+
+        for node in self._feedbackSet:
+            total = LogVar( 0 )
+            for i in range( node.N ):
+                total += node._fullJoint[ i ]
+
+
     def getStats( self ):
 
-        self.messagePasser()
-
-        print( 'U GOOD' )
-
-        assert 0
-
-        # self.getCounts()
+        self.getCounts()
 
         for node in self.nodes:
             for i in range( node.N ):
@@ -1011,7 +1033,8 @@ class HiddenMarkovModelMessagePasser():
     def aTest( self, printStuff=False ):
 
         if( self.preprocessing ):
-            self.computeForPreprocessing()
+            self.recursiveMessagePasser()
+            # self.messagePasser()
         else:
             self.getStats()
 
