@@ -76,7 +76,7 @@ def cycleExample1(isHidden):
     return hg,msg
 
 def cycleExample2(isHidden):
-    hg = MessagePassingHG(2)
+    hg = MessagePassingHG(1)
     n1 = hg.addNode(1)
     n3 = hg.addNode(3)
     n4 = hg.addNode(4)
@@ -602,10 +602,10 @@ def MMTest():
 
 # hg,msg = nonCycle(True)
 # hg,msg = cycleExample2(True)
-hg,msg = cycleExample5(True)
+# hg,msg = cycleExample5(True)
 # hg,msg = cycleExample9(True)
 # hg,msg = cycleExample10(True)
-# hg,msg = cycleExample11(True)
+hg,msg = cycleExample11(True)
 hg.draw()
 HMMTest(msg)
 # HMMTest(cycleExample1(True)[1])
