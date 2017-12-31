@@ -1,6 +1,14 @@
-# from CythonCode.HHMMUpDownFast import HiddenMarkovModelMessagePasser,MessagePassingHG
-from HHMMUpDown import HiddenMarkovModelMessagePasser,MessagePassingHG
-from AutosomalDistribution import *
+from HHMMUpDown import HiddenMarkovModelMessagePasser
+from HHMMHG import MessagePassingHG
+from AutosomalDistribution import hyperGraphBaseHyperParameters
+
+def getY( person ):
+    if( 'diagnoses' in dir( person ) ):
+        return int( len( person.diagnoses ) > 0 )
+    return 0
+
+def calcN( person ):
+    return 2
 
 class PedigreeHG(MessagePassingHG):
 
@@ -17,7 +25,9 @@ class PedigreeHG(MessagePassingHG):
         if(self.hasNode(person.Id)):
             currentNode = super(PedigreeHG,self).getNode(person.Id)
         else:
-            currentNode = super(PedigreeHG,self).addNode(person.Id)
+            y = getY( person )
+            N = calcN( person )
+            currentNode = super(PedigreeHG,self).addNode( person.Id, y, N )
         return currentNode
 
     def checkEdge(self,parents):
@@ -58,15 +68,6 @@ class PedigreeHG(MessagePassingHG):
                     childNode = self.checkNode(child)
                     if(not childNode): continue
                     familyEdge.addChild(childNode)
-
-        # for node in sorted(self._nodes):
-        #     print('\n')
-        #     print(node)
-        #     print(node._upEdge)
-        #     print(node._downEdges)
-        #     assert len(node._downEdges) > 0 or node._upEdge
-
-        # assert 0
 
         super(PedigreeHG,self).initialize()
 

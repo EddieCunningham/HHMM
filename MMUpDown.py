@@ -1,7 +1,5 @@
-# from CythonCode.HypergraphBaseFast import NodeBase,EdgeBase,BaseHyperGraph
 from HypergraphBase import NodeBase,EdgeBase,BaseHyperGraph
 from pyLogVar import LogVar
-# from CythonCode.LogVarCode import LogVar
 from cycleDetector import identifyCycles
 import numpy as np
 

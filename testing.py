@@ -4,15 +4,15 @@ import os
 import time
 from scipy.special import digamma
 import matplotlib.pyplot as plt
-# from CythonCode.LogVarCode import LogVar
 import json
 import itertools
 from model import Pedigree
 from PedigreeHypergraph import PedigreeHG
-from AutosomalDistribution import *
-# from CythonCode.HHMMUpDownFast import HiddenMarkovModelMessagePasser,MessagePassingHG
-from HHMMUpDown import HiddenMarkovModelMessagePasser,MessagePassingHG
-# from MMUpDown import MarkovModelMessagePasser
+from AutosomalDistribution import generic2DParameters,sampleHyperGraphParameters
+from HHMMUpDown import HiddenMarkovModelMessagePasser
+from HHMMHG import MessagePassingHG
+from MMUpDown import MarkovModelMessagePasser
+from HGTest import aTest
 
 def printListOfNodes(nodes):
     print('[ '),
@@ -356,6 +356,8 @@ def cycleExample9(isHidden=True):
 
 
 def cycleExample10(isHidden=True):
+    # the current fbs algorithm makes this
+    # disjoint!!!!
     hg = MessagePassingHG(2)
     n0 = hg.addNode(0)
     n1 = hg.addNode(1)
@@ -584,13 +586,12 @@ def HMMTest(msg):
     msg.preprocess()
     end = time.time()
     print('\nPreprocess time: '+str(end-start))
-    msg.aTest(True)
+    aTest( msg, True )
     start = time.time()
     for _ in range(1):
         msg.getStats()
     end = time.time()
     print('Traversal time: '+str(end-start))
-    msg.aTest(True)
 
 def MMTest():
 
@@ -605,9 +606,10 @@ def MMTest():
 # hg,msg = cycleExample5(True)
 # hg,msg = cycleExample9(True)
 # hg,msg = cycleExample10(True)
-hg,msg = cycleExample11(True)
+# hg,msg = cycleExample11(True)
 # hg.draw()
-HMMTest(msg)
+# HMMTest(msg)
+# assert 0
 # HMMTest(cycleExample1(True)[1])
 # HMMTest(cycleExample3(True)[1])
 # HMMTest(cycleExample4(True)[1])
@@ -615,4 +617,7 @@ HMMTest(msg)
 # HMMTest(cycleExample5_1(True)[1])
 # HMMTest(cycleExample6(True)[1])
 # HMMTest(cycleExample7(True)[1])
-# HMMTest(pedigreeExample('3818J')[1])
+# HMMTest(cycleExample8(True)[1])
+# HMMTest(cycleExample9(True)[1])
+# HMMTest(cycleExample11(True)[1])
+HMMTest(pedigreeExample('3818J')[1])
