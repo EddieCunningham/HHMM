@@ -10,7 +10,7 @@ from model import Pedigree
 from PedigreeHypergraph import PedigreeHG
 from AutosomalDistribution import *
 import os
-from HHMMUpDown import *
+from HHMMMessagePasser import *
 
 
 

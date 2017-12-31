@@ -2,6 +2,15 @@ import itertools
 import random
 import operator
 
+############################
+#
+# THIS CODE IS OVERKILL
+# FOR THIS PROBLEM BUT
+# IT IS GOOD ENOUGH FOR
+# THE MOMENT
+#
+############################
+
 
 class Block(object):
 

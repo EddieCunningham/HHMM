@@ -1,4 +1,4 @@
-from HHMMUpDown import HiddenMarkovModelMessagePasser
+from HHMMMessagePasser import HiddenMarkovModelMessagePasser
 from pyLogVar import LogVar
 from HHMMNode import NodeForHMM
 from util import prettyPrint
