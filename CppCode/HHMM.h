@@ -111,6 +111,7 @@ private:
     LogVar  _getA            ( Edge_ptr edge, uint i, const conditioning& cond                                          );
     LogVar  _computeA        ( Edge_ptr edge, uint i, const conditioning& cond                                          );
     LogVar  _getMarginalizedA( Edge_ptr edge, uint i, const conditioning& nodesToKeep, const set<Node_ptr>& feedbackSet );
+    bool    _aReady          ( Edge_ptr edge, uint i, const conditioning& cond                                          );
 
     condKey _bKey            ( const conditioning& cond                                                          );
     bool    _needToComputeB  ( parentStates X, condKey key                                                       );
@@ -119,6 +120,7 @@ private:
     LogVar  _getB            ( parentStates X, const conditioning& cond                                          );
     LogVar  _computeB        ( parentStates X, const conditioning& cond                                          );
     LogVar  _getMarginalizedB( parentStates X, const conditioning& nodesToKeep, const set<Node_ptr>& feedbackSet );
+    bool    _bReady          ( parentStates X, const conditioning& cond                                          );
 
     condKey _UKey            ( const conditioning& cond                                                  );
     bool    _needToComputeU  ( uint i, condKey key                                                       );
@@ -127,6 +129,7 @@ private:
     LogVar  _getU            ( uint i, const conditioning& cond                                          );
     LogVar  _computeU        ( uint i, const conditioning& cond                                          );
     LogVar  _getMarginalizedU( uint i, const conditioning& nodesToKeep, const set<Node_ptr>& feedbackSet );
+    bool    _UReady          ( uint i, const conditioning& cond                                          );
 
     condKey _VKey            ( const conditioning& cond                                                                 );
     bool    _needToComputeV  ( Edge_ptr edge, uint i, condKey key                                                       );
@@ -135,6 +138,7 @@ private:
     LogVar  _getV            ( Edge_ptr edge, uint i, const conditioning& cond                                          );
     LogVar  _computeV        ( Edge_ptr edge, uint i, const conditioning& cond                                          );
     LogVar  _getMarginalizedV( Edge_ptr edge, uint i, const conditioning& nodesToKeep, const set<Node_ptr>& feedbackSet );
+    bool    _VReady          ( Edge_ptr edge, uint i, const conditioning& cond                                          );
 
     LogVar _sortaRootProb      ( const conditioning& cond         );
     void   _accumulateFullJoint( const set<Node_ptr>& feedbackSet );
@@ -278,7 +282,7 @@ public:
 
     void     preprocess                  ( const set< Node_ptr >& feedbackSet     );
     LogVar   isolatedParentJoint         ( Node_ptr node, parentStates X, uint i  );
-    LogVar   probOfParentsProducingNode  ( Node_ptr node, parentStates X, uint i  );
+    LogVar   jointParentChild  ( Node_ptr node, parentStates X, uint i  );
     void     getStats                    (                                        );
     LogVar   probOfAllNodeObservations   (                                        );
     float    logProbOfAllNodeObservations(                                        );

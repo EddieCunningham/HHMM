@@ -11,6 +11,8 @@ class NodeForHMM( NodeBase ):
         self.N = N
         self.y = y
 
+        self.x = None
+
         self.inFBS = False
 
         self._UDeps = set( [ self ] )
@@ -22,49 +24,6 @@ class NodeForHMM( NodeBase ):
 
         self.doneUpEdge = {}
         self.doneDownEdges = {}
-
-    def remainingUpEdges( self, conditioning ):
-
-        if( self.inFBS ):
-            return set()
-
-        key = self.UKey( conditioning )
-
-        if( key not in self.doneUpEdge ):
-            self.doneUpEdge[ key ] = set()
-
-        return set( [ self._upEdge ] ) - self.doneUpEdge[ key ]
-
-    def doneWithUpEdge( self, edge, conditioning ):
-
-        key = self.UKey( conditioning )
-
-        if( key not in self.doneUpEdge ):
-            self.doneUpEdge[ key ] = set()
-
-        self.doneUpEdge[ key ].add( edge )
-
-
-    def remainingDownEdges( self, conditioning ):
-
-        if( self.inFBS ):
-            return set()
-
-        key = self.VKey( conditioning )
-
-        if( key not in self.doneDownEdges ):
-            self.doneDownEdges[ key ] = set()
-
-        return self._downEdges - self.doneDownEdges[ key ]
-
-    def doneWithDownEdge( self, edge, conditioning ):
-
-        key = self.VKey( conditioning )
-
-        if( key not in self.doneDownEdges ):
-            self.doneDownEdges[ key ] = set()
-
-        self.doneDownEdges[ key ].add( edge )
 
     def reset( self ):
         self._U = {}

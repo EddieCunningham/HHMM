@@ -283,7 +283,7 @@ LogVar HyperGraph::isolatedParentJoint( Node_ptr node, parentStates X, uint i ) 
     return jointProb;
 }
 
-LogVar HyperGraph::probOfParentsProducingNode( Node_ptr node, parentStates X, uint i ) {
+LogVar HyperGraph::jointParentChild( Node_ptr node, parentStates X, uint i ) {
 
     if( inSet( _sortaRootDeps, node ) ) {
         return isolatedParentJoint( node, X, i );

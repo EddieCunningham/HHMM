@@ -5,7 +5,7 @@ from util import prettyPrint
 import itertools
 
 
-def aTest( messagePasser, printStuff=False ):
+def marginalizeTest( messagePasser, printStuff=False ):
 
     messagePasser.getStats()
 
@@ -52,11 +52,10 @@ def aTest( messagePasser, printStuff=False ):
             total += uCopy
 
         if( not isclose( total.logVal, correct.logVal ) ):
-            if( printStuff ):
-                print( '\nFailed the P( Y ) test!' )
-                print( 'Node: '+str( node ) )
-                print( 'total: '+str( float( total ) ) )
-                print( 'correct: '+str( float( correct ) ) )
+            print( '\nFailed the P( Y ) test!' )
+            print( 'Node: '+str( node ) )
+            print( 'total: '+str( float( total ) ) )
+            print( 'correct: '+str( float( correct ) ) )
             print( 'up edge: '+str( node._upEdge ) )
             print( 'down edges: '+str( node._downEdges ) )
             assert 0
@@ -82,15 +81,14 @@ def aTest( messagePasser, printStuff=False ):
                 shouldEqualProb = LogVar( 0 )
                 for X in itertools.product( *[ range( p.N ) for p in n._parents ] ):
 
-                    prob2 = messagePasser.probOfParentsProducingNode( n, X, i, correct )
+                    prob2 = messagePasser.jointParentChild( n, X, i, correct )
                     total2 += prob2
                     shouldEqualProb += prob2
 
                 if( not isclose( float( shouldEqualProb ), float( prob ) ) ):
-                    if( printStuff ):
-                        print( '\n\n\n\nFailed this test for node: '+str( n ) )
-                        print( 'This is wrong: '+str( float( shouldEqualProb*correct ) ) )
-                        print( 'This is right: '+str( float( prob*correct ) ) )
+                    print( '\n\n\n\nFailed this test for node: '+str( n ) )
+                    print( 'This is wrong: '+str( float( shouldEqualProb*correct ) ) )
+                    print( 'This is right: '+str( float( prob*correct ) ) )
                     print( 'up edge: '+str( n._upEdge ) )
                     print( 'down edges: '+str( n._downEdges ) )
                     assert 0
@@ -100,16 +98,14 @@ def aTest( messagePasser, printStuff=False ):
                         print( '==========================================================' )
 
         if( not isclose( float( total1 ), 1. ) ):
-            if( printStuff ):
-                print( 'The sum of all P( x_i|Y ) doesn\'t equal 1 for node: '+str( n )+', total1: '+str( total1.logVal ) )
+            print( 'The sum of all P( x_i|Y ) doesn\'t equal 1 for node: '+str( n )+', total1: '+str( total1.logVal ) )
             print( 'up edge: '+str( node._upEdge ) )
             print( 'down edges: '+str( node._downEdges ) )
             assert 0
 
         if( len( n._parents ) > 0 ):
             if( not isclose( float( total2 ), 1. ) ):
-                if( printStuff ):
-                    'The sum of all P( {x_p}|Y ) isn\'t 1 for node: '+str( n )+', total2: '+str( total2.logVal )
+                print( 'The sum of all P( {x_p}|Y ) isn\'t 1 for node: '+str( n )+', total2: '+str( total2.logVal ) )
                 print( 'up edge: '+str( node._upEdge ) )
                 print( 'down edges: '+str( node._downEdges ) )
                 assert 0

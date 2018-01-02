@@ -160,6 +160,32 @@ LogVar Node::_getMarginalizedA( Edge_ptr edge, uint i, const conditioning& nodes
     return aVal;
 }
 
+bool Node::_aReady( Edge_ptr edge, uint i, const conditioning& cond ) {
+
+    if( inFeedbackSet ) {
+        return true;
+    }
+
+    condKey uKey = _UKey( cond );
+    condKey vKey = _VKey( cond );
+
+    if( _needToComputeU( i, uKey ) ) {
+        return false;
+    }
+
+    for( Edge_ptr const &_edge : this->downEdges ) {
+        if( _edge == edge ) {
+            continue;
+        }
+
+        if( _needToComputeV( _edge, i, vKey ) ) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
 /* ------------------------------------------------------------------------- */
 
 /* Get conditioning key for the b value */
@@ -259,6 +285,26 @@ LogVar Node::_getMarginalizedB( parentStates X, const conditioning& nodesToKeep,
         bVal += _getB( X, cond );
     } while( xIter.next() );
     return bVal;
+}
+
+bool Node::_bReady( parentStates X, const conditioning& cond ) {
+
+    if( inFeedbackSet || this->downEdges.size() == 0 ) {
+        return true;
+    }
+
+    condKey vKey = _VKey( cond );
+
+    for( uint k = 0; k < _getN( this, cond ) ) {
+
+        for( Edge_ptr const &_edge : this->downEdges ) {
+
+            if( _needToComputeV( _edge, k, vKey ) ) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 /* ------------------------------------------------------------------------- */
@@ -411,6 +457,66 @@ LogVar Node::_getMarginalizedU( uint i, const conditioning& nodesToKeep, const s
     return uVal;
 }
 
+bool Node::_UReady( uint i, const conditioning& cond ) {
+
+    if( this->parents.size() == 0 || this->inFeedbackSet ) {
+        return true;
+    }
+    else {
+
+        std::vector< uint > maxVals = std::vector< uint >();
+        std::vector< std::pair< uint, uint > > constValues;
+
+        uint j = 0;
+        /* Determine what parent latent states to sum over */
+        for( Node_ptr const &_parent : this->parents ) {
+            Node_ptr parent = ( Node_ptr )_parent;
+
+            std::pair< uint, uint > startAndEnd = _getN( parent, cond );
+
+            /* If we are conditioning on this node, then it will be */
+            /* constant in the loop                                 */
+            if( startAndEnd.first == startAndEnd.second ) {
+                constValues.push_back( std::make_pair( j, startAndEnd.first ) );
+            }
+            /* Otherwise add the max value to maxVals so that we can */
+            /* iterate over range(N)                                 */
+            else {
+                maxVals.push_back( startAndEnd.first );
+            }
+            ++j;
+        }
+
+        /* Sum over all of the parent latent states */
+        CartesianNodeProduct xIter = CartesianNodeProduct( maxVals, constValues );
+        do {
+            parentStates X = xIter.getParentStates();
+
+            /* Branch out from each parent */
+            uint j = 0;
+            for( Node_ptr const &_parent : this->parents ) {
+                Node_ptr parent = ( Node_ptr )_parent;
+
+                if( parent->_aReady( this->upEdge, X.at( j ), cond ) == false ) {
+                    return false;
+                }
+                ++j;
+            }
+
+            /* Branch out from each sibling */
+            for( Node_ptr const &_sibling : this->upEdge->children ) {
+                if( _sibling == this ) { continue; }
+                Node_ptr sibling = ( Node_ptr )_sibling;
+
+                if( sibling->_bReady( X, cond ) == false ) {
+                    return false;
+                }
+            }
+        } while( xIter.next() );
+    }
+    return true;
+}
+
 /* ------------------------------------------------------------------------- */
 
 /* Get conditioning key for the a value */
@@ -523,8 +629,8 @@ LogVar Node::_computeV( Edge_ptr edge, uint i, const conditioning& cond ) {
 
         /* Branch out from each mate */
         for( uint j = 0; j < X_.size(); ++j ) {
-
             Node_ptr mate = mates.at( j );
+
             prod *= mate->_getA( edge, X_.at( j ), cond );
             inplace_set_union( _VDependencies, mate->_aDependencies );
         }
@@ -561,6 +667,81 @@ LogVar Node::_getMarginalizedV( Edge_ptr edge, uint i, const conditioning& nodes
         vVal += _getV( edge, i, cond );
     } while( xIter.next() );
     return vVal;
+}
+
+bool Node::_VReady( Edge_ptr edge, uint i, const conditioning& cond ) {
+
+    if( inFeedbackSet || this->downEdges.size() == 0 ) {
+        return true;
+    }
+
+    uint index = -1;
+    std::vector< Node_ptr > mates = std::vector< Node_ptr >();
+
+    std::vector< uint > maxVals = std::vector< uint >();
+    std::vector< std::pair< uint, uint > > constValues;
+
+    uint j = 0;
+    for( Node_ptr const &_mate : edge->parents ) {
+        Node_ptr mate = ( Node_ptr )_mate;
+
+        /* We want to condition on this mate so mark that */
+        /* the constant index j has value i               */
+        if( mate == this ) {
+            constValues.push_back( std::make_pair( j, i ) );
+            index = j;
+            continue;
+        }
+
+        /* Update mates */
+        mates.push_back( mate );
+
+        std::pair< uint, uint > startAndEnd = _getN( mate, cond );
+
+        /* If we are conditioning on this node, then it will be */
+        /* constant in the loop                                 */
+        if( startAndEnd.first == startAndEnd.second ) {
+            constValues.push_back( std::make_pair( j, startAndEnd.first ) );
+        }
+        /* Otherwise add the max value to maxVals so that we can */
+        /* iterate over range(N)                                 */
+        else {
+            maxVals.push_back( startAndEnd.first );
+        }
+
+        ++j;
+    }
+
+    LogVar vVal = LogVar( 0 );
+
+    CartesianNodeProduct xIter = CartesianNodeProduct( maxVals, constValues );
+    do {
+
+        /* X is X_ without mate's latent state value */
+        parentStates X_ = xIter.getNonConstStates( index );
+        parentStates X = xIter.getParentStates();
+
+        LogVar prod = LogVar( 1 );
+
+        /* Branch out from each mate */
+        for( uint j = 0; j < X_.size(); ++j ) {
+            Node_ptr mate = mates.at( j );
+
+            if( mate->_aReady( edge, X_.at( j ), cond ) == false ) {
+                return false;
+            }
+        }
+
+        /* Branch out from each child */
+        for( Node_ptr const &_child : edge->children ) {
+            Node_ptr child = ( Node_ptr )_child;
+
+            if( child->_bReady( X, cond ) == false ) {
+                return false;
+            }
+        }
+    } while( xIter.next() );
+    return true;
 }
 
 /* ------------------------------------------------------------------------------------ */

@@ -72,7 +72,7 @@ for it in range(10):
 
     for i in range(len(allObjs)):
         allObjs[i]['msg'].getStats()
-        allObjs[i]['msg'].aTest(False)
+        allObjs[i]['msg'].marginalizeTest(False)
 
     end = time.time()
     print('\nBatch test time: '+str(end-start))

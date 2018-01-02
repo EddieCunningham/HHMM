@@ -9,7 +9,6 @@ from AutosomalDistribution import generic2DParameters, sampleHyperGraphParameter
 from HHMMMessagePasser import HiddenMarkovModelMessagePasser
 from HHMMHG import MessagePassingHG
 from MMUpDown import MarkovModelMessagePasser
-from HGTest import aTest
 from cycleDetector import identifyCycles
 
 def printListOfNodes( nodes ):
@@ -39,12 +38,12 @@ def pedigreeExample( name ):
         allPedigrees[ name ] = hg
 
     hg = allPedigrees[ name ]
-
-    hg.draw()
     hg.initHyperParams( 'autosome', 'dominant', 1000 )
-    msg = HiddenMarkovModelMessagePasser( hg, sampleHyperGraphParameters )
-    return hg, msg
-
+    parameters = sampleHyperGraphParameters( hg )
+    hg.setParameters( parameters[ 'transDist' ], \
+                      parameters[ 'emissionDist' ], \
+                      parameters[ 'rootDist' ] )
+    return hg
 
 def cycleExample1( isHidden ):
     hg = MessagePassingHG( 2 )
@@ -65,13 +64,15 @@ def cycleExample1( isHidden ):
     e5.addChild( n7 )
 
     hg.initialize()
-
-    hg.draw()
     if( isHidden ):
-        msg = HiddenMarkovModelMessagePasser( hg, generic2DParameters )
+        parameters   = generic2DParameters( hg )
+        transFunc    = parameters[ 'transDist' ]
+        emissionFunc = parameters[ 'emissionDist' ]
+        rootFunc     = parameters[ 'rootDist' ]
+        hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
-    return hg, msg
+    return hg
 
 def cycleExample2( isHidden ):
     hg = MessagePassingHG( 1 )
@@ -95,13 +96,15 @@ def cycleExample2( isHidden ):
 
     hg.initialize()
 
-    hg.draw()
-
     if( isHidden ):
-        msg = HiddenMarkovModelMessagePasser( hg, generic2DParameters )
+        parameters   = generic2DParameters( hg )
+        transFunc    = parameters[ 'transDist' ]
+        emissionFunc = parameters[ 'emissionDist' ]
+        rootFunc     = parameters[ 'rootDist' ]
+        hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
-    return hg, msg
+    return hg
 
 def cycleExample3( isHidden ):
     hg = MessagePassingHG( 2 )
@@ -131,13 +134,15 @@ def cycleExample3( isHidden ):
 
     hg.initialize()
 
-    hg.draw()
-
     if( isHidden ):
-        msg = HiddenMarkovModelMessagePasser( hg, generic2DParameters )
+        parameters   = generic2DParameters( hg )
+        transFunc    = parameters[ 'transDist' ]
+        emissionFunc = parameters[ 'emissionDist' ]
+        rootFunc     = parameters[ 'rootDist' ]
+        hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
-    return hg, msg
+    return hg
 
 def cycleExample4( isHidden=True ):
     hg = MessagePassingHG( 2 )
@@ -161,13 +166,15 @@ def cycleExample4( isHidden=True ):
 
     hg.initialize()
 
-    hg.draw()
-
     if( isHidden ):
-        msg = HiddenMarkovModelMessagePasser( hg, generic2DParameters )
+        parameters   = generic2DParameters( hg )
+        transFunc    = parameters[ 'transDist' ]
+        emissionFunc = parameters[ 'emissionDist' ]
+        rootFunc     = parameters[ 'rootDist' ]
+        hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
-    return hg, msg
+    return hg
 
 def cycleExample5( isHidden=True ):
     hg = MessagePassingHG( 2 )
@@ -201,13 +208,15 @@ def cycleExample5( isHidden=True ):
 
     hg.initialize()
 
-    hg.draw()
-
     if( isHidden ):
-        msg = HiddenMarkovModelMessagePasser( hg, generic2DParameters )
+        parameters   = generic2DParameters( hg )
+        transFunc    = parameters[ 'transDist' ]
+        emissionFunc = parameters[ 'emissionDist' ]
+        rootFunc     = parameters[ 'rootDist' ]
+        hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
-    return hg, msg
+    return hg
 
 
 def cycleExample5_1( isHidden=True ):
@@ -239,13 +248,15 @@ def cycleExample5_1( isHidden=True ):
 
     hg.initialize()
 
-    hg.draw()
-
     if( isHidden ):
-        msg = HiddenMarkovModelMessagePasser( hg, generic2DParameters )
+        parameters   = generic2DParameters( hg )
+        transFunc    = parameters[ 'transDist' ]
+        emissionFunc = parameters[ 'emissionDist' ]
+        rootFunc     = parameters[ 'rootDist' ]
+        hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
-    return hg, msg
+    return hg
 
 def cycleExample6( isHidden=True ):
     hg = MessagePassingHG( 2 )
@@ -263,13 +274,15 @@ def cycleExample6( isHidden=True ):
 
     hg.initialize()
 
-    hg.draw()
-
     if( isHidden ):
-        msg = HiddenMarkovModelMessagePasser( hg, generic2DParameters )
+        parameters   = generic2DParameters( hg )
+        transFunc    = parameters[ 'transDist' ]
+        emissionFunc = parameters[ 'emissionDist' ]
+        rootFunc     = parameters[ 'rootDist' ]
+        hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
-    return hg, msg
+    return hg
 
 def cycleExample7( isHidden=True ):
     hg = MessagePassingHG( 2 )
@@ -295,13 +308,15 @@ def cycleExample7( isHidden=True ):
 
     hg.initialize()
 
-    hg.draw()
-
     if( isHidden ):
-        msg = HiddenMarkovModelMessagePasser( hg, generic2DParameters )
+        parameters   = generic2DParameters( hg )
+        transFunc    = parameters[ 'transDist' ]
+        emissionFunc = parameters[ 'emissionDist' ]
+        rootFunc     = parameters[ 'rootDist' ]
+        hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
-    return hg, msg
+    return hg
 
 def cycleExample8( isHidden=True ):
     hg = MessagePassingHG( 2 )
@@ -320,13 +335,15 @@ def cycleExample8( isHidden=True ):
 
     hg.initialize()
 
-    hg.draw()
-
     if( isHidden ):
-        msg = HiddenMarkovModelMessagePasser( hg, generic2DParameters )
+        parameters   = generic2DParameters( hg )
+        transFunc    = parameters[ 'transDist' ]
+        emissionFunc = parameters[ 'emissionDist' ]
+        rootFunc     = parameters[ 'rootDist' ]
+        hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
-    return hg, msg
+    return hg
 
 def cycleExample9( isHidden=True ):
     hg = MessagePassingHG( 2 )
@@ -344,13 +361,15 @@ def cycleExample9( isHidden=True ):
 
     hg.initialize()
 
-    hg.draw()
-
     if( isHidden ):
-        msg = HiddenMarkovModelMessagePasser( hg, generic2DParameters )
+        parameters   = generic2DParameters( hg )
+        transFunc    = parameters[ 'transDist' ]
+        emissionFunc = parameters[ 'emissionDist' ]
+        rootFunc     = parameters[ 'rootDist' ]
+        hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
-    return hg, msg
+    return hg
 
 
 def cycleExample10( isHidden=True ):
@@ -423,13 +442,15 @@ def cycleExample10( isHidden=True ):
 
     hg.initialize()
 
-    hg.draw()
-
     if( isHidden ):
-        msg = HiddenMarkovModelMessagePasser( hg, generic2DParameters )
+        parameters   = generic2DParameters( hg )
+        transFunc    = parameters[ 'transDist' ]
+        emissionFunc = parameters[ 'emissionDist' ]
+        rootFunc     = parameters[ 'rootDist' ]
+        hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
-    return hg, msg
+    return hg
 
 
 def cycleExample11( isHidden=True ):
@@ -488,13 +509,15 @@ def cycleExample11( isHidden=True ):
 
     hg.initialize()
 
-    hg.draw()
-
     if( isHidden ):
-        msg = HiddenMarkovModelMessagePasser( hg, generic2DParameters )
+        parameters   = generic2DParameters( hg )
+        transFunc    = parameters[ 'transDist' ]
+        emissionFunc = parameters[ 'emissionDist' ]
+        rootFunc     = parameters[ 'rootDist' ]
+        hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
-    return hg, msg
+    return hg
 
 def disjointExample( isHidden=True ):
     hg = MessagePassingHG( 2 )
@@ -529,13 +552,15 @@ def disjointExample( isHidden=True ):
 
     hg.initialize()
 
-    hg.draw()
-
     if( isHidden ):
-        msg = HiddenMarkovModelMessagePasser( hg, generic2DParameters )
+        parameters   = generic2DParameters( hg )
+        transFunc    = parameters[ 'transDist' ]
+        emissionFunc = parameters[ 'emissionDist' ]
+        rootFunc     = parameters[ 'rootDist' ]
+        hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
-    return hg, msg
+    return hg
 
 def nonCycle( isHidden=True ):
     hg = MessagePassingHG( 1 )
@@ -553,13 +578,15 @@ def nonCycle( isHidden=True ):
 
     hg.initialize()
 
-    hg.draw()
-
     if( isHidden ):
-        msg = HiddenMarkovModelMessagePasser( hg, generic2DParameters )
+        parameters   = generic2DParameters( hg )
+        transFunc    = parameters[ 'transDist' ]
+        emissionFunc = parameters[ 'emissionDist' ]
+        rootFunc     = parameters[ 'rootDist' ]
+        hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
-    return hg, msg
+    return hg
 
 # hg, msg = pedigreeExample()
 # hg, msg = cycleExample4( True )
@@ -579,19 +606,26 @@ def nonCycle( isHidden=True ):
 # print( str0 )
 # assert 0
 
-def HMMTest( hg, msg ):
+def HMMTest( hg ):
+
     start = time.time()
 
-    feedbackSet,  blockManager = identifyCycles( hg )
-    feedbackSetIds = [  node._id for node in feedbackSet  ]
-    msg.preprocess( feedbackSetIds )
+    feedbackSet, blockManager = identifyCycles( hg )
+    feedbackSetIds = [ node._id for node in feedbackSet ]
+
+    hg.preprocess( feedbackSetIds )
+
+    hg.draw()
+
     end = time.time()
     print( '\nPreprocess time: '+str( end-start ) )
-    aTest( msg,  True )
+
     start = time.time()
-    for _ in range( 1 ):
-        msg.getStats()
+
+    hg.test( False )
+
     end = time.time()
+
     print( 'Traversal time: '+str( end-start ) )
 
 def MMTest():
@@ -607,18 +641,17 @@ def MMTest():
 # hg, msg = cycleExample5( True )
 # hg, msg = cycleExample9( True )
 # hg, msg = cycleExample10( True )
-# hg, msg = cycleExample11( True )
-# hg.draw()
-# HMMTest( msg )
+# hg, msg = cycleExample11( True )# HMMTest( msg )
 # assert 0
-HMMTest( *cycleExample1( True ) )
-HMMTest( *cycleExample3( True ) )
-HMMTest( *cycleExample4( True ) )
-HMMTest( *cycleExample5( True ) )
-HMMTest( *cycleExample5_1( True ) )
-HMMTest( *cycleExample6( True ) )
-HMMTest( *cycleExample7( True ) )
-HMMTest( *cycleExample8( True ) )
-HMMTest( *cycleExample9( True ) )
-HMMTest( *cycleExample11( True ) )
-HMMTest( *pedigreeExample( '3818J' ) )
+# HMMTest( cycleExample1( True ) )
+# HMMTest( cycleExample3( True ) )
+# HMMTest( cycleExample4( True ) )
+# HMMTest( cycleExample5( True ) )
+# HMMTest( cycleExample5_1( True ) )
+# HMMTest( cycleExample6( True ) )
+# HMMTest( cycleExample7( True ) )
+# HMMTest( cycleExample8( True ) )
+# HMMTest( cycleExample9( True ) )
+HMMTest( cycleExample10( True ) )
+# HMMTest( cycleExample11( True ) )
+# HMMTest( pedigreeExample( '3818J' ) )

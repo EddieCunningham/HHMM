@@ -8,36 +8,34 @@ from util import prettyPrint
 
 class HiddenMarkovModelMessagePasser():
 
-    def __init__( self, hg, hgParamFunction ):
+    def __init__( self, hg ):
 
         self._hyperGraph = hg
-        self._paramGenerator = hgParamFunction
 
         self.nodes = hg._nodes
         self.edges = hg._edges
 
-        self._params = self._paramGenerator( self._hyperGraph )
-        self._trans = self._params[ 'transDist' ]
-        self._L = self._params[ 'emissionDist' ]
-
         self._conditioning = {}
 
-        self._pi = self._params[ 'rootDist' ]
         self._srp = {}
+
+    def setParameters( self, transFunc, emissionFunc, rootFunc ):
+
+        self._trans = transFunc
+        self._L = emissionFunc
+        self._pi = rootFunc
 
     def preprocess( self, feedbackSetIds ):
 
         # for preprocessing, need to find a fvs, sortaRootProb
 
-        self._feedbackSet = sorted( [ self._hyperGraph.getNode( n ) for n in feedbackSetIds ], key=lambda x:x._id )
+        self._feedbackSet = sorted( [ self._hyperGraph.getNode( n ) for n in feedbackSetIds ], key=lambda x: x._id )
 
         print( 'Feedback is: '+str( self._feedbackSet ) )
 
-        # self._feedbackSet = [ self._hyperGraph.getNode( 4 ), self._hyperGraph.getNode( 5 ) ]
-
         for node in self.nodes: node.setMsg( self )
 
-        # This is in case a person
+        # This is in case a person is basically a root because its parents are all in the fbs
         self._sortaRootDeps = [ node for node in self._feedbackSet if len( node._parents ) == 0 or \
                             ( len( [ x for x in node._parents if x not in self._feedbackSet ] ) == 0 and \
                              len( [ x for x in node._upEdge._children if x not in self._feedbackSet ] ) == 0 ) ]
@@ -49,6 +47,10 @@ class HiddenMarkovModelMessagePasser():
     """ -------------------------------------------------------------------------------------- """
 
     def sortaRootProb( self, conditioning ):
+
+        # This accounts for individual disjoint nodes.
+        # This same sort of logic can probably extend this
+        # algorithm to handle disjoint graphs
 
         key = tuple( conditioning.items() )
         if( key in self._srp ):
@@ -79,7 +81,7 @@ class HiddenMarkovModelMessagePasser():
             if( node in self._feedbackSet ): continue
 
             for X in itertools.product( *[ range( n.N ) for n in self._feedbackSet ] ):
-                conditioning = { node:i for node, i in zip( self._feedbackSet, X ) }
+                conditioning = { node: i for node, i in zip( self._feedbackSet, X ) }
                 for i in range( node.N ):
                     node.getU( i, conditioning )
                 for i in range( node.N ):
@@ -97,7 +99,7 @@ class HiddenMarkovModelMessagePasser():
 
         for X in itertools.product( *[ range( n.N ) for n in self._feedbackSet ] ):
 
-            conditioning = { node:i for node, i in zip( self._feedbackSet, X ) }
+            conditioning = { node: i for node, i in zip( self._feedbackSet, X ) }
 
             for i in range( aLeaf.N ):
                 val = aLeaf.getU( i, conditioning )
@@ -121,13 +123,13 @@ class HiddenMarkovModelMessagePasser():
         parents = node._parents
         jointProb = LogVar( 0 )
 
-        parentCond = { p:j for p, j in zip( parents, X ) }
+        parentCond = { p: j for p, j in zip( parents, X ) }
 
         margOut = [ n for n in self._feedbackSet if n!=node and n not in parents ]
 
         for _X in itertools.product( *[ range( n.N ) for n in margOut ] ):
 
-            conditioning = { _node:_i for _node, _i in zip( margOut, _X ) }
+            conditioning = { _node: _i for _node, _i in zip( margOut, _X ) }
             conditioning.update( parentCond )
             conditioning[ node ] = i
 
@@ -140,7 +142,9 @@ class HiddenMarkovModelMessagePasser():
             jointProb /= totalProb
         return jointProb
 
-    def probOfParentsProducingNode( self, node, X, i, totalProb=None ):
+    def jointParentChild( self, node, X, i, totalProb=None ):
+
+        # P( x_c, x_p, x_q | Y )
 
         if( node in self._sortaRootDeps ):
             return self.isolatedParentJoint( node, X, i, totalProb )
@@ -167,7 +171,7 @@ class HiddenMarkovModelMessagePasser():
         for S in itertools.product( *latentRanges ):
 
             # print( 'S IS '+str( S ) )
-            familyInFBS = { n:s for n, s in zip( self._feedbackSet, S ) }
+            familyInFBS = { n: s for n, s in zip( self._feedbackSet, S ) }
 
             """ Down this node """
             _prob = LogVar( 1 )
@@ -202,10 +206,65 @@ class HiddenMarkovModelMessagePasser():
 
         return prob
 
+    def conditionalParentChild( self, node, X, i, totalProb=None ):
+
+        # P( x_c | x_p, x_q, Y )
+
+        if( node in self._sortaRootDeps ):
+            # need to do something special in this case probably
+            assert 0
+            return self.isolatedParentJoint( node, X, i, totalProb )
+
+        parents = node._parents
+
+        # make sure we sum over all of the possible nodes in the fbs
+        latentRanges = [ [ X[ parents.index( n ) ] ] if n in parents else range( n.N ) for n in self._feedbackSet ]
+
+        if( node.inFBS ):
+            latentRanges[ self._feedbackSet.index( node ) ] = [ i ]
+
+        """ Prob of this node """
+        prob = LogVar( self._trans( parents, node, X, i ) ) * self._L( node, i )
+
+        total = LogVar( 0 )
+
+        # print( '\ni is: '+str( i ) )
+        # print( 'node is: '+str( node ) )
+        # print( 'X is: '+str( X ) )
+        # print( 'parents is: '+str( parents ) )
+        # print( 'self._feedbackSet is: '+str( self._feedbackSet ) )
+        # print( 'latentRanges: '+str( latentRanges ) )
+        for S in itertools.product( *latentRanges ):
+
+            # print( 'S IS '+str( S ) )
+            familyInFBS = { n: s for n, s in zip( self._feedbackSet, S ) }
+
+            """ Down this node """
+            _prob = LogVar( 1 )
+            for e in node._downEdges:
+                v = node.getMarginalizedV( e, i, familyInFBS, self._feedbackSet )
+                # print( 'e: '+str( e )+' v: '+str( v ) )
+                _prob *= v
+
+            _prob /= node.getMarginalizedB( X, self._feedbackSet )
+
+            srp = self.sortaRootProb( familyInFBS )
+            # print( 'srp: '+str( srp ) )
+            _prob *= srp
+            total += _prob
+
+        prob *= total
+
+        """ Normalize """
+        if( totalProb ):
+            prob /= totalProb
+
+        return prob
+
     def messagePasser( self ):
 
         for X in itertools.product( *[ range( n.N ) for n in self._feedbackSet ] ):
-            conditioning = { node:i for node, i in zip( self._feedbackSet, X ) }
+            conditioning = { node: i for node, i in zip( self._feedbackSet, X ) }
 
             restart = True
             while( restart ):
@@ -333,7 +392,7 @@ class HiddenMarkovModelMessagePasser():
 
         for X in itertools.product( *[ range( n.N ) for n in self._feedbackSet ] ):
 
-            conditioning = { node:i for node, i in zip( self._feedbackSet, X ) }
+            conditioning = { node: i for node, i in zip( self._feedbackSet, X ) }
 
             for i in range( aLeaf.N ):
                 val = aLeaf.getU( i, conditioning )
@@ -362,7 +421,7 @@ class HiddenMarkovModelMessagePasser():
             for i in range( n.N ):
                 if( len( n._parents ) > 0 ):
                     for X in itertools.product( *[ range( p.N ) for p in n._parents ] ):
-                        genProb = self.probOfParentsProducingNode( n, X, i )
+                        genProb = self.jointParentChild( n, X, i )
 
     """ -------------------------------------------------------------------------------------- """
 
