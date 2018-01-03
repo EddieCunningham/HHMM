@@ -4,6 +4,7 @@ from HHMMMessagePasser import HiddenMarkovModelMessagePasser
 import graphviz
 from HGTest import marginalizeTest
 import numpy as np
+from pyLogVar import LogVar
 
 
 class MessagePassingHG( BaseHyperGraph ):
@@ -73,15 +74,20 @@ class MessagePassingHG( BaseHyperGraph ):
     def preprocess( self, feedbackSetIds ):
         self._msg.preprocess( feedbackSetIds )
 
-    def test( self, printStuff=False ):
+    def marginalizeTest( self, printStuff=False ):
         marginalizeTest( self._msg, printStuff )
 
     def resampleGraphStates( self ):
-        current = self._roots
 
-        for root in current:
+        current = []
+
+        for root in self._roots:
             probs = [ self._msg._pi( root, i ) for i in range( root.N ) ]
-            root.state = np.random.choice( root.N, 1, p=probs )[0]
+            root.x = np.random.choice( root.N, 1, p=probs )[ 0 ]
+            print('root: %s  x: %s  probs: %s'%( root, root.x, str( probs ) ) )
+
+            for edge in root._downEdges:
+                current.extend( edge._children )
 
         while( len( current ) > 0 ):
 
@@ -89,7 +95,9 @@ class MessagePassingHG( BaseHyperGraph ):
 
             for node in current:
 
-                if( np.all( np.array( [ n.x for n in node._parents ] ) ) ):
+                if( len( [ n for n in node._parents if n.x == None ] ) == 0 ):
+
+                    X = tuple( [ n.x for n in sorted( node._parents ) ] )
 
                     probs = np.array( [ self._msg.conditionalParentChild( node, X, i ) for i in range( node.N ) ] )
                     total = LogVar( 0 )
@@ -99,14 +107,16 @@ class MessagePassingHG( BaseHyperGraph ):
                     for i in range( node.N ):
                         probs[ i ] /= total
 
-                    node.state = np.random.choice( node.N, 1, p=probs )[ 0 ]
+                    probs = np.array( [ float( p ) for p in probs ] )
 
+                    node.x = np.random.choice( node.N, 1, p=probs )[ 0 ]
+                    print('node: %s  x: %s  probs: %s'%( node, node.x, str( probs ) ) )
                     for edge in node._downEdges:
 
-                        for child in node._children:
+                        for child in edge._children:
                             child.x = None
 
-                        nextCurrent.extend( node._children )
+                        nextCurrent.extend( edge._children )
                 else:
                     nextCurrent.append( node )
 
