@@ -23,36 +23,9 @@ class MessagePassingHG( BaseHyperGraph ):
             N = self.N
         return super( MessagePassingHG, self ).addNode( ID, y, N )
 
-    def draw( self ):
+    def draw( self, render=True ):
 
-        assert self._initialized, 'call the function \'hypergraph.initialize()\''
-
-        """ Draws the hypergraph using graphviz """
-        d = graphviz.Digraph()
-        for e in self._edges:
-            eId = e._id
-            for p in e._parents:
-                pId = p._id
-                d.edge( 'n( '+str( pId )+' )', 'E( '+str( eId )+' )', **{
-                    'arrowhead': 'none',
-                    'fixedsize': 'true'
-                })
-            for c in e._children:
-                cId = c._id
-                d.edge( 'E( '+str( eId )+' )', 'n( '+str( cId )+' )', **{
-                    'arrowhead': 'none',
-                    'fixedsize': 'true'
-                })
-
-            d.node('E( '+str( eId )+' )', **{
-                'width': '0.25',
-                'height': '0.25',
-                'fontcolor': 'white',
-                'style': 'filled',
-                'fillcolor': 'black',
-                'fixedsize': 'true',
-                'fontsize': '6'
-            })
+        d = super( MessagePassingHG, self ).draw( render=False )
 
         for node in self._msg._feedbackSet:
             d.node('n( '+str( node._id )+' )', **{
@@ -68,8 +41,34 @@ class MessagePassingHG( BaseHyperGraph ):
                 'fillcolor': 'blue1',
             })
 
-        d.render()
+        if( render ):
+            d.render()
+
         return d
+
+
+    def genCode( self ):
+        assert self._initialized, 'call the function \'hypergraph.initialize()\''
+
+        code = 'hg = MessagePassingHG( 2 )\n'
+
+        for node in self._nodes:
+            code += 'n%d = hg.addNode( %d )\n'%( node._id, node._id )
+
+        for edge in self._edges:
+            code += 'e%d = hg.addEdge( set( ['%( edge._id )
+
+            for node in edge._parents:
+                code += ' n%d,'%( node._id )
+
+            code = code[:-1]+' '
+            code += ' ] ), %d )\n'%( edge._id )
+
+
+            for node in edge._children:
+                code += 'e%d.addChild( n%d )\n'%( edge._id, node._id )
+
+        return code
 
     def preprocess( self, feedbackSetIds ):
         self._msg.preprocess( feedbackSetIds )

@@ -17,6 +17,11 @@ def printListOfNodes( nodes ):
         print( str( node._id )+' ' ),
     print( ' ]' )
 
+def hgCheck( hg ):
+    for node in hg._nodes:
+        if( node._upEdge is None and len( node._downEdges ) == 0 ):
+            assert 0
+
 def pedigreeExample( name ):
     pedigreeFolderName = '/Users/Eddie/kec-bot/app/pedigreeDataOLDBUTWORKS/'
 
@@ -35,9 +40,14 @@ def pedigreeExample( name ):
 
         hg = PedigreeHG( name )
         hg.initialize( pedigree )
+
+
         allPedigrees[ name ] = hg
 
     hg = allPedigrees[ name ]
+
+    hgCheck( hg )
+
     hg.initHyperParams( 'autosome', 'dominant', 1000 )
     parameters = sampleHyperGraphParameters( hg )
     hg.setParameters( parameters[ 'transDist' ], \
@@ -45,8 +55,8 @@ def pedigreeExample( name ):
                       parameters[ 'rootDist' ] )
     return hg
 
-def cycleExample1( isHidden ):
-    hg = MessagePassingHG( 2 )
+def cycleExample1( hiddenStateSize=2, isHidden=True ):
+    hg = MessagePassingHG( hiddenStateSize )
     n0 = hg.addNode( 0 )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
@@ -74,8 +84,8 @@ def cycleExample1( isHidden ):
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def cycleExample2( isHidden ):
-    hg = MessagePassingHG( 1 )
+def cycleExample2( hiddenStateSize=2, isHidden=True ):
+    hg = MessagePassingHG( hiddenStateSize )
     n1 = hg.addNode( 1 )
     n3 = hg.addNode( 3 )
     n4 = hg.addNode( 4 )
@@ -106,8 +116,8 @@ def cycleExample2( isHidden ):
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def cycleExample3( isHidden ):
-    hg = MessagePassingHG( 2 )
+def cycleExample3( hiddenStateSize=2, isHidden=True ):
+    hg = MessagePassingHG( hiddenStateSize )
     n0 = hg.addNode( 0 )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
@@ -144,8 +154,8 @@ def cycleExample3( isHidden ):
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def cycleExample4( isHidden=True ):
-    hg = MessagePassingHG( 2 )
+def cycleExample4( hiddenStateSize=2, isHidden=True ):
+    hg = MessagePassingHG( hiddenStateSize )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
     n4 = hg.addNode( 4 )
@@ -176,8 +186,8 @@ def cycleExample4( isHidden=True ):
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def cycleExample5( isHidden=True ):
-    hg = MessagePassingHG( 2 )
+def cycleExample5( hiddenStateSize=2, isHidden=True ):
+    hg = MessagePassingHG( hiddenStateSize )
     n0 = hg.addNode( 0 )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
@@ -219,8 +229,8 @@ def cycleExample5( isHidden=True ):
     return hg
 
 
-def cycleExample5_1( isHidden=True ):
-    hg = MessagePassingHG( 2 )
+def cycleExample5_1( hiddenStateSize=2, isHidden=True ):
+    hg = MessagePassingHG( hiddenStateSize )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
     n3 = hg.addNode( 3 )
@@ -258,8 +268,8 @@ def cycleExample5_1( isHidden=True ):
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def cycleExample6( isHidden=True ):
-    hg = MessagePassingHG( 2 )
+def cycleExample6( hiddenStateSize=2, isHidden=True ):
+    hg = MessagePassingHG( hiddenStateSize )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
     n3 = hg.addNode( 3 )
@@ -284,8 +294,8 @@ def cycleExample6( isHidden=True ):
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def cycleExample7( isHidden=True ):
-    hg = MessagePassingHG( 2 )
+def cycleExample7( hiddenStateSize=2, isHidden=True ):
+    hg = MessagePassingHG( hiddenStateSize )
     n0 = hg.addNode( 0 )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
@@ -318,8 +328,8 @@ def cycleExample7( isHidden=True ):
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def cycleExample8( isHidden=True ):
-    hg = MessagePassingHG( 2 )
+def cycleExample8( hiddenStateSize=2, isHidden=True ):
+    hg = MessagePassingHG( hiddenStateSize )
     n0 = hg.addNode( 0 )
     n2 = hg.addNode( 2 )
     n3 = hg.addNode( 3 )
@@ -345,8 +355,8 @@ def cycleExample8( isHidden=True ):
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def cycleExample9( isHidden=True ):
-    hg = MessagePassingHG( 2 )
+def cycleExample9( hiddenStateSize=2, isHidden=True ):
+    hg = MessagePassingHG( hiddenStateSize )
     n0 = hg.addNode( 0 )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
@@ -372,10 +382,10 @@ def cycleExample9( isHidden=True ):
     return hg
 
 
-def cycleExample10( isHidden=True ):
+def cycleExample10( hiddenStateSize=2, isHidden=True ):
     # the current fbs algorithm makes this
     # disjoint!!!!
-    hg = MessagePassingHG( 2 )
+    hg = MessagePassingHG( hiddenStateSize )
     n0 = hg.addNode( 0 )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
@@ -453,8 +463,8 @@ def cycleExample10( isHidden=True ):
     return hg
 
 
-def cycleExample11( isHidden=True ):
-    hg = MessagePassingHG( 2 )
+def cycleExample11( hiddenStateSize=2, isHidden=True ):
+    hg = MessagePassingHG( hiddenStateSize )
     n0 = hg.addNode( 0 )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
@@ -519,8 +529,40 @@ def cycleExample11( isHidden=True ):
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def disjointExample( isHidden=True ):
-    hg = MessagePassingHG( 2 )
+def cycleExample12( hiddenStateSize=2, isHidden=True ):
+    hg = MessagePassingHG( hiddenStateSize )
+    n0 = hg.addNode( 0 )
+    n2 = hg.addNode( 2 )
+    n3 = hg.addNode( 3 )
+    n5 = hg.addNode( 5 )
+    n6 = hg.addNode( 6 )
+
+    e1 = hg.addEdge( set( [ n0 ] ), 1 )
+    e1.addChild( n2 )
+
+    e2 = hg.addEdge( set( [ n2 ] ), 2 )
+    e2.addChild( n3 )
+
+    e3 = hg.addEdge( set( [ n3 ] ), 3 )
+    e3.addChild( n5 )
+
+    e4 = hg.addEdge( set( [ n5, n0 ] ), 4 )
+    e4.addChild( n6 )
+
+    hg.initialize()
+
+    if( isHidden ):
+        parameters   = generic2DParameters( hg )
+        transFunc    = parameters[ 'transDist' ]
+        emissionFunc = parameters[ 'emissionDist' ]
+        rootFunc     = parameters[ 'rootDist' ]
+        hg.setParameters( transFunc, emissionFunc, rootFunc )
+    else:
+        msg = MarkovModelMessagePasser( hg, generic2DParameters )
+    return hg
+
+def disjointExample( hiddenStateSize=2, isHidden=True ):
+    hg = MessagePassingHG( hiddenStateSize )
 
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
@@ -562,8 +604,8 @@ def disjointExample( isHidden=True ):
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def nonCycle( isHidden=True ):
-    hg = MessagePassingHG( 1 )
+def nonCycle( hiddenStateSize=2, isHidden=True ):
+    hg = MessagePassingHG( hiddenStateSize )
     n0 = hg.addNode( 0 )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
@@ -589,11 +631,11 @@ def nonCycle( isHidden=True ):
     return hg
 
 # hg, msg = pedigreeExample()
-# hg, msg = cycleExample4( True )
-# hg, msg = cycleExample5( True )
-# hg, msg = cycleExample5_1( True )
+# hg, msg = cycleExample4( isHidden=True )
+# hg, msg = cycleExample5( isHidden=True )
+# hg, msg = cycleExample5_1( isHidden=True )
 # hg, msg = cycleExample6()
-# hg, msg = cycleExample7( True )
+# hg, msg = cycleExample7( isHidden=True )
 # hg, msg = disjointExample()
 
 # print( 'Feedback set: '+str( msg._feedbackSet ) )
@@ -636,22 +678,24 @@ def MMTest():
             bf = LogVar( 0 )#msg.getWBruteForce( [ node ], [ i ] )
             print( comp )
 
-# hg, msg = nonCycle( True )
-# hg, msg = cycleExample2( True )
-# hg, msg = cycleExample5( True )
-# hg, msg = cycleExample9( True )
-# hg, msg = cycleExample10( True )
-# hg, msg = cycleExample11( True )# HMMTest( msg )
+# hg, msg = nonCycle( isHidden=True )
+# hg, msg = cycleExample2( isHidden=True )
+# hg, msg = cycleExample5( isHidden=True )
+# hg, msg = cycleExample9( isHidden=True )
+# hg, msg = cycleExample10( isHidden=True )
+# hg, msg = cycleExample11( isHidden=True )# HMMTest( msg )
 # assert 0
-# HMMTest( cycleExample1( True ) )
-# HMMTest( cycleExample3( True ) )
-# HMMTest( cycleExample4( True ) )
-# HMMTest( cycleExample5( True ) )
-# HMMTest( cycleExample5_1( True ) )
-# HMMTest( cycleExample6( True ) )
-# HMMTest( cycleExample7( True ) )
-# HMMTest( cycleExample8( True ) )
-# HMMTest( cycleExample9( True ) )
-HMMTest( cycleExample10( True ) )
-# HMMTest( cycleExample11( True ) )
-# HMMTest( pedigreeExample( '3818J' ) )
+HMMTest( cycleExample1( isHidden=True ) )
+HMMTest( cycleExample3( isHidden=True ) )
+HMMTest( cycleExample5( isHidden=True ) )
+HMMTest( cycleExample5_1( isHidden=True ) )
+HMMTest( cycleExample7( isHidden=True ) )
+HMMTest( cycleExample4( isHidden=True ) )
+HMMTest( cycleExample8( isHidden=True ) )
+HMMTest( cycleExample9( isHidden=True ) )
+HMMTest( cycleExample12( isHidden=True ) )
+HMMTest( pedigreeExample( '3818J' ) )
+HMMTest( cycleExample6( isHidden=True ) )
+
+# HMMTest( cycleExample10( isHidden=True ) )
+# HMMTest( cycleExample11( isHidden=True ) )

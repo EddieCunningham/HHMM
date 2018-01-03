@@ -199,7 +199,7 @@ def generic2DParameters(hyperGraph):
 
 
     def rootDistFunction(person,i):
-        theDist = np.array([[1.0,0.0] for _ in hyperGraph._roots])
+        theDist = np.array([[0.25,0.75] for _ in hyperGraph._roots])
         index = sorted(hyperGraph._roots).index(person)
         return theDist[index][i]
 

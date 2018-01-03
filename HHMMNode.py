@@ -211,7 +211,6 @@ class NodeForHMM( NodeBase ):
 
         return b_
 
-
     def getMarginalizedB( self, X, nodesToKeep, feedbackSet ):
 
         margOut = filter( lambda n:n not in nodesToKeep and n in self._bDeps, feedbackSet )

@@ -48,9 +48,8 @@ class HiddenMarkovModelMessagePasser():
 
     def sortaRootProb( self, conditioning ):
 
-        # This accounts for individual disjoint nodes.
-        # This same sort of logic can probably extend this
-        # algorithm to handle disjoint graphs
+        # This accounts for nodes whose parents are all in the
+        # feedback set
 
         key = tuple( conditioning.items() )
         if( key in self._srp ):
@@ -117,6 +116,10 @@ class HiddenMarkovModelMessagePasser():
 
     def isolatedParentJoint( self, node, X, i, totalProb=None ):
 
+        # if we have a node in the sorta root deps (the parents are in the fbs)
+        # then to get the joint, we can just marginalize out the other feedback
+        # set nodes out from a U value in the leaf
+
         # compute the probs for the fbs
         aLeaf = list( self._hyperGraph._leaves )[ 0 ]
 
@@ -140,6 +143,7 @@ class HiddenMarkovModelMessagePasser():
 
         if( totalProb ):
             jointProb /= totalProb
+
         return jointProb
 
     def jointParentChild( self, node, X, i, totalProb=None ):
@@ -157,50 +161,80 @@ class HiddenMarkovModelMessagePasser():
         if( node.inFBS ):
             latentRanges[ self._feedbackSet.index( node ) ] = [ i ]
 
-        """ Prob of this node """
-        prob = LogVar( self._trans( parents, node, X, i ) ) * self._L( node, i )
+        prob = LogVar( 0 )
 
-        total = LogVar( 0 )
-
-        # print( '\ni is: '+str( i ) )
-        # print( 'node is: '+str( node ) )
-        # print( 'X is: '+str( X ) )
-        # print( 'parents is: '+str( parents ) )
-        # print( 'self._feedbackSet is: '+str( self._feedbackSet ) )
-        # print( 'latentRanges: '+str( latentRanges ) )
         for S in itertools.product( *latentRanges ):
 
-            # print( 'S IS '+str( S ) )
             familyInFBS = { n: s for n, s in zip( self._feedbackSet, S ) }
 
             """ Down this node """
             _prob = LogVar( 1 )
             for e in node._downEdges:
                 v = node.getMarginalizedV( e, i, familyInFBS, self._feedbackSet )
-                # print( 'e: '+str( e )+' v: '+str( v ) )
                 _prob *= v
 
             """ Out from each sibling """
             for sibling in node._upEdge._children:
                 if( sibling is node ): continue
                 b = sibling.getMarginalizedB( X, familyInFBS, self._feedbackSet )
-                # print( 'sibling: '+str( sibling )+' b: '+str( b ) )
                 _prob *= b
 
             """ Out from each parent """
             for parent, j in zip( parents, X ):
                 a = parent.getMarginalizedA( node._upEdge, j, familyInFBS, self._feedbackSet )
-                # print( 'parent: '+str( parent )+' edge: '+str( node._upEdge )+' j: '+str( j )+' a: '+str( a ) )
                 _prob *= a
 
             srp = self.sortaRootProb( familyInFBS )
-            # print( 'srp: '+str( srp ) )
             _prob *= srp
-            total += _prob
+            prob += _prob
 
-        prob *= total
+        """ Prob of this node """
+        prob *= LogVar( self._trans( parents, node, X, i ) ) * self._L( node, i )
 
-        """ Normalize """
+        """ Normalize to condition on Y """
+        if( totalProb ):
+            prob /= totalProb
+
+        return prob
+
+    # uses parents of node
+    def jointParents( self, node, X, totalProb=None ):
+
+        if( node in self._sortaRootDeps ):
+            total = LogVar( 0 )
+            for i in range( node.N ):
+                total +=  self.isolatedParentJoint( node, X, i, totalProb )
+            return total
+
+        # P( x_p, x_q | Y )
+        parents = node._parents
+
+        # make sure we sum over all of the possible nodes in the fbs
+        latentRanges = [ [ X[ parents.index( n ) ] ] if n in parents else range( n.N ) for n in self._feedbackSet ]
+
+        prob = LogVar( 0 )
+
+        for S in itertools.product( *latentRanges ):
+
+            _prob = LogVar( 1 )
+
+            familyInFBS = { n: s for n, s in zip( self._feedbackSet, S ) }
+
+            """ Out from each child """
+            for child in node._upEdge._children:
+                b = child.getMarginalizedB( X, familyInFBS, self._feedbackSet )
+                _prob *= b
+
+            """ Out from each parent """
+            for parent, j in zip( parents, X ):
+                a = parent.getMarginalizedA( node._upEdge, j, familyInFBS, self._feedbackSet )
+                _prob *= a
+
+            srp = self.sortaRootProb( familyInFBS )
+            _prob *= srp
+            prob += _prob
+
+        """ Normalize to condition on Y """
         if( totalProb ):
             prob /= totalProb
 
@@ -209,57 +243,7 @@ class HiddenMarkovModelMessagePasser():
     def conditionalParentChild( self, node, X, i, totalProb=None ):
 
         # P( x_c | x_p, x_q, Y )
-
-        if( node in self._sortaRootDeps ):
-            # need to do something special in this case probably
-            assert 0
-            return self.isolatedParentJoint( node, X, i, totalProb )
-
-        parents = node._parents
-
-        # make sure we sum over all of the possible nodes in the fbs
-        latentRanges = [ [ X[ parents.index( n ) ] ] if n in parents else range( n.N ) for n in self._feedbackSet ]
-
-        if( node.inFBS ):
-            latentRanges[ self._feedbackSet.index( node ) ] = [ i ]
-
-        """ Prob of this node """
-        prob = LogVar( self._trans( parents, node, X, i ) ) * self._L( node, i )
-
-        total = LogVar( 0 )
-
-        # print( '\ni is: '+str( i ) )
-        # print( 'node is: '+str( node ) )
-        # print( 'X is: '+str( X ) )
-        # print( 'parents is: '+str( parents ) )
-        # print( 'self._feedbackSet is: '+str( self._feedbackSet ) )
-        # print( 'latentRanges: '+str( latentRanges ) )
-        for S in itertools.product( *latentRanges ):
-
-            # print( 'S IS '+str( S ) )
-            familyInFBS = { n: s for n, s in zip( self._feedbackSet, S ) }
-
-            """ Down this node """
-            _prob = LogVar( 1 )
-            for e in node._downEdges:
-                v = node.getMarginalizedV( e, i, familyInFBS, self._feedbackSet )
-                # print( 'e: '+str( e )+' v: '+str( v ) )
-                _prob *= v
-
-            _prob /= node.getMarginalizedB( X, self._feedbackSet )
-
-            srp = self.sortaRootProb( familyInFBS )
-            # print( 'srp: '+str( srp ) )
-            _prob *= srp
-            total += _prob
-
-        prob *= total
-
-        """ Normalize """
-        if( totalProb ):
-            prob /= totalProb
-
-        return prob
+        return self.jointParentChild( node, X, i, totalProb ) / self.jointParents( node, X, totalProb )
 
     def messagePasser( self ):
 
@@ -286,13 +270,9 @@ class HiddenMarkovModelMessagePasser():
                 currentVList = set( list( self._hyperGraph._leaves ) + newLeaves ) - set( self._feedbackSet )
                 currentUList = set( list( self._hyperGraph._roots ) + newRoots ) - set( self._feedbackSet )
 
-                # print( '\n============\n============\n============\n' )
-                # print( 'STARTING WITH GOING UP: %s AND GOING DOWN: %s'%( str( currentVList ), str( currentUList ) ) )
 
                 while( len( currentVList ) + len( currentUList ) > 0 ):
 
-                    # print( '\n=========\n=========\n' )
-                    # print( '\nGOING UP: %s AND GOING DOWN: %s'%( str( currentVList ), str( currentUList ) ) )
                     nextVList = set()
                     nextUList = set()
 
@@ -307,24 +287,20 @@ class HiddenMarkovModelMessagePasser():
                                 addChildren = True
 
                         if( addChildren ):
-                            # print( 'Computed U for node %s'%( node ) )
 
                             for edge in node._downEdges:
 
                                 for mate in edge._parents:
                                     if( mate.inFBS or mate == node ):
                                         continue
-                                    # print( 'ADDING %s TO GOING UP'%mate )
                                     nextVList.add( mate )
 
                                 for child in edge._children:
                                     if( child.inFBS ):
                                         continue
-                                    # print( 'ADDING %s TO GOING DOWN'%child )
                                     nextUList.add( child )
 
                         else:
-                            # print( 'READDING %s TO GOING DOWN'%node )
                             nextUList.add( node )
 
                     #####################################################################################################
@@ -345,22 +321,18 @@ class HiddenMarkovModelMessagePasser():
                                         addParents = False
 
                         if( addParents ):
-                            # print( 'Computed V for node %s'%( node ) )
 
                             for parent in node._parents:
                                 if( parent.inFBS ):
                                     continue
-                                # print( 'ADDING %s TO GOING UP'%parent )
                                 nextVList.add( parent )
 
                             if( node._upEdge ):
                                 for sibling in node._upEdge._children:
                                     if( sibling.inFBS or sibling == node ):
                                         continue
-                                    # print( 'ADDING %s TO GOING DOWN'%sibling )
                                     nextUList.add( sibling )
                         else:
-                            # print( 'READDING %s TO GOING UP'%node )
                             nextVList.add( node )
 
                     if( lastVList == currentVList and lastUList == currentUList ):
@@ -370,7 +342,6 @@ class HiddenMarkovModelMessagePasser():
                         # a,b,U,V values that we need.  If we hit this, then we
                         # have most likely gathered the relevant dependencies
                         # and the algorithm should work the next time around.
-                        print( '\n\n\nFAILED WITH GOING UP: %s AND GOING DOWN: %s\n'%( str( currentVList ), str( currentUList ) ) )
                         restart = True
                         break
 

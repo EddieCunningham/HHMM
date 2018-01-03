@@ -22,12 +22,15 @@ class PedigreeHG( MessagePassingHG ):
     def checkNode( self, person ):
         if( len( person.parents + person.mateKids ) == 0 ):
             return False
-        if( self.hasNode( person.Id ) ):
-            currentNode = super( PedigreeHG, self ).getNode( person.Id )
+
+        personId = person.Id
+
+        if( self.hasNode( personId ) ):
+            currentNode = super( PedigreeHG, self ).getNode( personId )
         else:
             y = getY( person )
             N = calcN( person )
-            currentNode = super( PedigreeHG, self ).addNode( person.Id, y, N )
+            currentNode = super( PedigreeHG, self ).addNode( personId, y, N )
         return currentNode
 
     def checkEdge( self, parents ):

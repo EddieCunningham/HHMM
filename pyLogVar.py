@@ -89,7 +89,6 @@ class LogVar():
     def isZero(self):
         return self.logVal == 'ZERO'
 
-
     def __float__(self):
         if(self.logVal == ZERO):
             return 0.
