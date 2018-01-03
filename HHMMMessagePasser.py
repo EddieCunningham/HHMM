@@ -74,46 +74,6 @@ class HiddenMarkovModelMessagePasser():
 
     """ -------------------------------------------------------------------------------------- """
 
-    def recursiveMessagePasser( self ):
-
-        for node in self.nodes:
-            if( node in self._feedbackSet ): continue
-
-            for X in itertools.product( *[ range( n.N ) for n in self._feedbackSet ] ):
-                conditioning = { node: i for node, i in zip( self._feedbackSet, X ) }
-                for i in range( node.N ):
-                    node.getU( i, conditioning )
-                for i in range( node.N ):
-                    for edge in node._downEdges:
-                        node.getV( edge, i, conditioning )
-
-        for node in self.nodes:
-            if( node in self._feedbackSet ): continue
-
-            node.accumulateFullJoint( self._feedbackSet )
-
-        # compute the probs for the fbs
-        aLeaf = self._hyperGraph._leaves.__iter__().__next__()
-        self._srp = {}
-
-        for X in itertools.product( *[ range( n.N ) for n in self._feedbackSet ] ):
-
-            conditioning = { node: i for node, i in zip( self._feedbackSet, X ) }
-
-            for i in range( aLeaf.N ):
-                val = aLeaf.getU( i, conditioning )
-                sr = self.sortaRootProb( conditioning )
-
-                for node, x in zip( self._feedbackSet, X ):
-                    node.updateFullJoint( x, val*sr )
-
-        for node in self._feedbackSet:
-            total = LogVar( 0 )
-            for i in range( node.N ):
-                total += node._fullJoint[ i ]
-
-    """ -------------------------------------------------------------------------------------- """
-
     def isolatedParentJoint( self, node, X, i, totalProb=None ):
 
         # if we have a node in the sorta root deps (the parents are in the fbs)
