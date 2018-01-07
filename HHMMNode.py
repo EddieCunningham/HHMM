@@ -11,6 +11,8 @@ class NodeForHMM( NodeBase ):
         self.N = N
         self.y = y
 
+        self.fakeY = None
+
         self.x = None
 
         self.inFBS = False
@@ -74,6 +76,7 @@ class NodeForHMM( NodeBase ):
             assert 0
 
     def getA( self, edge, i, conditioning, depth=0 ):
+        assert depth < 3
 
         key = self.aKey( conditioning )
 
@@ -93,6 +96,7 @@ class NodeForHMM( NodeBase ):
         return aVal
 
     def _computeA( self, edge, i, conditioning, depth=0 ):
+        assert depth < 3
 
         a_ = LogVar( 1 )
 
@@ -132,14 +136,12 @@ class NodeForHMM( NodeBase ):
         vKey = self.VKey( conditioning )
 
         if( self.needToComputeU( i, uKey ) ):
-            # print( '\nNode %s is waiting on U( %s, %s ) for aReady'%( self, i, uKey ) )
             return False
 
         for e in self._downEdges:
             if( e == edge ): continue
 
             if( self.needToComputeV( e, i, vKey ) ):
-                # print( '\nNode %s is waiting on V( %s, %s, %s ) for aReady'%( self, e, i, vKey ) )
                 return False
 
         return True
@@ -168,6 +170,7 @@ class NodeForHMM( NodeBase ):
             assert 0
 
     def getB( self, X, conditioning, depth=0 ):
+        assert depth < 3
 
         key = self.bKey( conditioning )
 
@@ -186,6 +189,7 @@ class NodeForHMM( NodeBase ):
         return bVal
 
     def _computeB( self, X, conditioning, depth=0 ):
+        assert depth < 3
 
         b_ = LogVar( 0 )
         if( len( self._downEdges ) > 0 ):
@@ -233,7 +237,6 @@ class NodeForHMM( NodeBase ):
             for e in self._downEdges:
 
                 if( self.needToComputeV( e, k, vKey ) ):
-                    # print( '\nNode %s is waiting on V( %s, %s, %s ) for bReady'%( self, e, k, vKey ) )
                     return False
 
         return True
@@ -256,8 +259,7 @@ class NodeForHMM( NodeBase ):
         return LogVar( self._U[ i ][ key ] )
 
     def getU( self, i, conditioning, depth=0 ):
-
-        # print( ''.join( [ '\t' for _ in range( depth ) ] )+'U value for depth is %d for node %s'%( depth, self ) )
+        assert depth < 3
 
         key = self.UKey( conditioning )
 
@@ -271,13 +273,13 @@ class NodeForHMM( NodeBase ):
 
             self.setUVal( i, key, uVal )
 
-            # print( 'U( %s, %s ) at node %s'%( i, key, self ) )
 
         else:
             uVal = self.getUVal( i, key )
         return uVal
 
     def _computeU( self, i, conditioning, depth=0 ):
+        assert depth < 3
 
         parents = self._parents
         if( len( parents ) == 0 or self.inFBS ):
@@ -335,14 +337,12 @@ class NodeForHMM( NodeBase ):
                 for parent, j in zip( parents, X ):
 
                     if( parent.aReady( self._upEdge, j, conditioning ) == False ):
-                        # print( '\nNode %s is waiting on parent %s a( %s, %s, %s ) for UReady'%( self, parent, self._upEdge, str( j ), self.UKey( conditioning ) ) )
                         return False
 
                 for sibling in self._upEdge._children:
                     if( sibling == self ):continue
 
                     if( sibling.bReady( X, conditioning ) == False ):
-                        # print( '\nNode %s is waiting on sibling %s b( %s, %s ) for UReady'%( self, sibling, str( X ), self.VKey( conditioning ) ) )
                         return False
         return True
 
@@ -366,8 +366,7 @@ class NodeForHMM( NodeBase ):
         return LogVar( self._V[ edge ][ i ][ key ] )
 
     def getV( self, edge, i, conditioning, depth=0 ):
-
-        # print( ''.join( [ '\t' for _ in range( depth ) ] )+'V value for depth is %d for node %s'%( depth, self ) )
+        assert depth < 3
 
         key = self.VKey( conditioning )
 
@@ -380,7 +379,6 @@ class NodeForHMM( NodeBase ):
             # revise the key
             key = self.VKey( conditioning )
 
-            # print( 'V( %s, %s, %s ) at node %s'%( edge, i, key, self ) )
 
             self.setVVal( edge, i, key, vVal )
 
@@ -389,15 +387,16 @@ class NodeForHMM( NodeBase ):
         return vVal
 
     def _computeV( self, edge, i, conditioning, depth=0 ):
+        assert depth < 3
 
         if( self.inFBS or len( self._downEdges ) == 0 ):
             return LogVar( 1 )
 
         mates = [ x for x in edge._parents if x != self ]
+        selfIndex = edge._parents.index( self )
 
         v = LogVar( 0 )
-        for X_, X in zip( itertools.product( *[ self._getN( m, conditioning ) for m in mates ] ), \
-            itertools.product( *[ self._getN( m, conditioning ) if m!=self else [ i ] for m in edge._parents ] ) ):
+        for X_ in itertools.product( *[ self._getN( m, conditioning ) for m in mates ] ):
 
             prod = LogVar( 1 )
 
@@ -406,6 +405,8 @@ class NodeForHMM( NodeBase ):
 
                 prod *= mate.getA( edge, j, conditioning, depth+1 )
                 self._VDeps |= mate._aDeps
+
+            X = tuple( list( X_[ :selfIndex ] ) + [ i ] + list( X_[ selfIndex: ] ) )
 
             """ Branch out from each child """
             for child in edge._children:
@@ -440,12 +441,10 @@ class NodeForHMM( NodeBase ):
             for mate, j in zip( mates, X_ ):
 
                 if( mate.aReady( edge, j, conditioning ) == False ):
-                    # print( '\nNode %s is waiting on mate %s a( %s, %s, %s ) for VReady'%( self, mate, edge, str( j ), conditioning ) )
                     return False
 
             for child in edge._children:
                 if( child.bReady( X, conditioning ) == False ):
-                    # print( '\nNode %s is waiting on child %s b( %s, %s ) for VReady'%( self, child, str( X ), conditioning ) )
                     return False
 
         return True

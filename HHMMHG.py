@@ -5,14 +5,26 @@ import graphviz
 from HGTest import marginalizeTest
 import numpy as np
 from pyLogVar import LogVar
-
+from Distributions import Categorical
 
 class MessagePassingHG( BaseHyperGraph ):
-    def __init__( self, N=None ):
+    def __init__( self, N=None, NodeType=None ):
         self.N = N
         super( MessagePassingHG, self ).__init__()
-        self.setNodeType( NodeForHMM )
+        if( NodeType ):
+            self.setNodeType( NodeType )
+        else:
+            self.setNodeType( NodeForHMM )
         self._msg = HiddenMarkovModelMessagePasser( self )
+
+    def setTransitionDist( self, transFunc ):
+        self._msg._trans = transFunc
+
+    def setEmissionDist( self, emissionFunc ):
+        self._msg._L = emissionFunc
+
+    def setRootDist( self, rootDist ):
+        self._msg._pi = rootDist
 
     def setParameters( self, transFunc, emissionFunc, rootFunc ):
         self._msg.setParameters( transFunc, \
@@ -77,47 +89,110 @@ class MessagePassingHG( BaseHyperGraph ):
     def marginalizeTest( self, printStuff=False ):
         marginalizeTest( self._msg, printStuff )
 
-    def resampleGraphStates( self ):
+    def resample( self ):
+        self.resampleGraphStates()
+
+    def graphIterate( self, nodeWork ):
 
         current = []
+        visited = set()
 
-        for root in self._roots:
-            probs = [ self._msg._pi( root, i ) for i in range( root.N ) ]
-            root.x = np.random.choice( root.N, 1, p=probs )[ 0 ]
-            print('root: %s  x: %s  probs: %s'%( root, root.x, str( probs ) ) )
+        for root in self.roots:
+            nodeWork( root )
+            visited.add( root._id )
 
             for edge in root._downEdges:
                 current.extend( edge._children )
 
+        current = list( set( current ) )
+
         while( len( current ) > 0 ):
 
             nextCurrent = []
-
             for node in current:
+                if( len( [ n for n in node._parents if n._id not in visited ] ) == 0 ):
 
-                if( len( [ n for n in node._parents if n.x == None ] ) == 0 ):
+                    nodeWork( node )
+                    assert node._id not in visited, str(node)
+                    visited.add( node._id )
 
-                    X = tuple( [ n.x for n in sorted( node._parents ) ] )
-
-                    probs = np.array( [ self._msg.conditionalParentChild( node, X, i ) for i in range( node.N ) ] )
-                    total = LogVar( 0 )
-                    for p in probs:
-                        total += p
-
-                    for i in range( node.N ):
-                        probs[ i ] /= total
-
-                    probs = np.array( [ float( p ) for p in probs ] )
-
-                    node.x = np.random.choice( node.N, 1, p=probs )[ 0 ]
-                    print('node: %s  x: %s  probs: %s'%( node, node.x, str( probs ) ) )
                     for edge in node._downEdges:
-
-                        for child in edge._children:
-                            child.x = None
-
                         nextCurrent.extend( edge._children )
                 else:
                     nextCurrent.append( node )
 
             current = list( set( nextCurrent ) )
+
+    def log_joint( self ):
+        # P( Y, X | θ )
+        joint = LogVar( 1 )
+
+        def nodeWork( node ):
+            if( len( node._parents ) == 0 ):
+                joint *= LogVar( self._msg._pi( node, node.x ) )
+            else:
+                X = tuple( [ n.x for n in self.parentSort( node._parents ) ] )
+                joint *= LogVar( self._msg._trans( node._parents, node, X, node.x ) )
+            joint *= LogVar( self._msg._L( node, node.x ) )
+
+        self.graphIterate( nodeWork )
+
+        return joint.logVal
+
+    def log_likelihood( self ):
+        # P( Y | X, θ )
+        likelihood = LogVar( 1 )
+
+        def nodeWork( node ):
+            likelihood *= LogVar( self._msg._L( node, node.x ) )
+
+        self.graphIterate( nodeWork )
+
+        return likelihood.logVal
+
+    def log_obsProb( self ):
+        # P( Y | θ )
+        return self._msg.probOfAllNodeObservations().logVal
+
+    def log_posterior( self ):
+        # P( X | Y, θ )
+        return self.log_joint - self.log_likelihood
+
+    def resampleGraphStates( self ):
+        # Sample from P( X | Y, θ )
+        def nodeWork( node ):
+
+            if( len( node._parents ) == 0 ):
+                probs = [ self._msg._pi( node, i ) for i in range( node.N ) ]
+                node.x = Categorical.sample( probs, normalized=True )
+            else:
+                X = tuple( [ n.x for n in self.parentSort( node._parents ) ] )
+                probs = [ self._msg.conditionalParentChild( node, X, i ) for i in range( node.N ) ]
+                node.x = Categorical.sample( probs, normalized=False )
+
+        self.graphIterate( nodeWork )
+
+    def resampleGraphStatesAndEmissions( self ):
+        # Sample from P( X, Y | θ )
+        def nodeWork( node ):
+
+            if( len( node._parents ) == 0 ):
+                stateProbs = [ self._msg._pi( node, i ) for i in range( node.N ) ]
+                node.x = Categorical.sample( stateProbs, normalized=True )
+            else:
+                X = tuple( [ n.x for n in self.parentSort( node._parents ) ] )
+                stateProbs = [ self._msg._trans( node._parents, node, X, i ) for i in range( node.N ) ]
+                node.x = Categorical.sample( stateProbs, normalized=True )
+
+            emissionProbs = [ self._msg._L( node, i ) for i in range( node.N ) ]
+            node.fakeY = Categorical.sample( stateProbs, normalized=True )
+
+        self.graphIterate( nodeWork )
+
+    def resampleEmissions( self ):
+        # Sample from P( Y | X, θ )
+        def nodeWork( node ):
+            emissionProbs = [ self._msg._L( node, i ) for i in range( node.N ) ]
+            node.fakeY = Categorical.sample( stateProbs, normalized=True )
+
+        self.graphIterate( nodeWork )

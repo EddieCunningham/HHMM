@@ -1,5 +1,6 @@
 from HHMMMessagePasser import HiddenMarkovModelMessagePasser
 from HHMMHG import MessagePassingHG
+from HHMMNode import NodeForHMM
 from AutosomalDistribution import hyperGraphBaseHyperParameters
 
 def getY( person ):
@@ -7,17 +8,32 @@ def getY( person ):
         return int( len( person.diagnoses ) > 0 )
     return 0
 
+def getSex( person ):
+    return person.sex
+
 def calcN( person ):
     return 2
+
+class PersonNode( NodeForHMM ):
+    def __init__( self, y, N, sex ):
+        super( PersonNode, self ).__init__( y, N )
+        self.sex = sex
 
 class PedigreeHG( MessagePassingHG ):
 
     def __init__( self, filename ):
-        super( PedigreeHG, self ).__init__()
+        # Set N to None so that we can have different Ns for different nodes
+        super( PedigreeHG, self ).__init__( N=None, NodeType=PersonNode )
         self._filename = filename
 
         self._parentsToEdge = {}
         self._addedNodes = set()
+
+        self.setParentSortKey( lambda x:[ 'female', 'male', 'unknown' ].index( x.sex ) )
+
+    def addNode( self, ID, y, N, sex ):
+        node = super( MessagePassingHG, self ).addNode( ID, y, N, sex )
+        return node
 
     def checkNode( self, person ):
         if( len( person.parents + person.mateKids ) == 0 ):
@@ -30,17 +46,19 @@ class PedigreeHG( MessagePassingHG ):
         else:
             y = getY( person )
             N = calcN( person )
-            currentNode = super( PedigreeHG, self ).addNode( personId, y, N )
+            sex = getSex( person )
+            currentNode = self.addNode( personId, y, N, sex )
+
         return currentNode
 
     def checkEdge( self, parents ):
-        sortedParents = tuple( sorted( parents ) )
+        sortedParents = tuple( self.parentSort( parents ) )
         if( sortedParents not in self._parentsToEdge ):
             edgeNumber = len( self._parentsToEdge )
-            self._parentsToEdge[sortedParents] = edgeNumber
+            self._parentsToEdge[ sortedParents ] = edgeNumber
             return super( PedigreeHG, self ).addEdge( parents, edgeNumber )
         else:
-            edgeNumber = self._parentsToEdge[sortedParents]
+            edgeNumber = self._parentsToEdge[ sortedParents ]
             return super( PedigreeHG, self ).getEdge( edgeNumber )
 
     def initialize( self, pedigree ):
@@ -61,7 +79,7 @@ class PedigreeHG( MessagePassingHG ):
 
                 mateNode = self.checkNode( mate )
                 if( not mateNode ): continue
-                familyEdge = self.checkEdge( [personNode, mateNode] )
+                familyEdge = self.checkEdge( [ personNode, mateNode ] )
 
                 for child in children:
 

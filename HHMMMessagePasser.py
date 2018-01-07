@@ -81,7 +81,7 @@ class HiddenMarkovModelMessagePasser():
         # set nodes out from a U value in the leaf
 
         # compute the probs for the fbs
-        aLeaf = list( self._hyperGraph._leaves )[ 0 ]
+        aLeaf = list( self._hyperGraph.leaves )[ 0 ]
 
         parents = node._parents
         jointProb = LogVar( 0 )
@@ -227,9 +227,8 @@ class HiddenMarkovModelMessagePasser():
                     newLeaves.extend( fbNode._parents )
 
                 # start at leaves / roots and work in
-                currentVList = set( list( self._hyperGraph._leaves ) + newLeaves ) - set( self._feedbackSet )
-                currentUList = set( list( self._hyperGraph._roots ) + newRoots ) - set( self._feedbackSet )
-
+                currentVList = set( list( self._hyperGraph.leaves ) + newLeaves ) - set( self._feedbackSet )
+                currentUList = set( list( self._hyperGraph.roots ) + newRoots ) - set( self._feedbackSet )
 
                 while( len( currentVList ) + len( currentUList ) > 0 ):
 
@@ -318,7 +317,7 @@ class HiddenMarkovModelMessagePasser():
             node.accumulateFullJoint( self._feedbackSet )
 
         # compute the probs for the fbs
-        aLeaf = self._hyperGraph._leaves.__iter__().__next__()
+        aLeaf = self._hyperGraph.leaves.__iter__().__next__()
         self._srp = {}
 
         for X in itertools.product( *[ range( n.N ) for n in self._feedbackSet ] ):
@@ -359,7 +358,7 @@ class HiddenMarkovModelMessagePasser():
     def probOfAllNodeObservations( self ):
 
         """ P( Y ) = sum_i( U_l_e( i ) ) for any leaf l """
-        aLeaf = list( self._hyperGraph._leaves )[ 0 ]
+        aLeaf = list( self._hyperGraph.leaves )[ 0 ]
 
         total = LogVar( 0 )
         for i in range( aLeaf.N ):

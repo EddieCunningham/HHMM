@@ -60,14 +60,23 @@ class EdgeBase( object ):
 class BaseHyperGraph( object ):
     def __init__( self ):
         self._nodes = set( )
-        self._leaves = set( )
-        self._roots = set( )
+        self.leaves = set( )
+        self.roots = set( )
         self._edges = set( )
         self._initialized = False
         self._NodeType = NodeBase
         self._EdgeType = EdgeBase
         self._nodeIDs = {}
         self._edgeIDs = {}
+        self._sortKey = lambda x:x._id
+
+    def setParentSortKey( self, func ):
+        self._sortKey = func
+
+    def parentSort( self, parents ):
+        # this is so that we can have ordering
+        # in the transition function if we want
+        return sorted( parents, key=self._sortKey )
 
     def setNodeType( self, NodeType ):
         self._NodeType = NodeType
@@ -114,21 +123,21 @@ class BaseHyperGraph( object ):
         for n in self._nodes:
 
             if( len( n._parents ) == 0 ):
-                self._roots.add( n )
+                self.roots.add( n )
                 n.isRoot = True
 
             if( len( n._downEdges ) == 0 ):
-                self._leaves.add( n )
+                self.leaves.add( n )
                 n.isLeaf = True
 
             if( n._upEdge is None and len( n._downEdges ) == 0 ):
                 assert 0, 'Node %s doesn\'t have an up or down edge!'%n
 
         for n in self._nodes:
-            n._parents = tuple( sorted( n._parents, key=lambda x:x._id ) )
+            n._parents = tuple( self.parentSort( n._parents ) )
 
         for e in self._edges:
-            e._parents = tuple( sorted( e._parents, key=lambda x:x._id ) )
+            e._parents = tuple( self.parentSort( e._parents ) )
             e._children = tuple( sorted( e._children, key=lambda x:x._id ) )
 
             if( len( e._parents ) == 0 ):

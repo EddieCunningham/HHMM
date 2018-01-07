@@ -8,7 +8,7 @@ r = RandomState(5)
 def uniformRootPrior(hyperGraph,strength=1):
     """ Generates a uniform for the dirichlet distribution """
     ans = []
-    for r in sorted(hyperGraph._roots):
+    for r in sorted(hyperGraph.roots):
         ans.append([1. for _ in range(r.N)])
     return strength*np.array(ans)
 
@@ -73,7 +73,7 @@ def generateRootDist(hyperGraph,alpha_r):
     theDist = np.array([r.dirichlet(a) for a in alpha_r])
 
     def rootDistFunction(person,i):
-        index = sorted(hyperGraph._roots).index(person)
+        index = sorted(hyperGraph.roots).index(person)
         return theDist[index][i]
     return rootDistFunction
 
@@ -199,8 +199,8 @@ def generic2DParameters(hyperGraph):
 
 
     def rootDistFunction(person,i):
-        theDist = np.array([[0.25,0.75] for _ in hyperGraph._roots])
-        index = sorted(hyperGraph._roots).index(person)
+        theDist = np.array([[0.25,0.75] for _ in hyperGraph.roots])
+        index = sorted(hyperGraph.roots).index(person)
         return theDist[index][i]
 
     def transDistFunction(parents,child,X,i):

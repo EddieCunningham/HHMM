@@ -175,7 +175,7 @@ class BlockManager(object):
         if(visitOnce == False):
 
             # if a root in to be excluded, need to add its children
-            current = self._hg._roots
+            current = self._hg.roots
             notGood = True
             while(notGood):
 
@@ -206,7 +206,7 @@ class BlockManager(object):
 
             for n in current:
                 assert n not in self._ex
-            # current = [n for n in self._hg._roots if n not in self._ex]
+            # current = [n for n in self._hg.roots if n not in self._ex]
             while(len(current) > 0):
                 [self._mapper[c].incCount() for c in current]
                 for c in current:
@@ -463,7 +463,7 @@ def identifyCycles(hg,exclude=[],tryToKeepOutOfFeedbackSet=[]):
     allCycles = []
 
 
-    initialLeaves = hg._leaves
+    initialLeaves = hg.leaves
     notGood = True
     while(notGood):
 
