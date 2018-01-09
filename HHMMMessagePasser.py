@@ -203,6 +203,10 @@ class HiddenMarkovModelMessagePasser():
     def conditionalParentChild( self, node, X, i, totalProb=None ):
 
         # P( x_c | x_p, x_q, Y )
+        # a = self.jointParentChild( node, X, i, totalProb )
+        # b = self.jointParents( node, X, totalProb )
+        # print('a: %f'%a.logVal)
+        # print('b: %f'%b.logVal)
         return self.jointParentChild( node, X, i, totalProb ) / self.jointParents( node, X, totalProb )
 
     def messagePasser( self ):
@@ -357,7 +361,7 @@ class HiddenMarkovModelMessagePasser():
 
     def probOfAllNodeObservations( self ):
 
-        """ P( Y ) = sum_i( U_l_e( i ) ) for any leaf l """
+        """ P( Y ) = sum_i( U_l( i ) ) for any leaf l """
         aLeaf = list( self._hyperGraph.leaves )[ 0 ]
 
         total = LogVar( 0 )

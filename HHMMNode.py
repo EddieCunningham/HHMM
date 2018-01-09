@@ -5,10 +5,11 @@ from util import prettyPrint
 
 
 class NodeForHMM( NodeBase ):
-    def __init__( self, y, N ):
+    def __init__( self, y, N, NObs ):
         super( NodeForHMM, self ).__init__()
 
         self.N = N
+        self.NObs = NObs
         self.y = y
 
         self.fakeY = None
@@ -76,7 +77,7 @@ class NodeForHMM( NodeBase ):
             assert 0
 
     def getA( self, edge, i, conditioning, depth=0 ):
-        assert depth < 3
+        assert depth < 8
 
         key = self.aKey( conditioning )
 
@@ -96,7 +97,7 @@ class NodeForHMM( NodeBase ):
         return aVal
 
     def _computeA( self, edge, i, conditioning, depth=0 ):
-        assert depth < 3
+        assert depth < 8
 
         a_ = LogVar( 1 )
 
@@ -170,7 +171,7 @@ class NodeForHMM( NodeBase ):
             assert 0
 
     def getB( self, X, conditioning, depth=0 ):
-        assert depth < 3
+        assert depth < 8
 
         key = self.bKey( conditioning )
 
@@ -189,7 +190,7 @@ class NodeForHMM( NodeBase ):
         return bVal
 
     def _computeB( self, X, conditioning, depth=0 ):
-        assert depth < 3
+        assert depth < 8
 
         b_ = LogVar( 0 )
         if( len( self._downEdges ) > 0 ):
@@ -259,7 +260,7 @@ class NodeForHMM( NodeBase ):
         return LogVar( self._U[ i ][ key ] )
 
     def getU( self, i, conditioning, depth=0 ):
-        assert depth < 3
+        assert depth < 8
 
         key = self.UKey( conditioning )
 
@@ -279,7 +280,7 @@ class NodeForHMM( NodeBase ):
         return uVal
 
     def _computeU( self, i, conditioning, depth=0 ):
-        assert depth < 3
+        assert depth < 8
 
         parents = self._parents
         if( len( parents ) == 0 or self.inFBS ):
@@ -366,7 +367,7 @@ class NodeForHMM( NodeBase ):
         return LogVar( self._V[ edge ][ i ][ key ] )
 
     def getV( self, edge, i, conditioning, depth=0 ):
-        assert depth < 3
+        assert depth < 8
 
         key = self.VKey( conditioning )
 
@@ -387,7 +388,7 @@ class NodeForHMM( NodeBase ):
         return vVal
 
     def _computeV( self, edge, i, conditioning, depth=0 ):
-        assert depth < 3
+        assert depth < 8
 
         if( self.inFBS or len( self._downEdges ) == 0 ):
             return LogVar( 1 )

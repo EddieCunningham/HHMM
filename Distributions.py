@@ -2,7 +2,7 @@ import os
 import time
 import json
 import itertools
-import scipy.stats
+from scipy.stats import dirichlet
 from pyLogVar import LogVar
 from functools import reduce
 import numpy as np
@@ -21,37 +21,32 @@ class Dirichlet():
     def pdf( self, probs ):
         return self._dir.pdf( probs )
 
-    def log_pdf( self, probs ):
+    def logpdf( self, probs ):
         return self._dir.logpdf( probs )
-
-    @staticmethod
-    def sample( alpha ):
-        return dirichlet( np.array( alpha ) ).rvs( 1 )[ 0 ]
-
-    @staticmethod
-    def pdf( alpha, probs ):
-        return dirichlet( np.array( alpha ) ).pdf( probs )
 
 class Categorical():
 
-    def __init__( self, params, alpha=None ):
+    def __init__( self, params=None, alpha=None ):
 
-        if( alpha ):
+        if( alpha is not None ):
             self.alpha = alpha
             self._prior = Dirichlet( alpha )
             self._probs = self.resample()
         else:
+            assert params is not None
             self._probs = params
 
-        self.N = _probs.shape[ 0 ]
+        self.N = self._probs.shape[ 0 ]
 
     def resample( self, newAlpha=None, observations=None ):
 
-        if( observations ):
+        if( observations is not None ):
+            # print( self.alpha )
+            # print( observations )
             newAlpha = self.alpha + observations
 
-        if( newAlpha ):
-            self._probs = Categorical.resample( newAlpha )
+        if( newAlpha is not None ):
+            self._probs = Dirichlet( newAlpha ).sample()
         else:
             self._probs = self._prior.sample()
         return self._probs
@@ -68,12 +63,13 @@ class Categorical():
         return np.log( self.pdf( i ) )
 
     def log_likelihood( self ):
-        return self._dir.logpdf( self._probs )
+        return self._prior.logpdf( self._probs )
 
     @staticmethod
     def sample( probs, normalized=False ):
 
         N = len( probs )
+        # print('probs: '+str(probs))
 
         if( normalized == False ):
 
@@ -85,14 +81,24 @@ class Categorical():
             if( isinstance( probs, list ) or isinstance( probs, tuple ) ):
                 probs = np.array( [ float( p ) for p in probs ] )
 
+            if( not np.isclose( reduce( lambda x,y: x+y, probs ), 1.0 ) ):
+                print( probs )
+                print( reduce( lambda x,y: x+y, probs ) )
+                print( reduce( lambda x,y: x+y, probs ) - 1.0 )
+                assert 0
+
         else:
-            assert reduce( lambda x,y: x+y, probs ) == 1.0
+            if( not np.isclose( reduce( lambda x,y: x+y, probs ), 1.0 ) ):
+                print( probs )
+                print( reduce( lambda x,y: x+y, probs ) )
+                print( reduce( lambda x,y: x+y, probs ) - 1.0 )
+                assert 0
 
             if( isinstance( probs, list ) or isinstance( probs, tuple ) ):
                 probs = np.array( probs )
 
         return np.random.choice( N, 1, p=probs )[ 0 ]
 
-    @staticmethod
-    def pdf( probs, i ):
-        return probs[ i ]
+    # @staticmethod
+    # def pdf( probs, i ):
+    #     return probs[ i ]

@@ -8,14 +8,19 @@ from pyLogVar import LogVar
 from Distributions import Categorical
 
 class MessagePassingHG( BaseHyperGraph ):
-    def __init__( self, N=None, NodeType=None ):
+    def __init__( self, N=None, NObs=None, NodeType=None ):
         self.N = N
+        self.NObs = NObs
         super( MessagePassingHG, self ).__init__()
         if( NodeType ):
             self.setNodeType( NodeType )
         else:
             self.setNodeType( NodeForHMM )
         self._msg = HiddenMarkovModelMessagePasser( self )
+
+        # dummy variable so that we can use the graph
+        # iterator easily
+        self.workspace = LogVar( 0 )
 
     def setTransitionDist( self, transFunc ):
         self._msg._trans = transFunc
@@ -31,10 +36,12 @@ class MessagePassingHG( BaseHyperGraph ):
                                  emissionFunc, \
                                  rootFunc )
 
-    def addNode( self, ID, y=0, N=None ):
+    def addNode( self, ID, y=0, N=None, NObs=None ):
         if( N == None ):
             N = self.N
-        return super( MessagePassingHG, self ).addNode( ID, y, N )
+        if( NObs == None ):
+            NObs = self.NObs
+        return super( MessagePassingHG, self ).addNode( ID, y, N, NObs )
 
     def draw( self, render=True ):
 
@@ -58,7 +65,6 @@ class MessagePassingHG( BaseHyperGraph ):
             d.render()
 
         return d
-
 
     def genCode( self ):
         assert self._initialized, 'call the function \'hypergraph.initialize()\''
@@ -110,14 +116,15 @@ class MessagePassingHG( BaseHyperGraph ):
 
             nextCurrent = []
             for node in current:
+                if( node._id in visited ):
+                    continue
                 if( len( [ n for n in node._parents if n._id not in visited ] ) == 0 ):
 
                     nodeWork( node )
-                    assert node._id not in visited, str(node)
                     visited.add( node._id )
 
                     for edge in node._downEdges:
-                        nextCurrent.extend( edge._children )
+                        nextCurrent.extend( edge._children)
                 else:
                     nextCurrent.append( node )
 
@@ -125,30 +132,30 @@ class MessagePassingHG( BaseHyperGraph ):
 
     def log_joint( self ):
         # P( Y, X | θ )
-        joint = LogVar( 1 )
+        self.workspace = LogVar( 1 )
 
         def nodeWork( node ):
             if( len( node._parents ) == 0 ):
-                joint *= LogVar( self._msg._pi( node, node.x ) )
+                self.workspace *= LogVar( self._msg._pi( node, node.x ) )
             else:
                 X = tuple( [ n.x for n in self.parentSort( node._parents ) ] )
-                joint *= LogVar( self._msg._trans( node._parents, node, X, node.x ) )
-            joint *= LogVar( self._msg._L( node, node.x ) )
+                self.workspace *= LogVar( self._msg._trans( node._parents, node, X, node.x ) )
+            self.workspace *= LogVar( self._msg._L( node, node.x ) )
 
         self.graphIterate( nodeWork )
 
-        return joint.logVal
+        return self.workspace.logVal
 
     def log_likelihood( self ):
         # P( Y | X, θ )
-        likelihood = LogVar( 1 )
+        self.workspace = LogVar( 1 )
 
         def nodeWork( node ):
-            likelihood *= LogVar( self._msg._L( node, node.x ) )
+            self.workspace *= LogVar( self._msg._L( node, node.x ) )
 
         self.graphIterate( nodeWork )
 
-        return likelihood.logVal
+        return self.workspace.logVal
 
     def log_obsProb( self ):
         # P( Y | θ )
@@ -156,10 +163,14 @@ class MessagePassingHG( BaseHyperGraph ):
 
     def log_posterior( self ):
         # P( X | Y, θ )
-        return self.log_joint - self.log_likelihood
+        return self.log_joint() - self.log_obsProb()
 
     def resampleGraphStates( self ):
         # Sample from P( X | Y, θ )
+
+        # Run the message passing algorithm
+        self._msg.getStats()
+
         def nodeWork( node ):
 
             if( len( node._parents ) == 0 ):
@@ -184,15 +195,21 @@ class MessagePassingHG( BaseHyperGraph ):
                 stateProbs = [ self._msg._trans( node._parents, node, X, i ) for i in range( node.N ) ]
                 node.x = Categorical.sample( stateProbs, normalized=True )
 
-            emissionProbs = [ self._msg._L( node, i ) for i in range( node.N ) ]
-            node.fakeY = Categorical.sample( stateProbs, normalized=True )
+            emissionProbs = []
+            for i in range( node.NObs ):
+                node.fakeY = i
+                emissionProbs.append( self._msg._L( node, node.x ) )
+            node.fakeY = Categorical.sample( emissionProbs, normalized=True )
 
         self.graphIterate( nodeWork )
 
     def resampleEmissions( self ):
         # Sample from P( Y | X, θ )
         def nodeWork( node ):
-            emissionProbs = [ self._msg._L( node, i ) for i in range( node.N ) ]
-            node.fakeY = Categorical.sample( stateProbs, normalized=True )
+            emissionProbs = []
+            for i in range( node.NObs ):
+                node.fakeY = i
+                emissionProbs.append( self._msg._L( node, node.x ) )
+            node.fakeY = Categorical.sample( emissionProbs, normalized=True )
 
         self.graphIterate( nodeWork )

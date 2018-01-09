@@ -31,9 +31,9 @@ def pedigreeExample( name ):
 
     hg = allPedigrees[ name ]
 
-    hg.initHyperParams( 'autosome', 'dominant', 1000 )
-    parameters = sampleHyperGraphParameters( hg )
-    hg.setParameters( parameters[ 'transDist' ], \
-                      parameters[ 'emissionDist' ], \
-                      parameters[ 'rootDist' ] )
+    # hg.initHyperParams( 'autosome', 'dominant', 1000 )
+    # parameters = sampleHyperGraphParameters( hg )
+    # hg.setParameters( parameters[ 'transDist' ], \
+    #                   parameters[ 'emissionDist' ], \
+    #                   parameters[ 'rootDist' ] )
     return hg

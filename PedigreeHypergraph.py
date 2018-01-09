@@ -12,11 +12,14 @@ def getSex( person ):
     return person.sex
 
 def calcN( person ):
+    return 4
+
+def calcNObs( person ):
     return 2
 
 class PersonNode( NodeForHMM ):
-    def __init__( self, y, N, sex ):
-        super( PersonNode, self ).__init__( y, N )
+    def __init__( self, y, N, NObs, sex ):
+        super( PersonNode, self ).__init__( y, N, NObs )
         self.sex = sex
 
 class PedigreeHG( MessagePassingHG ):
@@ -31,8 +34,8 @@ class PedigreeHG( MessagePassingHG ):
 
         self.setParentSortKey( lambda x:[ 'female', 'male', 'unknown' ].index( x.sex ) )
 
-    def addNode( self, ID, y, N, sex ):
-        node = super( MessagePassingHG, self ).addNode( ID, y, N, sex )
+    def addNode( self, ID, y, N, NObs, sex ):
+        node = super( MessagePassingHG, self ).addNode( ID, y, N, NObs, sex )
         return node
 
     def checkNode( self, person ):
@@ -46,8 +49,9 @@ class PedigreeHG( MessagePassingHG ):
         else:
             y = getY( person )
             N = calcN( person )
+            NObs = calcNObs( person )
             sex = getSex( person )
-            currentNode = self.addNode( personId, y, N, sex )
+            currentNode = self.addNode( personId, y, N, NObs, sex )
 
         return currentNode
 

@@ -1,10 +1,10 @@
-from AutosomalDistribution import generic2DParameters, sampleHyperGraphParameters
+from AutosomalDistribution import generic2DParameters
 from HHMMMessagePasser import HiddenMarkovModelMessagePasser
 from HHMMHG import MessagePassingHG
 from MMUpDown import MarkovModelMessagePasser
 
-def cycleExample1( hiddenStateSize=2, isHidden=True ):
-    hg = MessagePassingHG( hiddenStateSize )
+def cycleExample1( hiddenStateSize=2, obsSize=2, isHidden=True, initParams=True ):
+    hg = MessagePassingHG( N=hiddenStateSize, NObs=obsSize )
     n0 = hg.addNode( 0 )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
@@ -23,17 +23,18 @@ def cycleExample1( hiddenStateSize=2, isHidden=True ):
 
     hg.initialize()
     if( isHidden ):
-        parameters   = generic2DParameters( hg )
-        transFunc    = parameters[ 'transDist' ]
-        emissionFunc = parameters[ 'emissionDist' ]
-        rootFunc     = parameters[ 'rootDist' ]
-        hg.setParameters( transFunc, emissionFunc, rootFunc )
+        if( initParams ):
+            parameters   = generic2DParameters( hg )
+            transFunc    = parameters[ 'transDist' ]
+            emissionFunc = parameters[ 'emissionDist' ]
+            rootFunc     = parameters[ 'rootDist' ]
+            hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def cycleExample2( hiddenStateSize=2, isHidden=True ):
-    hg = MessagePassingHG( hiddenStateSize )
+def cycleExample2( hiddenStateSize=2, obsSize=2, isHidden=True, initParams=True ):
+    hg = MessagePassingHG( N=hiddenStateSize, NObs=obsSize )
     n1 = hg.addNode( 1 )
     n3 = hg.addNode( 3 )
     n4 = hg.addNode( 4 )
@@ -55,17 +56,18 @@ def cycleExample2( hiddenStateSize=2, isHidden=True ):
     hg.initialize()
 
     if( isHidden ):
-        parameters   = generic2DParameters( hg )
-        transFunc    = parameters[ 'transDist' ]
-        emissionFunc = parameters[ 'emissionDist' ]
-        rootFunc     = parameters[ 'rootDist' ]
-        hg.setParameters( transFunc, emissionFunc, rootFunc )
+        if( initParams ):
+            parameters   = generic2DParameters( hg )
+            transFunc    = parameters[ 'transDist' ]
+            emissionFunc = parameters[ 'emissionDist' ]
+            rootFunc     = parameters[ 'rootDist' ]
+            hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def cycleExample3( hiddenStateSize=2, isHidden=True ):
-    hg = MessagePassingHG( hiddenStateSize )
+def cycleExample3( hiddenStateSize=2, obsSize=2, isHidden=True, initParams=True ):
+    hg = MessagePassingHG( N=hiddenStateSize, NObs=obsSize )
     n0 = hg.addNode( 0 )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
@@ -93,17 +95,18 @@ def cycleExample3( hiddenStateSize=2, isHidden=True ):
     hg.initialize()
 
     if( isHidden ):
-        parameters   = generic2DParameters( hg )
-        transFunc    = parameters[ 'transDist' ]
-        emissionFunc = parameters[ 'emissionDist' ]
-        rootFunc     = parameters[ 'rootDist' ]
-        hg.setParameters( transFunc, emissionFunc, rootFunc )
+        if( initParams ):
+            parameters   = generic2DParameters( hg )
+            transFunc    = parameters[ 'transDist' ]
+            emissionFunc = parameters[ 'emissionDist' ]
+            rootFunc     = parameters[ 'rootDist' ]
+            hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def cycleExample4( hiddenStateSize=2, isHidden=True ):
-    hg = MessagePassingHG( hiddenStateSize )
+def cycleExample4( hiddenStateSize=2, obsSize=2, isHidden=True, initParams=True ):
+    hg = MessagePassingHG( N=hiddenStateSize, NObs=obsSize )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
     n4 = hg.addNode( 4 )
@@ -125,17 +128,18 @@ def cycleExample4( hiddenStateSize=2, isHidden=True ):
     hg.initialize()
 
     if( isHidden ):
-        parameters   = generic2DParameters( hg )
-        transFunc    = parameters[ 'transDist' ]
-        emissionFunc = parameters[ 'emissionDist' ]
-        rootFunc     = parameters[ 'rootDist' ]
-        hg.setParameters( transFunc, emissionFunc, rootFunc )
+        if( initParams ):
+            parameters   = generic2DParameters( hg )
+            transFunc    = parameters[ 'transDist' ]
+            emissionFunc = parameters[ 'emissionDist' ]
+            rootFunc     = parameters[ 'rootDist' ]
+            hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def cycleExample5( hiddenStateSize=2, isHidden=True ):
-    hg = MessagePassingHG( hiddenStateSize )
+def cycleExample5( hiddenStateSize=2, obsSize=2, isHidden=True, initParams=True ):
+    hg = MessagePassingHG( N=hiddenStateSize, NObs=obsSize )
     n0 = hg.addNode( 0 )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
@@ -167,18 +171,19 @@ def cycleExample5( hiddenStateSize=2, isHidden=True ):
     hg.initialize()
 
     if( isHidden ):
-        parameters   = generic2DParameters( hg )
-        transFunc    = parameters[ 'transDist' ]
-        emissionFunc = parameters[ 'emissionDist' ]
-        rootFunc     = parameters[ 'rootDist' ]
-        hg.setParameters( transFunc, emissionFunc, rootFunc )
+        if( initParams ):
+            parameters   = generic2DParameters( hg )
+            transFunc    = parameters[ 'transDist' ]
+            emissionFunc = parameters[ 'emissionDist' ]
+            rootFunc     = parameters[ 'rootDist' ]
+            hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
 
-def cycleExample5_1( hiddenStateSize=2, isHidden=True ):
-    hg = MessagePassingHG( hiddenStateSize )
+def cycleExample5_1( hiddenStateSize=2, obsSize=2, isHidden=True, initParams=True ):
+    hg = MessagePassingHG( N=hiddenStateSize, NObs=obsSize )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
     n3 = hg.addNode( 3 )
@@ -207,17 +212,18 @@ def cycleExample5_1( hiddenStateSize=2, isHidden=True ):
     hg.initialize()
 
     if( isHidden ):
-        parameters   = generic2DParameters( hg )
-        transFunc    = parameters[ 'transDist' ]
-        emissionFunc = parameters[ 'emissionDist' ]
-        rootFunc     = parameters[ 'rootDist' ]
-        hg.setParameters( transFunc, emissionFunc, rootFunc )
+        if( initParams ):
+            parameters   = generic2DParameters( hg )
+            transFunc    = parameters[ 'transDist' ]
+            emissionFunc = parameters[ 'emissionDist' ]
+            rootFunc     = parameters[ 'rootDist' ]
+            hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def cycleExample6( hiddenStateSize=2, isHidden=True ):
-    hg = MessagePassingHG( hiddenStateSize )
+def cycleExample6( hiddenStateSize=2, obsSize=2, isHidden=True, initParams=True ):
+    hg = MessagePassingHG( N=hiddenStateSize, NObs=obsSize )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
     n3 = hg.addNode( 3 )
@@ -233,17 +239,18 @@ def cycleExample6( hiddenStateSize=2, isHidden=True ):
     hg.initialize()
 
     if( isHidden ):
-        parameters   = generic2DParameters( hg )
-        transFunc    = parameters[ 'transDist' ]
-        emissionFunc = parameters[ 'emissionDist' ]
-        rootFunc     = parameters[ 'rootDist' ]
-        hg.setParameters( transFunc, emissionFunc, rootFunc )
+        if( initParams ):
+            parameters   = generic2DParameters( hg )
+            transFunc    = parameters[ 'transDist' ]
+            emissionFunc = parameters[ 'emissionDist' ]
+            rootFunc     = parameters[ 'rootDist' ]
+            hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def cycleExample7( hiddenStateSize=2, isHidden=True ):
-    hg = MessagePassingHG( hiddenStateSize )
+def cycleExample7( hiddenStateSize=2, obsSize=2, isHidden=True, initParams=True ):
+    hg = MessagePassingHG( N=hiddenStateSize, NObs=obsSize )
     n0 = hg.addNode( 0 )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
@@ -267,17 +274,18 @@ def cycleExample7( hiddenStateSize=2, isHidden=True ):
     hg.initialize()
 
     if( isHidden ):
-        parameters   = generic2DParameters( hg )
-        transFunc    = parameters[ 'transDist' ]
-        emissionFunc = parameters[ 'emissionDist' ]
-        rootFunc     = parameters[ 'rootDist' ]
-        hg.setParameters( transFunc, emissionFunc, rootFunc )
+        if( initParams ):
+            parameters   = generic2DParameters( hg )
+            transFunc    = parameters[ 'transDist' ]
+            emissionFunc = parameters[ 'emissionDist' ]
+            rootFunc     = parameters[ 'rootDist' ]
+            hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def cycleExample8( hiddenStateSize=2, isHidden=True ):
-    hg = MessagePassingHG( hiddenStateSize )
+def cycleExample8( hiddenStateSize=2, obsSize=2, isHidden=True, initParams=True ):
+    hg = MessagePassingHG( N=hiddenStateSize, NObs=obsSize )
     n0 = hg.addNode( 0 )
     n2 = hg.addNode( 2 )
     n3 = hg.addNode( 3 )
@@ -294,17 +302,18 @@ def cycleExample8( hiddenStateSize=2, isHidden=True ):
     hg.initialize()
 
     if( isHidden ):
-        parameters   = generic2DParameters( hg )
-        transFunc    = parameters[ 'transDist' ]
-        emissionFunc = parameters[ 'emissionDist' ]
-        rootFunc     = parameters[ 'rootDist' ]
-        hg.setParameters( transFunc, emissionFunc, rootFunc )
+        if( initParams ):
+            parameters   = generic2DParameters( hg )
+            transFunc    = parameters[ 'transDist' ]
+            emissionFunc = parameters[ 'emissionDist' ]
+            rootFunc     = parameters[ 'rootDist' ]
+            hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def cycleExample9( hiddenStateSize=2, isHidden=True ):
-    hg = MessagePassingHG( hiddenStateSize )
+def cycleExample9( hiddenStateSize=2, obsSize=2, isHidden=True, initParams=True ):
+    hg = MessagePassingHG( N=hiddenStateSize, NObs=obsSize )
     n0 = hg.addNode( 0 )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
@@ -320,20 +329,21 @@ def cycleExample9( hiddenStateSize=2, isHidden=True ):
     hg.initialize()
 
     if( isHidden ):
-        parameters   = generic2DParameters( hg )
-        transFunc    = parameters[ 'transDist' ]
-        emissionFunc = parameters[ 'emissionDist' ]
-        rootFunc     = parameters[ 'rootDist' ]
-        hg.setParameters( transFunc, emissionFunc, rootFunc )
+        if( initParams ):
+            parameters   = generic2DParameters( hg )
+            transFunc    = parameters[ 'transDist' ]
+            emissionFunc = parameters[ 'emissionDist' ]
+            rootFunc     = parameters[ 'rootDist' ]
+            hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
 
-def cycleExample10( hiddenStateSize=2, isHidden=True ):
+def cycleExample10( hiddenStateSize=2, obsSize=2, isHidden=True, initParams=True ):
     # the current fbs algorithm makes this
     # disjoint!!!!
-    hg = MessagePassingHG( hiddenStateSize )
+    hg = MessagePassingHG( N=hiddenStateSize, NObs=obsSize )
     n0 = hg.addNode( 0 )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
@@ -401,18 +411,19 @@ def cycleExample10( hiddenStateSize=2, isHidden=True ):
     hg.initialize()
 
     if( isHidden ):
-        parameters   = generic2DParameters( hg )
-        transFunc    = parameters[ 'transDist' ]
-        emissionFunc = parameters[ 'emissionDist' ]
-        rootFunc     = parameters[ 'rootDist' ]
-        hg.setParameters( transFunc, emissionFunc, rootFunc )
+        if( initParams ):
+            parameters   = generic2DParameters( hg )
+            transFunc    = parameters[ 'transDist' ]
+            emissionFunc = parameters[ 'emissionDist' ]
+            rootFunc     = parameters[ 'rootDist' ]
+            hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
 
-def cycleExample11( hiddenStateSize=2, isHidden=True ):
-    hg = MessagePassingHG( hiddenStateSize )
+def cycleExample11( hiddenStateSize=2, obsSize=2, isHidden=True, initParams=True ):
+    hg = MessagePassingHG( N=hiddenStateSize, NObs=obsSize )
     n0 = hg.addNode( 0 )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
@@ -468,17 +479,18 @@ def cycleExample11( hiddenStateSize=2, isHidden=True ):
     hg.initialize()
 
     if( isHidden ):
-        parameters   = generic2DParameters( hg )
-        transFunc    = parameters[ 'transDist' ]
-        emissionFunc = parameters[ 'emissionDist' ]
-        rootFunc     = parameters[ 'rootDist' ]
-        hg.setParameters( transFunc, emissionFunc, rootFunc )
+        if( initParams ):
+            parameters   = generic2DParameters( hg )
+            transFunc    = parameters[ 'transDist' ]
+            emissionFunc = parameters[ 'emissionDist' ]
+            rootFunc     = parameters[ 'rootDist' ]
+            hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def cycleExample12( hiddenStateSize=2, isHidden=True ):
-    hg = MessagePassingHG( hiddenStateSize )
+def cycleExample12( hiddenStateSize=2, obsSize=2, isHidden=True, initParams=True ):
+    hg = MessagePassingHG( N=hiddenStateSize, NObs=obsSize )
     n0 = hg.addNode( 0 )
     n2 = hg.addNode( 2 )
     n3 = hg.addNode( 3 )
@@ -500,17 +512,18 @@ def cycleExample12( hiddenStateSize=2, isHidden=True ):
     hg.initialize()
 
     if( isHidden ):
-        parameters   = generic2DParameters( hg )
-        transFunc    = parameters[ 'transDist' ]
-        emissionFunc = parameters[ 'emissionDist' ]
-        rootFunc     = parameters[ 'rootDist' ]
-        hg.setParameters( transFunc, emissionFunc, rootFunc )
+        if( initParams ):
+            parameters   = generic2DParameters( hg )
+            transFunc    = parameters[ 'transDist' ]
+            emissionFunc = parameters[ 'emissionDist' ]
+            rootFunc     = parameters[ 'rootDist' ]
+            hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def disjointExample( hiddenStateSize=2, isHidden=True ):
-    hg = MessagePassingHG( hiddenStateSize )
+def disjointExample( hiddenStateSize=2, obsSize=2, isHidden=True, initParams=True ):
+    hg = MessagePassingHG( N=hiddenStateSize, NObs=obsSize )
 
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
@@ -543,17 +556,18 @@ def disjointExample( hiddenStateSize=2, isHidden=True ):
     hg.initialize()
 
     if( isHidden ):
-        parameters   = generic2DParameters( hg )
-        transFunc    = parameters[ 'transDist' ]
-        emissionFunc = parameters[ 'emissionDist' ]
-        rootFunc     = parameters[ 'rootDist' ]
-        hg.setParameters( transFunc, emissionFunc, rootFunc )
+        if( initParams ):
+            parameters   = generic2DParameters( hg )
+            transFunc    = parameters[ 'transDist' ]
+            emissionFunc = parameters[ 'emissionDist' ]
+            rootFunc     = parameters[ 'rootDist' ]
+            hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
 
-def nonCycle( hiddenStateSize=2, isHidden=True ):
-    hg = MessagePassingHG( hiddenStateSize )
+def nonCycle( hiddenStateSize=2, obsSize=2, isHidden=True, initParams=True ):
+    hg = MessagePassingHG( N=hiddenStateSize, NObs=obsSize )
     n0 = hg.addNode( 0 )
     n1 = hg.addNode( 1 )
     n2 = hg.addNode( 2 )
@@ -569,11 +583,35 @@ def nonCycle( hiddenStateSize=2, isHidden=True ):
     hg.initialize()
 
     if( isHidden ):
-        parameters   = generic2DParameters( hg )
-        transFunc    = parameters[ 'transDist' ]
-        emissionFunc = parameters[ 'emissionDist' ]
-        rootFunc     = parameters[ 'rootDist' ]
-        hg.setParameters( transFunc, emissionFunc, rootFunc )
+        if( initParams ):
+            parameters   = generic2DParameters( hg )
+            transFunc    = parameters[ 'transDist' ]
+            emissionFunc = parameters[ 'emissionDist' ]
+            rootFunc     = parameters[ 'rootDist' ]
+            hg.setParameters( transFunc, emissionFunc, rootFunc )
+    else:
+        msg = MarkovModelMessagePasser( hg, generic2DParameters )
+    return hg
+
+
+
+def cycleEasy( hiddenStateSize=2, obsSize=2, isHidden=True, initParams=True ):
+    hg = MessagePassingHG( N=hiddenStateSize, NObs=obsSize )
+    n0 = hg.addNode( 0 )
+    n1 = hg.addNode( 1 )
+    n2 = hg.addNode( 2 )
+
+    e0 = hg.addEdge( set( [ n0, n1 ] ), 0 )
+    e0.addChild( n2 )
+
+    hg.initialize()
+    if( isHidden ):
+        if( initParams ):
+            parameters   = generic2DParameters( hg )
+            transFunc    = parameters[ 'transDist' ]
+            emissionFunc = parameters[ 'emissionDist' ]
+            rootFunc     = parameters[ 'rootDist' ]
+            hg.setParameters( transFunc, emissionFunc, rootFunc )
     else:
         msg = MarkovModelMessagePasser( hg, generic2DParameters )
     return hg
