@@ -85,8 +85,7 @@ class BaseHyperGraph( object ):
         self._EdgeType = EdgeType
 
     def addNode( self, ID, *args ):
-        if( self._initialized ):
-            assert 0, 'Graph already initialized'
+        assert self._initialized == False, 'Graph already initialized'
         node = self._NodeType( *args )
         node._id = ID
         self._nodes.add( node )
@@ -131,7 +130,8 @@ class BaseHyperGraph( object ):
                 n.isLeaf = True
 
             if( n._upEdge is None and len( n._downEdges ) == 0 ):
-                assert 0, 'Node %s doesn\'t have an up or down edge!'%n
+                raise Exception('Node %s doesn\'t have an up or down edge!'%n)
+                # assert 0, 'Node %s doesn\'t have an up or down edge!'%n
 
         for n in self._nodes:
             n._parents = tuple( self.parentSort( n._parents ) )
@@ -141,10 +141,10 @@ class BaseHyperGraph( object ):
             e._children = tuple( sorted( e._children, key=lambda x:x._id ) )
 
             if( len( e._parents ) == 0 ):
-                print('Can\'t have an edge with no parents!!!!')
+                raise Exception('Can\'t have an edge with no parents!!!!')
 
             if( len( e._children ) == 0 ):
-                print('Can\'t have an edge with no children!!!!')
+                raise Exception('Can\'t have an edge with no children!!!!')
 
 
     def draw( self, render=True ):

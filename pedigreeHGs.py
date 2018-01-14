@@ -7,7 +7,7 @@ from PedigreeHypergraph import PedigreeHG
 import json
 import os
 
-def pedigreeExample( name ):
+def pedigreeExampleOldJSON( name ):
     pedigreeFolderName = '/Users/Eddie/kec-bot/app/pedigreeDataOLDBUTWORKS/'
 
     pedigreeNames = [ name ]
@@ -31,9 +31,8 @@ def pedigreeExample( name ):
 
     hg = allPedigrees[ name ]
 
-    # hg.initHyperParams( 'autosome', 'dominant', 1000 )
-    # parameters = sampleHyperGraphParameters( hg )
-    # hg.setParameters( parameters[ 'transDist' ], \
-    #                   parameters[ 'emissionDist' ], \
-    #                   parameters[ 'rootDist' ] )
     return hg
+
+def pedigreeExample( name ):
+
+    pedigreeFolderName = '.'

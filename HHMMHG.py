@@ -2,7 +2,6 @@ from HypergraphBase import BaseHyperGraph
 from HHMMNode import NodeForHMM
 from HHMMMessagePasser import HiddenMarkovModelMessagePasser
 import graphviz
-from HGTest import marginalizeTest
 import numpy as np
 from pyLogVar import LogVar
 from Distributions import Categorical
@@ -92,9 +91,6 @@ class MessagePassingHG( BaseHyperGraph ):
     def preprocess( self, feedbackSetIds ):
         self._msg.preprocess( feedbackSetIds )
 
-    def marginalizeTest( self, printStuff=False ):
-        marginalizeTest( self._msg, printStuff )
-
     def resample( self ):
         self.resampleGraphStates()
 
@@ -138,7 +134,7 @@ class MessagePassingHG( BaseHyperGraph ):
             if( len( node._parents ) == 0 ):
                 self.workspace *= LogVar( self._msg._pi( node, node.x ) )
             else:
-                X = tuple( [ n.x for n in self.parentSort( node._parents ) ] )
+                X = tuple( [ n.x for n in node._parents ] )
                 self.workspace *= LogVar( self._msg._trans( node._parents, node, X, node.x ) )
             self.workspace *= LogVar( self._msg._L( node, node.x ) )
 
@@ -177,7 +173,7 @@ class MessagePassingHG( BaseHyperGraph ):
                 probs = [ self._msg._pi( node, i ) for i in range( node.N ) ]
                 node.x = Categorical.sample( probs, normalized=True )
             else:
-                X = tuple( [ n.x for n in self.parentSort( node._parents ) ] )
+                X = tuple( [ n.x for n in node._parents ] )
                 probs = [ self._msg.conditionalParentChild( node, X, i ) for i in range( node.N ) ]
                 node.x = Categorical.sample( probs, normalized=False )
 
@@ -191,7 +187,7 @@ class MessagePassingHG( BaseHyperGraph ):
                 stateProbs = [ self._msg._pi( node, i ) for i in range( node.N ) ]
                 node.x = Categorical.sample( stateProbs, normalized=True )
             else:
-                X = tuple( [ n.x for n in self.parentSort( node._parents ) ] )
+                X = tuple( [ n.x for n in node._parents ] )
                 stateProbs = [ self._msg._trans( node._parents, node, X, i ) for i in range( node.N ) ]
                 node.x = Categorical.sample( stateProbs, normalized=True )
 
@@ -212,4 +208,21 @@ class MessagePassingHG( BaseHyperGraph ):
                 emissionProbs.append( self._msg._L( node, node.x ) )
             node.fakeY = Categorical.sample( emissionProbs, normalized=True )
 
+        self.graphIterate( nodeWork )
+
+    def countTransitions( self, accumulator ):
+        # Count the # of times each transition is used.
+        # Accumulator should be some function that defines
+        # its own count for each parent child combo
+
+        def nodeWork( node ):
+            if( len( node._parents ) > 0 ):
+                X = tuple( [ n.x for n in node._parents ] )
+                accumulator( node._parents, node, X, node.x )
+
+        self.graphIterate( nodeWork )
+
+    def countEmissions( self, accumulator ):
+        def nodeWork( node ):
+            accumulator( node, node.x )
         self.graphIterate( nodeWork )

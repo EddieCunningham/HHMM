@@ -5,24 +5,25 @@ from Distributions import Categorical
 import numpy as np
 from cycleDetector import identifyCycles
 
+import sys
 
-# This model assumes that the transition and emission distributions
-# are known.  The things that are resampled are the root distributions
-# and the latent states.
-class ExactMendelModel():
+class AutosomalMendelModel():
 
-    def __init__( self, graphs, parameters, rootHypers ):
+    def __init__( self, graphs, transHypers, emissionHypers, rootHypers ):
 
         self.graphs = graphs
+
+        self._transHypers = transHypers
+        self.transDists = []
+
+        self._emissionHypers = emissionHypers
+        self.emissionDists = []
 
         # assume all roots have same hyper parameters
         self._rootHypers = rootHypers
         self.rootDists = []
 
-        if( not self.checkParameters( parameters ) ):
-            assert 0, 'Something doesn\'t add to 1!'
-
-        self.initializeGraphParameters( **parameters )
+        self.initializeGraphParameters()
 
         # preprocess graphs
         for graph in self.graphs:
@@ -32,31 +33,25 @@ class ExactMendelModel():
             graph.preprocess( feedbackSetIds )
             graph.draw()
 
-        # self.resample()
-
-    def marginalizeTests( self ):
-        for graph in self.graphs:
-            graph.marginalizeTest( printStuff=False )
-
-    def checkParameters( self, parameters ):
-        A = parameters[ 'A' ]
-        L = parameters[ 'L' ]
-
-        # make sure that things sum to 1 the way we expect
-        if( not np.all( np.isclose( L.sum( axis=1 ), np.ones( L.shape[ 0 ] ) ) ) ):
-            return False
-
-        if( not np.all( np.isclose( A.sum( axis=2 ), np.ones( A.shape[ 0:2 ] ) ) ) ):
-            print(A.sum(axis=2))
-            print(np.ones(A.shape[0:2]))
-            assert 0
-            return False
-
-        return True
+        self.resample()
 
     # Closure so that to the graph the root distributions
     # look the same way as the transition and emission
     # pdf functions
+    def _transPdfClosure( self, graph ):
+
+        def transPdf( parents, child, X, i ):
+            assert parents[ 0 ].sex == 'female'
+            return self.transDists[ X[ 0 ] ][ X[ 1 ] ].pdf( i )
+
+        return transPdf
+
+    def _emissionPdfClosure( self, graph ):
+        def emissionPdf( person, i ):
+            return self.emissionDists[ i ].pdf( person.y )
+
+        return emissionPdf
+
     def _rootPdfClosure( self, graph ):
         roots = sorted( graph.roots )
         graphIndex = self.graphs.index( graph )
@@ -67,147 +62,136 @@ class ExactMendelModel():
 
         return rootPdf
 
-    def initializeGraphParameters( self, A, L ):
+    def initializeGraphParameters( self ):
 
-        self.A = A
-        self.L = L
+        # make the transition parameters
+        for matHyper in self._transHypers:
+            transDist = []
+            for transHyper in matHyper:
+                transDist.append( Categorical( alpha=transHyper ) )
+            self.transDists.append( transDist )
 
-        def transitionPdf( parents, child, X, i ):
-            return A[ X[ 0 ] ][ X[ 1 ] ][ i ]
+        # make the emission parameters
+        for emissionHyper in self._emissionHypers:
+            self.emissionDists.append( Categorical( alpha=emissionHyper ) )
 
-        def emissionPdf( person, i ):
-            return L[ i ][ person.y ]
+        for graph in self.graphs:
 
-        for k, graph in enumerate( self.graphs ):
-
-            rootDist = []
-            for root in sorted( graph.roots ):
-                rootDist.append( Categorical( alpha=self._rootHypers ) )
+            # make the root distribution parameters
+            rootDist = [ Categorical( alpha=self._rootHypers ) for root in sorted( graph.roots ) ]
             self.rootDists.append( rootDist )
 
-            rootPdfs = self._rootPdfClosure( graph )
-            graph.setParameters( transitionPdf, emissionPdf, rootPdfs )
+            transitionPdf = self._transPdfClosure( graph )
+            emissionPdf   = self._emissionPdfClosure( graph )
+            rootPdf       = self._rootPdfClosure( graph )
+            graph.setParameters( transitionPdf, emissionPdf, rootPdf )
 
     def useFakeY( self ):
         # use each person's fakeY so we don't override y
         def emissionPdf( person, i ):
-            return self.L[ i ][ person.fakeY ]
+            return self.emissionDists[ i ].pdf( person.fakeY )
 
         for graph in self.graphs:
             graph.setEmissionDist( emissionPdf )
+
+            # initialize the fake emissions
             graph.resampleEmissions()
 
     def useRealY( self ):
         def emissionPdf( person, i ):
-            return self.L[ i ][ person.y ]
+            return self.emissionDists[ i ].pdf( person.y )
 
         for graph in self.graphs:
             graph.setEmissionDist( emissionPdf )
 
+    def resampleTransitionDistribution( self ):
+        # Sample from P( A | X, Y, L, π )
+
+        N = len( self._transHypers )
+        obs = np.zeros( ( N, N, N ) )
+
+        def accumulator( parents, child, X, i ):
+            obs[ X[ 0 ] ][ X[ 1 ] ][ i ] += 1
+
+        for graph in self.graphs:
+            graph.countTransitions( accumulator )
+
+        for i, matHyper in enumerate( self._transHypers ):
+            for j, transHyper in enumerate( matHyper ):
+                self.transDists[ i ][ j ].resample( observations=obs[ i, j, : ] )
+
+    def resampleEmissionDistribution( self, trueEmissions=True ):
+        # Sample from P( L | X, Y, A, π )
+
+        N = len( self._emissionHypers )
+        for emissionHyper in self._emissionHypers:
+            M = len( emissionHyper )
+            break
+
+        obs = np.zeros( ( N, M ) )
+
+        if( trueEmissions ):
+            def accumulator( node, i ):
+                obs[ i ][ node.y ] += 1
+        else:
+            def accumulator( node, i ):
+                obs[ i ][ node.fakeY ] += 1
+
+        for graph in self.graphs:
+            graph.countEmissions( accumulator )
+
+        for i,emissionHyper in enumerate( self._emissionHypers ):
+            self.emissionDists[ i ].resample( observations=obs[ i, : ] )
+
     def resampleRootDistributions( self ):
-        # Sample from P( π | X, Y )
+        # Sample from P( π | X, Y, A, L )
         for i, graph in enumerate( self.graphs ):
             for j, root in enumerate( graph.roots ):
                 obs = np.zeros( root.N )
                 obs[ root.x ] = 1
-                # print('Root %s has N: %d and x: %d, and obs is %s'%(root, root.N, root.x, str(obs)))
                 self.rootDists[ i ][ j ].resample( observations=obs )
 
     def resampleGraphs( self ):
-        # Sample from P( X | π, Y )
-        for graph in self.graphs:
+        # Sample from P( X | θ, Y )
+
+        nGraphs = len( self.graphs )
+        for i, graph in enumerate( self.graphs ):
             graph.resampleGraphStates()
 
+            if( int( i / nGraphs * 100 ) % 10 == 0 ):
+                print( '.', end=' ' )
+                sys.stdout.flush()
+        print('\n')
+
     def resample( self ):
-        # Sample from P( X, π | Y )
+        # Sample from P( X, θ | Y )
+
         self.resampleGraphs()
+        self.resampleTransitionDistribution()
+        self.resampleEmissionDistribution()
         self.resampleRootDistributions()
 
-    def ratioTest( self ):
-        # P( Y | X, π ) / P( Y' | X, π ) =
-        # P( Y, X, π ) / P( Y', X, π )
+    def log_joint( self ):
+        # P( Y, X, A, L, π )
 
-        self.resample()
-
-        self.useFakeY()
-
-        log_cond1 = 0
-        log_joint1 = 0
-        for i, graph in enumerate( self.graphs ):
-            log_cond1  += graph.log_likelihood()
-            log_joint1 += graph.log_joint()
-            for j, root in enumerate( graph.roots ):
-                log_joint1 += self.rootDists[ i ][ j ].log_likelihood()
+        val = 0
 
         for graph in self.graphs:
-            graph.resampleEmissions()
 
-        log_cond2 = 0
-        log_joint2 = 0
-        for i, graph in enumerate( self.graphs ):
-            log_cond2  += graph.log_likelihood()
-            log_joint2 += graph.log_joint()
+            # P( Y, X | A, L, π )
+            val += graph.log_joint()
+
+            # P( π )
             for j, root in enumerate( graph.roots ):
-                log_joint2 += self.rootDists[ i ][ j ].log_likelihood()
+                val += self.rootDists[ i ][ j ].log_likelihood()
 
+        # P( A )
+        for i, matHyper in enumerate( self._transHypers ):
+            for j, transHyper in enumerate( matHyper ):
+                val += self.transDists[ i ][ j ].log_likelihood()
 
-        if( not np.isclose( log_cond1 - log_cond2, log_joint1 - log_joint2 ) ):
-            print('Failed the ratio test!')
-            print('log P( X, π | Y ) = %f'%log_cond1)
-            print('log P( X\', π\' | Y ) = %f'%log_cond2)
-            print('\n')
-            print('log P( X, π, Y ) = %f'%log_joint1)
-            print('log P( X\', π\', Y ) = %f'%log_joint2)
-            print('\n')
-            print('log_cond1 - log_cond2 = %f'%( log_cond1 - log_cond2 ))
-            print('log_joint1 - log_joint2 = %f'%( log_joint1 - log_joint2 ))
-            print('\n')
-            assert 0
+        # P( L )
+        for i, emissionHyper in enumerate( self._emissionHypers ):
+            val += self.emissionDists[ i ].log_likelihood()
 
-        print('Passed a ratio test!')
-        return log_cond1 - log_cond2 == log_joint1 - log_joint2
-
-    def _forwardSample( self ):
-        # Sample from P( π )
-        for i, graph in enumerate( self.graphs ):
-            for j, root in enumerate( graph.roots ):
-                self.rootDist[ i ][ j ].resample()
-
-        # Sample from P( X, Y | π )
-        for graph in self.graphs:
-            graph.resampleGraphStatesAndEmissions()
-
-    def _fullGibbsSample( self ):
-        # Sample from P( X, π | Y )
-        self.resample()
-
-        # Sample from P( Y | X, π )
-        for graph in self.graphs:
-            graph.resampleEmissions()
-
-    def _collectStats( self ):
-        assert 0
-
-    def _compareStats( self, stats1, stats2 ):
-        assert 0
-
-    def gewekeTest( self ):
-        # Sample from P( X, π, Y ) using two methods:
-        #  1. P( π ), then P( X, Y | π )
-        #  2. P( X, π | Y ), then P( Y | X, π )
-        # And make sure that they agree
-
-
-        nIters = 1000
-
-        stats1 = []
-        for i in range( nIters ):
-            self._forwardSample()
-            stats1.append( self._collectStats() )
-
-        stats2 = []
-        for i in range( nIters ):
-            self._fullGibbsSample()
-            stats2.append( self._collectStats() )
-
-        self._compareStats( stats1, stats2 )
+        return val

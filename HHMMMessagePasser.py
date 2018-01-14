@@ -19,6 +19,8 @@ class HiddenMarkovModelMessagePasser():
 
         self._srp = {}
 
+        self.initialized = False
+
     def setParameters( self, transFunc, emissionFunc, rootFunc ):
 
         self._trans = transFunc
@@ -43,6 +45,8 @@ class HiddenMarkovModelMessagePasser():
         for node in self.nodes:
             if node in self._feedbackSet:
                 node.inFBS = True
+
+        self.initialized = True
 
     """ -------------------------------------------------------------------------------------- """
 
@@ -341,6 +345,9 @@ class HiddenMarkovModelMessagePasser():
                 total += node._fullJoint[ i ]
 
     def getStats( self ):
+
+        if( self.initialized == False ):
+            assert 0, 'Need to call preprocess with the feedback set'
 
         for node in self.nodes:
             node.reset()

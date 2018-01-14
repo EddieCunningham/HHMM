@@ -193,26 +193,19 @@ class NodeForHMM( NodeBase ):
         assert depth < 8
 
         b_ = LogVar( 0 )
-        if( len( self._downEdges ) > 0 ):
 
-            for k in self._getN( self, conditioning ):
+        for k in self._getN( self, conditioning ):
 
-                """ Prob of this sibling """
-                _prod = LogVar( self._trans( self._parents, self, X, k ) ) * self._L( self, k )
+            """ Prob of this sibling """
+            _prod = LogVar( self._trans( self._parents, self, X, k ) ) * self._L( self, k )
 
-                """ Branch down from sibling """
-                for e in self._downEdges:
-                    _prod *= self.getV( e, k, conditioning, depth )
+            """ Branch down from sibling """
+            for e in self._downEdges:
+                _prod *= self.getV( e, k, conditioning, depth )
 
-                b_ += _prod
+            b_ += _prod
 
-            self._bDeps |= self._VDeps
-        else:
-
-            for k in self._getN( self, conditioning ):
-
-                """ Prob of this sibling """
-                b_ += self._trans( self._parents, self, X, k ) * self._L( self, k )
+        self._bDeps |= self._VDeps
 
         return b_
 
@@ -273,7 +266,6 @@ class NodeForHMM( NodeBase ):
             key = self.UKey( conditioning )
 
             self.setUVal( i, key, uVal )
-
 
         else:
             uVal = self.getUVal( i, key )
@@ -380,7 +372,6 @@ class NodeForHMM( NodeBase ):
             # revise the key
             key = self.VKey( conditioning )
 
-
             self.setVVal( edge, i, key, vVal )
 
         else:
@@ -434,15 +425,17 @@ class NodeForHMM( NodeBase ):
             return True
 
         mates = [ x for x in edge._parents if x != self ]
+        selfIndex = edge._parents.index( self )
 
         v = LogVar( 0 )
-        for X_, X in zip( itertools.product( *[ self._getN( m, conditioning ) for m in mates ] ), \
-            itertools.product( *[ self._getN( m, conditioning ) if m != self else [ i ] for m in edge._parents ] ) ):
+        for X_ in itertools.product( *[ self._getN( m, conditioning ) for m in mates ] ):
 
             for mate, j in zip( mates, X_ ):
 
                 if( mate.aReady( edge, j, conditioning ) == False ):
                     return False
+
+            X = tuple( list( X_[ :selfIndex ] ) + [ i ] + list( X_[ selfIndex: ] ) )
 
             for child in edge._children:
                 if( child.bReady( X, conditioning ) == False ):

@@ -11,7 +11,9 @@ def isclose( a, b, rel_tol=1e-15, abs_tol=0.0 ):
         return False
     return abs( a-b ) < 1e-8
 
-def marginalizeTest( messagePasser, printStuff=False ):
+def marginalizeTest( graph, printStuff=False ):
+
+    messagePasser = graph._msg
 
     messagePasser.getStats()
     allFailures = []

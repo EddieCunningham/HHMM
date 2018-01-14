@@ -33,7 +33,7 @@ def marginalizationTests():
     # HMMMargTest( cycleExample8( isHidden=True ) )
     # HMMMargTest( cycleExample9( isHidden=True ) )
     # HMMMargTest( cycleExample12( isHidden=True ) )
-    HMMMargTest( pedigreeExample( '3818J' ) )
+    HMMMargTest( pedigreeExampleOldJSON( '3818J' ) )
     # HMMMargTest( cycleExample6( isHidden=True ) )
 
     # These take forever to test!
