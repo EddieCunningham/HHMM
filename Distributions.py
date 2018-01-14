@@ -65,6 +65,10 @@ class Categorical():
     def log_likelihood( self ):
         return self._prior.logpdf( self._probs )
 
+    def log_posterior( self, observations ):
+        newAlpha = self.alpha + observations
+        return Dirichlet( newAlpha ).logpdf( self._probs )
+
     @staticmethod
     def sample( probs, normalized=False ):
 
