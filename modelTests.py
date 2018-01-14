@@ -4,8 +4,6 @@ import numpy as np
 from exampleHG import *
 from mcmcTests import ratioTest, marginalizeTests
 
-
-
 from PedigreeHypergraph import PedigreeHG
 
 graphs = []
@@ -13,7 +11,12 @@ graphs = []
 goodPedigrees = 0
 badPedigrees = 0
 
-dataFolder = 'Pedigrees_JSON'
+
+IPMap = { 'AD' : 0, 'AR' : 1, 'XL' : 2, 'M' : 3 }
+nIPGood = np.zeros( 4 )
+nIP = np.zeros( 4 )
+
+dataFolder = 'Pedigrees_JSON_Fixed_Label'
 for filename in os.listdir( dataFolder ):
 
     try:
@@ -23,13 +26,16 @@ for filename in os.listdir( dataFolder ):
             data = json.loads( json.load( data_file ) )
 
         pedigree = Pedigree( data )
+        nIP[ IPMap[ pedigree.inheritancePattern ] ] += 1
 
         hg = PedigreeHG( filename )
         hg.initialize( pedigree )
 
-        print( 'Done with %s'%filename )
+        print( 'Done with %s (%s)'%( filename, pedigree.inheritancePattern ) )
 
         goodPedigrees += 1
+
+        nIPGood[ IPMap[ pedigree.inheritancePattern ] ] += 1
 
         graphs.append( hg )
 
@@ -42,6 +48,9 @@ for filename in os.listdir( dataFolder ):
 
 print('Good: %d'%goodPedigrees)
 print('Bad: %d'%badPedigrees)
+
+print('AD: %d, AR: %d, XL: %d, M: %d'%( nIP[ 0 ], nIP[ 1 ], nIP[ 2 ], nIP[ 3 ] ) )
+print('AD: %d, AR: %d, XL: %d, M: %d'%( nIPGood[ 0 ], nIPGood[ 1 ], nIPGood[ 2 ], nIPGood[ 3 ] ) )
 
 
 

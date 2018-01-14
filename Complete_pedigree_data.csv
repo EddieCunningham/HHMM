@@ -1,0 +1,579 @@
+Patient ID,Gene,Inheritance Pattern,Source,Correct?,Digitizer,Notes for Issues,Notes for solution,Date of pedigree photo,Pedigree photo filename,JSON filename,Mbox filename(eyeGene)
+1011MB,ABCA4,AR,KEC,Y,Ben,,,summer 2017,1011MB.JPG,1011MB.json,
+1022AS,CNGB3,AR,KEC,Y,Ben,,,summer 2017,1022AS.JPG,1022AS.json,
+1036RC,CNGB3,AR,KEC,Y,Ben,,,summer 2017,1036RC.JPG,1036RC.json,
+1038CG,XLRS1,XL,KEC,Y,Ben,Is RS a valid disease,yes it is a disease,summer 2017,1038CG.JPG,1038CG.json,
+1044IO,CNGA3,AR,KEC,Y,Ben,There are two different shadings but it says similar issue. Should I mark the same?,mark similar as unknown,summer 2017,1044IO.JPG,1044IO.json,
+1046DA,RP1,AD,KEC,Y,Ben,,,summer 2017,1046DA.JPG,1046DA.json,
+1071MP,Rho,AD,KEC,N,Ben,old one won't load. looking into issue after finishing others,,summer 2017,1071MP.JPG,1071MP.json,
+1075NP,CNGA3,AR,KEC,Y,Ben,,,summer 2017,1075NP.JPG,1075NP.json,
+1079JM,ABCA4,AR,KEC,Y,Ben,,,summer 2017,1079JM.JPG,1079JM.json,
+1083BF,ABCA4,AR,KEC,Y,Ben,,,summer 2017,1083BF.JPG,1083BF.json,
+1084LN,EFEMP1,AD,KEC,Y,Ben,,,2016,1084LN.JPG,1084LN.json,
+1089JB,XLRS1,XL,KEC,Y,Ben,,,summer 2017,1089JB.JPG,1089JB.json,
+164KD,ABCA4,AR,KEC,Y,Ben,,,summer 2017,164KD.JPG,164KD.json,
+167MW,ABCA4,AR,KEC,Y,Ben,Should I put similar to stargardt or just stargardt?,count that as an eye disease,summer 2017,167MW.JPG,167MW.json,
+180AB,LCA5,AR,KEC,S,Ben,"No current pedigree, picture is kind of weird, there may have been reason I did not make pedigree before",,summer 2017,180AB.JPG,180AB.json,
+189DC,Rho,AD,KEC,Y,Ben,,,summer 2017,189DC.JPG,189DC.json,
+2003PB,ABCA4,AR,KEC,Y,Ben,,,summer 2017,2003PB.JPG,2003PB.json,
+2016CH,ABCA4,AR,KEC,Y,Ben,,,summer 2017,2016CH.JPG,2016CH.json,
+2018LM,OPN1LW,XL,KEC,Y,Ben,,,summer 2017,2018LM.JPG,2018LM.json,
+2020MH,CTRP5,AD,KEC,S,Ben,"no digital pedigree, I beleive this was one that Dana said was too messy",Two shading,summer 2017,2020MH.JPG,2020MH.json,
+2021LH,CTRP5,AD,KEC,S,Ben,"no digital pedigree, I beleive this was one that Dana said was too messy",Two shading,summer 2017,2021LH.JPG,2021LH.json,
+2042JD,CNGB3,AR,KEC,Y,Ben,,,2016,2042JD.JPG,2042JD.json,
+2065GE,RPGR (RP3),XL,KEC,Y,Ben,,,2016,2065GE.JPG,2065GE.json,
+2068AP,RPGR (RP3),XL,KEC,Y,Ben,,,summer 2017,2068AP.JPG,2068AP.json,
+2079NC,Rho,AD,KEC,Y,Ben,,,summer 2017,2079NC.JPG,2079NC.json,
+208CM,ABCA4,AR,KEC,Y,Ben,,,summer 2017,208CM.JPG,208CM.json,
+2093SA,ABCA4,AR,KEC,Y,Ben,same as 2094KA,,summer 2017,2093SA.JPG,2093SA.json,
+2094KA,ABCA4,AR,KEC,Y,Ben,,,2016,2094KA.JPG,2094KA.json,
+235TL,ABCA4,AR,KEC,Y,Ben,,,2016,235TL.JPG,235TL.json,
+249SB,WDR19,AR,KEC,Y,Ben,,,2016,249SB.JPG,249SB.json,
+253BW,ABCA4,AR,KEC,Y,Ben,,,summer 2017,253BW.JPG,253BW.json,
+260MG,CTRP5,AD,KEC,Y,Ben,,,summer 2017,260MG.JPG,260MG.json,
+277DP,RPGR (RP3),XL,KEC,Y,Ben,,,2016,277DP.JPG,277DP.json,
+3005CV,ABCA4,AR,KEC,Y,Ben,,,summer 2017,3005CV.JPG,3005CV.json,
+3007TR,ABCA4,AR,KEC,Y,Ben,,,summer 2017,3007TR.JPG,3007TR.json,
+3008ML,ABCA4,AR,KEC,Y,Ben,,,summer 2017,3008ML.JPG,3008ML.json,
+3009DD,IMPDH1,AD,KEC,Y,Ben,,,summer 2017,3009DD.JPG,3009DD.json,
+3011JB,ABCA4,AR,KEC,Y,Ben,I think it says one has MAc Degen and stargardt but is shaded with only one,,summer 2017,3011JB.JPG,3011JB.json,
+302KW,CHM,XL,KEC,Y,Ben,,,2016,302KW.JPG,302KW.json,
+3045RK,ABCA4,AR,KEC,Y,Ben,,,summer 2017,3045RK.JPG,3045RK.json,
+3055CG,ABCA4,AR,KEC,Y,Ben,,,summer 2017,3055CG.JPG,3055CG.json,
+3065BB,ABCA4,AR,KEC,Y,Ben,,,summer 2017,3065BB.JPG,3065BB.json,
+3075EZ,TOPORS,AD,KEC,Y,Ben,has two proband arrows,Neither of them are true proband. The male between them is the proband,summer 2017,3075EZ.JPG,3075EZ.json,
+3235JW,RDS,AD,KEC,Y,Ben,"shading is a bit weird, i think current pedigree is correct",,2016,3235JW.JPG,3235JW.json,
+3239PB,RPGR (RP3),XL,KEC,Y,Ben,changed name from BP to PB,,2016,3239PB.JPG,3239PB.json,
+3420MZ,SNRP200,AD,KEC,Y,Ben,,,2016,3420MZ.JPG,3420MZ.json,
+3464DF,ABCA4,AR,KEC,Y,Ben,,,2016,3464DF.JPG,3464DF.json,
+3638NW,RDS,AD,KEC,Y,Ben,Other relative has same label for disease but is not shaded,The RA is no eye disease,2016,3638NW.JPG,3638NW.json,
+3729MM,TIMP3,AD,KEC,Y,Ben,,,2016,3729MM.JPG,3729MM.json,
+379RF,PROM1,AD,KEC,Y,Ben,Can't tell if ancestors have same shading or slightly different. Current version has them marked as different,,2016,379RF.JPG,379RF.json,
+3843AH,PDE6C,AR,KEC,N,Ben,The current digitized version I have is completely different from picture,I think we should just abandon it.,2016,3843AH.JPG,3843AH.json,
+3903KA,RPGR (RP3),XL,KEC,Y,Ben,,,2016,3903KA.JPG,3903KA.json,
+3919MR,USH2A,AR,KEC,Y,Ben,,,2016,3919MR.JPG,3919MR.json,
+397JG,EYS,AR,KEC,Y,Ben,,,2016,397JG.JPG,397JG.json,
+404KH,RPGRIP1,AR,KEC,Y,Ben,,,2016,404KH.JPG,404KH.json,
+4196KP,CNGB3,AR,KEC,Y,Ben,,,2016,4196KP.JPG,4196KP.json,
+4207JN,GPR98,AR,KEC,Y,Ben,,,2016,4207JN.JPG,4207JN.json,
+4358DS,ABCA4,AR,KEC,Y,Ben,,,2016,4358DS.JPG,4358DS.json,
+4561ER,RPGR (RP3),XL,KEC,Y,Ben,really weird and hard to read. Can't tell proband,bottom Left male is the proband,2016,4561ER.JPG,4561ER.json,
+464RR,no mutation/negative mutation in exon 8,other,KEC,Y,Ben,,,2016,464RR.JPG,464RR.json,
+4660FF,RDS,AD,KEC,Y,Ben,Disease labels are not consistent with shadings,only proband is for sure. The result are unknown,2016,4660FF.JPG,4660FF.json,
+4776EW,ABCA4,AR,KEC,Y,Ben,,,2016,4776EW.JPG,4776EW.json,
+4789AK,ABCA4,AR,KEC,Y,Ben,no shading,count proband as full shading. And count Mac degen as light shading,2016,4789AK.JPG,4789AK.json,
+4954DK,Rho,AD,KEC,Y,Ben,two probands,the one on the right,2016,4954DK.JPG,4954DK.json,
+4978SS,RP1,AD,KEC,Y,Ben,,,2016,4978SS.JPG,4978SS.json,
+4982RL,EFEMP1,AD,KEC,Y,Ben,,,2016,4982RL.JPG,4982RL.json,
+5867KA,Rho,AD,KEC,Y,Ben,,,2016,5867KA.JPG,5867KA.json,
+928DW,Rho,AD,KEC,Y,Ben,"has two arrows, one of ancestors has mac gen and RP, is this the disease they are specifying for everyone, or is the disease not stated",,summer 2017,928DW.JPG,928DW.json,
+3086GA,Bestrophin VMD2,AD,KEC,Y,Binghao,noticed at birth?,onset = 0,summer 2017,3086GA.JPG,3086GA.json,
+3113GT,ABCA4,AR,KEC,Y,Binghao,,,summer 2017,3113GT.JPG,3113GT.json,
+316CD,CHM,XL,KEC,Y,Binghao,,,summer 2017,316CD.JPG,316CD.json,
+3183DG,Rho,AD,KEC,Y,Binghao,half shaded?,,summer 2017,3183DG.JPG,3183DG.json,
+3197AC,ABCA4,AR,KEC,Y,Binghao,,,summer 2017,3197AC.JPG,3197AC.json,
+3200BK,RDS,AD,KEC,Y,Binghao,only 1 eye -> asymmetric?,yes it is asymmetric,summer 2017,3200BK.JPG,3200BK.json,
+3203NZ,TOPORS,AD,KEC,Y,Binghao,"two probands, NB@20 -> onset?","neither, the proband is the 53 years old male on the left, dark shaded; onset = 20",summer 2017,3203NZ.JPG,3203NZ.json,
+3216LP,Rho,AD,KEC,Y,Binghao,,,summer 2017,3216LP.JPG,3216LP.json,
+3236RL,GPR98,AR,KEC,Y,Binghao,,,summer 2017,3236RL.JPG,3236RL.json,
+3257JH,CRB1,AR,KEC,Y,Binghao,"no json, no proband",the one dark shaded,summer 2017,3257JH.JPG,3257JH.json,
+3261MM,PRPF31(RP11),AD,KEC,Y,Binghao,,,summer 2017,3261MM.JPG,3261MM.json,
+3267NF,ABCA4,AR,KEC,Y,Binghao,"no proband, central vision loss @ -> onset?",the dark shaded 8 years old girl on the left; onset = 7; childhood =7,summer 2017,3267NF.JPG,3267NF.json,
+3287SK,ABCA4,AR,KEC,Y,Binghao,,,summer 2017,3287SK.JPG,3287SK.json,
+3308WM,MYO7A,AR,KEC,Y,Binghao,,,summer 2017,3308WM.JPG,3308WM.json,
+3318SO,Bestrophin VMD2,AD,KEC,N,Binghao,no proband,not found in the profile room,summer 2017,3318SO.JPG,3318SO.json,
+331BB,CNGB3,AR,KEC,Y,Binghao,,,summer 2017,331BB.JPG,331BB.json,
+3359RG,XLRS1,XL,KEC,Y,Binghao,dxed. child,child=7,summer 2017,3359RG.JPG,3359RG.json,
+3360JG,ABCA4,AR,KEC,Y,Binghao,,,summer 2017,3360JG.JPG,3360JG.json,
+3379KS,Rho,AD,KEC,Y,Binghao,"no json, messy shapes",,summer 2017,3379KS.JPG,3379KS.json,
+3427NF,ABCA4,AR,KEC,Y,Binghao,same as 3267NF,the girl on the right,summer 2017,3427NF.JPG,3427NF.json,
+345JH,ABCA4,AR,KEC,Y,Binghao,,,summer 2017,345JH.JPG,345JH.json,
+346GT,USH2A,AR,KEC,Y,Binghao,"no proband, no json, cataracts quarter shaded?","count the quarter shading as unknown, the proband is the male on the left, dark shaded",summer 2017,346GT.JPG,346GT.json,
+3489ZM,CHM,XL,KEC,Y,Binghao,"no proband, no json, mac deg @ 60s no shading",dont count the mac degen 60s; 15 years old boy on the left,summer 2017,3489ZM.JPG,3489ZM.json,
+3490IM,CHM,XL,KEC,Y,Binghao,same as 3489ZM,,summer 2017,3490IM.JPG,3490IM.json,
+3507AA,VMD2,AD,KEC,Y,Binghao,cataracts?,,summer 2017,3507AA.JPG,3507AA.json,
+3515JA,VMD2,AD,KEC,Y,Binghao,,,summer 2017,3515JA.JPG,3515JA.json,
+357PF,GPR98,AR,KEC,Y,Binghao,,,summer 2017,357PF.JPG,357PF.json,
+3605JG,CHM,XL,KEC,Y,Binghao,,,summer 2017,3605JG.JPG,3605JG.json,
+3657DS,ABCA4,AR,KEC,Y,Binghao,"mac degeneration, late 60s shaded",don't count the late 60s mac degeneration,summer 2017,3657DS.JPG,3657DS.json,
+3672DW,RP1,AD,KEC,Y,Binghao,totally blind @30 -> onset?,,summer 2017,3672DW.JPG,3672DW.json,
+370JF,RP1,AD,KEC,Y,Binghao,,the male who is 75 years old on the right side,summer 2017,370JF.JPG,370JF.json,
+371KD,RP1,AD,KEC,Y,Binghao,same as 370JF,the male who is 45 years old on the right side,summer 2017,371KD.JPG,371KD.json,
+3720AL,BEST1,AR,KEC,,Binghao,"no json, no proband, messy",the proband is the shaded 37 years old female,summer 2017,3720AL.JPG,3720AL.json,
+3723JD,CNGA3,AR,KEC,Y,Binghao,doesn't count no shadings?,,summer 2017,3723JD.JPG,3723JD.json,
+3726LN,IMPDH3,AD,KEC,Y,Binghao,,,summer 2017,3726LN.JPG,3726LN.json,
+5013GJ,ABCA4,AR,KEC,Y,Binghao,,,2016,5013GJ.JPG,5013GJ.json,
+5035KK,ABCA4,AR,KEC,Y,Binghao,,,2016,5035KK.JPG,5035KK.json,
+5045DH,RDS,AD,KEC,Y,Binghao,,,2016,5045DH.JPG,5045DH.json,
+5092AD,CERKL,AR,KEC,Y,Binghao,,,2016,5092AD.JPG,5092AD.json,
+5238JB,RDS,AD,KEC,Y,Binghao,,,2016,5238JB.JPG,5238JB.json,
+5263TS,RDS,AD,KEC,Y,Binghao,,,2016,5263TS.JPG,5263TS.json,
+5273BR,Rho,AD,KEC,Y,Binghao,,,2016,5273BR.JPG,5273BR.json,
+5378LB,VMD2,AR,KEC,,Binghao,"confusing name with 5387LB (1/4 shaded), cannot find the picture",only count the proband. neither of them are eye disease,2016,5378LB.JPG,5378LB.json,
+5393JR,RDS,AD,KEC,Y,Binghao,,,2016,5393JR.JPG,5393JR.json,
+5415RS,EYS,AR,KEC,Y,Binghao,,,2016,5415RS.JPG,5415RS.json,
+5500MB,RPGR (RP3),XL,KEC,Y,Binghao,,,2016,5500MB.JPG,5500MB.json,
+5512TN,ABCA4,AR,KEC,Y,Binghao,two probands,"neither, the proband is the one right to them",2016,5512TN.JPG,5512TN.json,
+5571JF,RDS,AD,KEC,Y,Binghao,vision problems-60s -> onset?,yes onset is 60s,2016,5571JF.JPG,5571JF.json,
+5633JK,Rho,AD,KEC,Y,Binghao,,,2016,5633JK.JPG,5633JK.json,
+5665PB,RDS,AD,KEC,Y,Binghao,,,2016,5665PB.JPG,5665PB.json,
+5694JL,GPR98,AR,KEC,Y,Binghao,proband disease is hearing loss?,,2016,5694JL.JPG,5694JL.json,
+5697MS,USH2A,AR,KEC,Y,Binghao,hearing loss?,leave it. only count proband as eye disease.,2016,5697MS.JPG,5697MS.json,
+5712CS,Rho,AD,KEC,Y,Binghao,peripheral vision problems -40s; peripheral vision problems 6-8yrs ago,,2016,5712CS.JPG,5712CS.json,
+5713BS,Rho,AD,KEC,Y,Binghao,same as 5712CS,,2016,5713BS.JPG,5713BS.json,
+5748BB,RPE65,AR,KEC,Y,Binghao,,,2016,5748BB.JPG,5748BB.json,
+5749KR,ABCA4,AR,KEC,Y,Binghao,unclear disease and dx,dont count the light shaded two,2016,5749KR.JPG,5749KR.json,
+5777AH,USH2A,AR,KEC,Y,Binghao,,,2016,5777AH.JPG,5777AH.json,
+5783CC,RDS,AD,KEC,Y,Binghao,"vision loss, blind -> onset?",blind onset = 50; vision loss onset = 50,2016,5783CC.JPG,5783CC.json,
+5793KB,XLRS1,XL,KEC,Y,Binghao,not sure about unknown disease,discard the army one,2016,5793KB.JPG,5793KB.json,
+5808SL,RP1,AD,KEC,Y,Binghao,peripheral vision problems@13,,2016,5808SL.JPG,5808SL.json,
+5833TK,RPGR (RP3),XL,KEC,Y,Binghao,,,2016,5833TK.JPG,5833TK.json,
+5855MO,Rho,AD,KEC,Y,Binghao,night vision problems at least 5 yrs -> onset?,,2016,5855MO.JPG,5855MO.json,
+5892JB,RDS,AD,KEC,Y,Binghao,,,2016,5892JB.JPG,5892JB.json,
+965MK,PROM1,AR,KEC,Y,Binghao,vision problem in 20s -> onset?,,summer 2017,965MK.JPG,965MK.json,
+991KH,Rho,AD,KEC,Y,Binghao,,,summer 2017,991KH.JPG,991KH.json,
+992CK,CHM,XL,KEC,Y,Binghao,"no json, no proband",the rightest male with all black shading,summer 2017,992CK.JPG,992CK.json,
+372KW,KCNV2,AR,KEC,Y,Jason,,,summer 2017,372KW.JPG,372KW.json,
+3742VA,ABCA4,AR,KEC,Y,Jason,,,summer 2017,3742VA.JPG,3742VA.json,
+374CR,Rho,AD,KEC,Y,Jason,,,summer 2017,374CR.JPG,374CR.json,
+3757MR,XLRS1,XL,KEC,Y,Jason,,,summer 2017,3757MR.JPG,3757MR.json,
+377LP,CHM,XL,KEC,Y,Jason,Proband not displayed on pedigree picture,the boy on the bottom left,summer 2017,377LP.JPG,377LP.json,
+3848CB,CNGB3,AR,KEC,Y,Jason,,,summer 2017,3848CB.JPG,3848CB.json,
+384TD,RP2,XL,KEC,Y,Jason,,,summer 2017,384TD.JPG,384TD.json,
+3861RS,AIPL1,AR,KEC,Y,Jason,,,summer 2017,3861RS.JPG,3861RS.json,
+3867GB,CNGB3,AR,KEC,Y,Jason,,,summer 2017,3867GB.JPG,3867GB.json,
+387JS,ABCA4,AR,KEC,Y,Jason,,,summer 2017,387JS.JPG,387JS.json,
+3910VH,ABCA4,AR,KEC,Y,Jason,,,summer 2017,3910VH.JPG,3910VH.json,
+3930EM,Rho,AD,KEC,Y,Jason,,,summer 2017,3930EM.JPG,3930EM.json,
+3948DW,ELOVL4,AD,KEC,Y,Jason,,,summer 2017,3948DW.JPG,3948DW.json,
+3951WI,RP1,AD,KEC,Y,Jason,,,summer 2017,3951WI.JPG,3951WI.json,
+3962TD,RP1,AD,KEC,Y,Jason,,,summer 2017,3962TD.JPG,3962TD.json,
+396WP,Rho,AD,KEC,Y,Jason,,,summer 2017,396WP.JPG,396WP.json,
+4052IF,XLRS1,XL,KEC,Y,Jason,,,summer 2017,4052IF.JPG,4052IF.json,
+405JA,CHM,XL,KEC,Y,Jason,,,summer 2017,405JA.JPG,405JA.json,
+4071CW,XLRS1,XL,KEC,Y,Jason,Not sure about proband,The 73 years old male with arrow pointed,summer 2017,4071CW.JPG,4071CW.json,
+4092ES,Red Green Opsin Gene Cluster,XL,KEC,Y,Jason,,,summer 2017,4092ES.JPG,4092ES.json,
+4131GH,XLRS1,XL,KEC,Y,Jason,,,summer 2017,4131GH.JPG,4131GH.json,
+414JW,CNGB3,AR,KEC,Y,Jason,,,summer 2017,414JW.JPG,414JW.json,
+4205CT,VMD2,AD,KEC,Y,Jason,,,summer 2017,4205CT.JPG,4205CT.json,
+4224JH,ABCA4,AR,KEC,Y,Jason,,,summer 2017,4224JH.JPG,4224JH.json,
+4233CJ,ABCA4,AR,KEC,Y,Jason,No Disease on pedigree picture,only count proband as shaded,summer 2017,4233CJ.JPG,4233CJ.json,
+4235CD,Bestrophin VMD2,AD,KEC,Y,Jason,,,summer 2017,4235CD.JPG,4235CD.json,
+4236JL,USH2A,AR,KEC,Y,Jason,,,summer 2017,4236JL.JPG,4236JL.json,
+4256JT,RDS,AD,KEC,Y,Jason,,,summer 2017,4256JT.JPG,4256JT.json,
+425JY,XLRS1,XL,KEC,Y,Jason,,,summer 2017,425JY.JPG,425JY.json,
+4267SM,CHM,XL,KEC,Y,Jason,,,summer 2017,4267SM.JPG,4267SM.json,
+4272DG,Rho,AD,KEC,Y,Jason,,,summer 2017,4272DG.JPG,4272DG.json,
+4291AH,ABCA4,AR,KEC,Y,Jason,,,summer 2017,4291AH.JPG,4291AH.json,
+4338IR,RP2,XL,KEC,Y,Jason,,,summer 2017,4338IR.JPG,4338IR.json,
+4343RL,MYO7A,AR,KEC,Y,Jason,,,summer 2017,4343RL.JPG,4343RL.json,
+4359BK,RPGR (RP3),XL,KEC,Y,Jason,,,summer 2017,4359BK.JPG,4359BK.json,
+5951MB,Bestrophin VMD2,AD,KEC,Y,Jason,,,2016,5951MB.JPG,5951MB.json,
+5961FY,IMPDH6,AD,KEC,Y,Jason,,,2016,5961FY.JPG,5961FY.json,
+5962WJ,IMPDH2,AD,KEC,Y,Jason,,,2016,5962WJ.JPG,5962WJ.json,
+5965MS,PRPF31(RP11),AD,KEC,Y,Jason,,,2016,5965MS.JPG,5965MS.json,
+5988CF,IMPG2,AR,KEC,Y,Jason,,,2016,5988CF.JPG,5988CF.json,
+5991KP,RP2,XL,KEC,Y,Jason,,,2016,5991KP.JPG,5991KP.json,
+5992VM,USH2A,AR,KEC,Y,Jason,,,2016,5992VM.JPG,5992VM.json,
+6028SV,ABCA4,AR,KEC,Y,Jason,,,2016,6028SV.JPG,6028SV.json,
+6030CH,CHM,XL,KEC,Y,Jason,,,2016,6030CH.JPG,6030CH.json,
+6050MM,USH2A,AR,KEC,Y,Jason,,,2016,6050MM.JPG,6050MM.json,
+6066RB,ABCA4,AR,KEC,Y,Jason,,,2016,6066RB.JPG,6066RB.json,
+6087SR,RDS,AD,KEC,Y,Jason,,,2016,6087SR.JPG,6087SR.json,
+609DV,CHM,XL,KEC,Y,Jason,,,2016,609DV.JPG,609DV.json,
+611JC,ABCA4,AR,KEC,Y,Jason,Late teen < 20?,"yes, late teen = 18",2016,611JC.JPG,611JC.json,
+6142KB,ABCA4,AR,KEC,Y,Jason,,,2016,6142KB.JPG,6142KB.json,
+6156AK,Rho,AD,KEC,Y,Jason,,,2016,6156AK.JPG,6156AK.json,
+6158AT,ABCA4,AR,KEC,Y,Jason,,,2016,6158AT.JPG,6158AT.json,
+6166MS,ABCA4,AR,KEC,Y,Jason,,,2016,6166MS.JPG,6166MS.json,
+6199RS,ABCA4,AR,KEC,Y,Jason,,,2016,6199RS.JPG,6199RS.json,
+6210HG,ABCA4,AR,KEC,Y,Jason,,,2016,6210HG.JPG,6210HG.json,
+6212SD,RDS,AD,KEC,Y,Jason,,,2016,6212SD.JPG,6212SD.json,
+6217IV,ABCA4,AR,KEC,Y,Jason,,,2016,6217IV.JPG,6217IV.json,
+6261JS,CHM,XL,KEC,Y,Jason,,,2016,6261JS.JPG,6261JS.json,
+6327JA,XLRS1,XL,KEC,Y,Jason,,,2016,6327JA.JPG,6327JA.json,
+6339KS,Bestrophin VMD2,AD,KEC,Y,Jason,,,2016,6339KS.JPG,6339KS.json,
+6437AB,USH2A,AR,KEC,Y,Jason,,,2016,6437AB.JPG,6437AB.json,
+6449TA,ABCA4,AR,KEC,Y,Jason,,,2016,6449TA.JPG,6449TA.json,
+6457RB,KCNV2,AR,KEC,Y,Jason,,,2016,6457RB.JPG,6457RB.json,
+675DB,RPGR (RP3),XL,KEC,Y,Jason,,,2016,675DB.JPG,675DB.json,
+814DR,CNGA3,AR,KEC,Y,Jason,,,2016,814DR.JPG,814DR.json,
+839JJ,RPGR (RP3),XL,KEC,Y,Jason,,,2016,839JJ.JPG,839JJ.json,
+847CO,CNGA3,AR,KEC,Y,Jason,,,2016,847CO.JPG,847CO.json,
+913SC,CNGB3,AR,KEC,Y,Jason,,,2016,913SC.JPG,913SC.json,
+950JO,Bestrophin VMD2,AR,KEC,Y,Jason,,,2016,950JO.JPG,950JO.json,
+951RP,Rho,AD,KEC,Y,Jason,,,2016,951RP.JPG,951RP.json,
+979AS,CHM,XL,KEC,Y,Jason,,,summer 2017,979AS.JPG,979AS.json,
+2049EE,RPGR (RP3),XL,KEC,Y,Margaret,,,2016,2049EE.JPG,2049EE.json,
+2055JS,USH2A,AR,KEC,Y,Margaret,,,2016,2055JS.JPG,2055JS.json,
+230KK,ABCA4,AR,KEC,Y,Margaret,,,2016,230KK.JPG,230KK.json,
+231AG,RPE65,AR,KEC,Y,Margaret,,,2016,231AG.JPG,231AG.json,
+273PA,RP2,XL,KEC,Y,Margaret,,,2016,273PA.JPG,273PA.json,
+3061JE,CRB1,AR,KEC,Y,Margaret,,,2016,3061JE.JPG,3061JE.json,
+3204RS,Mitochondrial deletion,Mitochondrial,KEC,Y,Margaret,,,2016,3204RS.JPG,3204RS.json,
+329JR,SNRP200,AD,KEC,Y,Margaret,,,2016,329JR.JPG,329JR.json,
+348EG,RPGR (RP3),XL,KEC,Y,Margaret,,,2016,348EG.JPG,348EG.json,
+3738KW,CRX,AD,KEC,Y,Margaret,,,2016,3738KW.JPG,3738KW.json,
+3743MH,RDS,AD,KEC,Y,Margaret,,,2016,3743MH.JPG,3743MH.json,
+3814CB,Bestrophin VMD2,AD,KEC,Y,Margaret,,,2016,3814CB.JPG,3814CB.json,
+3818IJ,PDE6B,AR,KEC,Y,Margaret,,,2016,3818IJ.JPG,3818IJ.json,
+3847GB,MYO7A,AR,KEC,Y,Margaret,,,2016,3847GB.JPG,3847GB.json,
+3864AH,USH2A,AR,KEC,Y,Margaret,,,2016,3864AH.JPG,3864AH.json,
+3935SC,RDS,AD,KEC,Y,Margaret,,,2016,3935SC.JPG,3935SC.json,
+409MB,RPGR (RP3),XL,KEC,Y,Margaret,,,2016,409MB.JPG,409MB.json,
+417CP,PRPF31(RP11),AD,KEC,Y,Margaret,,,2016,417CP.JPG,417CP.json,
+4210AW,RDS,AD,KEC,Y,Margaret,,,2016,4210AW.JPG,4210AW.json,
+4259DM,ABCA4,AR,KEC,Y,Margaret,,,2016,4259DM.JPG,4259DM.json,
+4363LR,Rho,AD,KEC,Y,Margaret,,,summer 2017,4363LR.JPG,4363LR.json,
+4428MN,RPE65,AR,KEC,Y,Margaret,,,summer 2017,4428MN.JPG,4428MN.json,
+4460TK,Bestrophin VMD2,AD,KEC,Y,Margaret,,,summer 2017,4460TK.JPG,4460TK.json,
+4491CV,TULP1,AR,KEC,Y,Margaret,,,summer 2017,4491CV.JPG,4491CV.json,
+4515JN,CERKL,AR,KEC,Y,Margaret,,,2016,4515JN.JPG,4515JN.json,
+4543KS,CHM,XL,KEC,Y,Margaret,,,summer 2017,4543KS.JPG,4543KS.json,
+4545MP,RPGR (RP3),XL,KEC,Y,Margaret,No Proband,the 19 years old boy with arrow pointed to,summer 2017,4545MP.JPG,4545MP.json,
+4547PB,ABCA4,AR,KEC,Y,Margaret,,,2016,4547PB.JPG,4547PB.json,
+4564RG,CHM,XL,KEC,Y,Margaret,,,summer 2017,4564RG.JPG,4564RG.json,
+4598PW,ABCA4,AR,KEC,Y,Margaret,,,summer 2017,4598PW.JPG,4598PW.json,
+4599LB,VMD2,AD,KEC,Y,Margaret,,,2016,4599LB.JPG,4599LB.json,
+4609DB,ABCA4,AR,KEC,Y,Margaret,,,2016,4609DB.JPG,4609DB.json,
+4641JN,RDS,AD,KEC,Y,Margaret,,,summer 2017,4641JN.JPG,4641JN.json,
+4647SH,CDH23,AR,KEC,Y,Margaret,,,summer 2017,4647SH.JPG,4647SH.json,
+465LC,CNGA3,AR,KEC,Y,Margaret,,,summer 2017,465LC.JPG,465LC.json,
+4671AT,USH2A,AR,KEC,Y,Margaret,,,summer 2017,4671AT.JPG,4671AT.json,
+4673JB,ABCA4,AR,KEC,Y,Margaret,,,summer 2017,4673JB.JPG,4673JB.json,
+4683BC,RPE65,AR,KEC,Y,Margaret,,,summer 2017,4683BC.JPG,4683BC.json,
+4694AD,ABCA4,AR,KEC,Y,Margaret,,,summer 2017,4694AD.JPG,4694AD.json,
+4723HW,ABCA4,AR,KEC,Y,Margaret,,,summer 2017,4723HW.JPG,4723HW.json,
+4736PR,XLRS1,XL,KEC,Y,Margaret,,,2016,4736PR.JPG,4736PR.json,
+4737AL,ABCA4,AR,KEC,Y,Margaret,,,summer 2017,4737AL.JPG,4737AL.json,
+473DM,BBS1,AR,KEC,Y,Margaret,,,summer 2017,473DM.JPG,473DM.json,
+4747ZR,PRPF8,AD,KEC,Y,Margaret,,,summer 2017,4747ZR.JPG,4747ZR.json,
+4748LG,MELAS,Mitochondrial,KEC,Y,Margaret,,,2016,4748LG.JPG,4748LG.json,
+4754LK,RDS,AD,KEC,Y,Margaret,,,summer 2017,4754LK.JPG,4754LK.json,
+4781RM,RDS,AD,KEC,Y,Margaret,,,summer 2017,4781RM.JPG,4781RM.json,
+4783CK,ABCA4,AR,KEC,Y,Margaret,,,summer 2017,4783CK.JPG,4783CK.json,
+4811DG,ABCA4,AR,KEC,Y,Margaret,,,2016,4811DG.JPG,4811DG.json,
+4835MM,CERKL,AR,KEC,Y,Margaret,,,summer 2017,4835MM.JPG,4835MM.json,
+4870BF,ABCA4,AR,KEC,Y,Margaret,,,summer 2017,4870BF.JPG,4870BF.json,
+491SC,ABCA4,AR,KEC,Y,Margaret,,,summer 2017,491SC.JPG,491SC.json,
+4928AP,ABCA4,AR,KEC,Y,Margaret,,,summer 2017,4928AP.JPG,4928AP.json,
+4932MS,ABCA4,AR,KEC,Y,Margaret,,,summer 2017,4932MS.JPG,4932MS.json,
+4940KJ,ABCA4,AR,KEC,Y,Margaret,,,summer 2017,4940KJ.JPG,4940KJ.json,
+4951DK,Rho,AD,KEC,Y,Margaret,,,summer 2017,4951DK.JPG,4951DK.json,
+4956RL,RDS,AD,KEC,Y,Margaret,,,summer 2017,4956RL.JPG,4956RL.json,
+4957KL,RDS,AD,KEC,Y,Margaret,,,summer 2017,4957KL.JPG,4957KL.json,
+4958NG,RPGR (RP3),XL,KEC,Y,Margaret,,,2016,4958NG.JPG,4958NG.json,
+4961BR,RPGR (RP3),XL,KEC,Y,Margaret,No proband,the proband is the boy next to the 8 years old girl on bottom right,2016,4961BR.JPG,4961BR.json,
+4984TC,ABCA4,AR,KEC,Y,Margaret,,,2016,4984TC.JPG,4984TC.json,
+4987MG,ABCA4,AR,KEC,Y,Margaret,,,summer 2017,4987MG.JPG,4987MG.json,
+4994BD,CLN3,AR,KEC,Y,Margaret,,,2016,4994BD.JPG,4994BD.json,
+5019HT,ABCA4,AR,KEC,Y,Margaret,,,2016,5019HT.JPG,5019HT.json,
+5022KK,Rho,AD,KEC,Y,Margaret,,,summer 2017,5022KK.JPG,5022KK.json,
+5044AL,XLRS1,XL,KEC,Y,Margaret,,,summer 2017,5044AL.JPG,5044AL.json,
+5046IL,Rho,AD,KEC,Y,Margaret,,,summer 2017,5046IL.JPG,5046IL.json,
+988FT,PRPF31(RP11),AD,KEC,Y,Margaret,,,summer 2017,988FT.JPG,988FT.json,
+6323AM,RDS,AD,KEC,Y,Margaret,,,2016,6323AM.JPG,6323AM.json,
+6481MR,Bestrophin VMD2,AD,KEC,Y,Margaret,,,2016,6481MR.JPG,6481MR.json,
+5034MM,ABCA4,AR,KEC,Y,Simon,,,2016,5034MM.JPG,5034MM.json,
+5056WL,ABCA4,AR,KEC,Y,Simon,,,2016,5056WL.JPG,5056WL.json,
+5064JH,Red Green Opsin Gene Cluster,XL,KEC,Y,Simon,proband no shade,count proband as shaded the same as others,summer 2017,5064JH.JPG,5064JH.json,
+506JA,ELOVL4,AD,KEC,Y,Simon,,,summer 2017,506JA.JPG,506JA.json,
+5079JK,ABCA4,AR,KEC,Y,Simon,,,summer 2017,5079JK.JPG,5079JK.json,
+5081LD,VMD2,AD,KEC,Y,Simon,,,2016,5081LD.JPG,5081LD.json,
+5101LV,IMPDH5,AD,KEC,Y,Simon,,,summer 2017,5101LV.JPG,5101LV.json,
+5103AR,ABCA4,AR,KEC,Y,Simon,,,2016,5103AR.JPG,5103AR.json,
+5106JA,ABCA4,AR,KEC,Y,Simon,,,2016,5106JA.JPG,5106JA.json,
+5132SH,ABCA4,AR,KEC,Y,Simon,,,summer 2017,5132SH.JPG,5132SH.json,
+5148RM,BBS1,AR,KEC,Y,Simon,,,2016,5148RM.JPG,5148RM.json,
+5191BD,RPGR (RP3),XL,KEC,Y,Simon,,,2016,5191BD.JPG,5191BD.json,
+5221NV,ABCA4,AR,KEC,Y,Simon,,,summer 2017,5221NV.JPG,5221NV.json,
+5248RH,RDS,AD,KEC,Y,Simon,,,2016,5248RH.JPG,5248RH.json,
+5252SR,IMPDH4,AD,KEC,Y,Simon,,,summer 2017,5252SR.JPG,5252SR.json,
+5254SS,TIMP3,AD,KEC,N,Simon,No proband,not found in the profile room,summer 2017,5254SS.JPG,5254SS.json,
+5295MM,CNGA3,AR,KEC,Y,Simon,,,summer 2017,5295MM.JPG,5295MM.json,
+5334CS,RPGR (RP3),XL,KEC,Y,Simon,,,summer 2017,5334CS.JPG,5334CS.json,
+5348DW,Rho,AD,KEC,Y,Simon,,,summer 2017,5348DW.JPG,5348DW.json,
+5349AW,Rho,AD,KEC,Y,Simon,,,summer 2017,5349AW.JPG,5349AW.json,
+5359MH,SCA7,AD,KEC,Y,Simon,,,2016,5359MH.JPG,5359MH.json,
+5390JR,CNGB3,AR,KEC,Y,Simon,,,2016,5390JR.JPG,5390JR.json,
+5392KT,ABCA4,AR,KEC,Y,Simon,,,2016,5392KT.JPG,5392KT.json,
+5395BS,USH2A,AR,KEC,Y,Simon,,,summer 2017,5395BS.JPG,5395BS.json,
+5426JR,RP2,XL,KEC,Y,Simon,,,2016,5426JR.JPG,5426JR.json,
+5427ND,CNGA3,AR,KEC,Y,Simon,,,summer 2017,5427ND.JPG,5427ND.json,
+5431LM,ABCA4,AR,KEC,Y,Simon,,,summer 2017,5431LM.JPG,5431LM.json,
+5470NG,ABCA4,AR,KEC,Y,Simon,,,2016,5470NG.JPG,5470NG.json,
+5484LB,ABCA4,AR,KEC,Y,Simon,,,2016,5484LB.JPG,5484LB.json,
+5495MH,EYS,AR,KEC,Y,Simon,,,2016,5495MH.JPG,5495MH.json,
+5543ES,Rho,AD,KEC,Y,Simon,,,2016,5543ES.JPG,5543ES.json,
+5546EL,CNGB3,AR,KEC,Y,Simon,,,2016,5546EL.JPG,5546EL.json,
+5569IN,RPE65,AR,KEC,Y,Simon,Not sure how to draw the double lines,,2016,5569IN.JPG,5569IN.json,
+5620CQ,RPGR (RP3),XL,KEC,Y,Simon,,,summer 2017,5620CQ.JPG,5620CQ.json,
+5622KT,CNGB3,AR,KEC,Y,Simon,,,summer 2017,5622KT.JPG,5622KT.json,
+5669JS,CLRN1,AR,KEC,Y,Simon,,,2016,5669JS.JPG,5669JS.json,
+5678AK,ABCA4,AR,KEC,Y,Simon,,,2016,5678AK.JPG,5678AK.json,
+5701LC,ABCA4,AR,KEC,Y,Simon,,,2016,5701LC.JPG,5701LC.json,
+5704AC,CHM,XL,KEC,Y,Simon,,,2016,5704AC.JPG,5704AC.json,
+5738AT,RP1,AR,KEC,Y,Simon,,,2016,5738AT.JPG,5738AT.json,
+5768PP,ABCA4,AR,KEC,Y,Simon,,,summer 2017,5768PP.JPG,5768PP.json,
+5775VS,Bestrophin VMD2,AD,KEC,Y,Simon,,,2016,5775VS.JPG,5775VS.json,
+5784CV,XLRS1,XL,KEC,Y,Simon,,,2016,5784CV.JPG,5784CV.json,
+5786EK,ABCA4,AR,KEC,Y,Simon,,,2016,5786EK.JPG,5786EK.json,
+5811AC,GPR98,AR,KEC,Y,Simon,,,2016,5811AC.JPG,5811AC.json,
+5812RH,USH2A,AR,KEC,Y,Simon,,,2016,5812RH.JPG,5812RH.json,
+5864KJ,PROM1,AD,KEC,Y,Simon,Proband no shading,counted as eye disease even though it's not been shaded,2016,5864KJ.JPG,5864KJ.json,
+5865MH,Rho,AD,KEC,Y,Simon,,,2016,5865MH.JPG,5865MH.json,
+5904SC,RDS,AD,KEC,Y,Simon,,,previous team,5904SC.JPG,5904SC.json,
+643SB,Rho,AD,KEC,Y,Simon,,,summer 2017,643SB.JPG,643SB.json,
+671AH,RPGR (RP3),XL,KEC,Y,Simon,"proband no shading, possibly affected as unkown or not?",possibly affected as unknown,summer 2017,671AH.JPG,671AH.json,
+771KG,BBS1,AR,KEC,Y,Simon,,,summer 2017,771KG.JPG,771KG.json,
+772GT,XLRS1,XL,KEC,Y,Simon,,,summer 2017,772GT.JPG,772GT.json,
+773SM,ABCA4,AR,KEC,Y,Simon,,,summer 2017,773SM.JPG,773SM.json,
+784MB,Rho,AR,KEC,Y,Simon,,,summer 2017,784MB.JPG,784MB.json,
+840CJ,RPGR (RP3),XL,KEC,Y,Simon,,,summer 2017,840CJ.JPG,840CJ.json,
+843BC,Rho,AD,KEC,Y,Simon,,,summer 2017,843BC.JPG,843BC.json,
+849SS,Rho,AD,KEC,Y,Simon,,,summer 2017,849SS.JPG,849SS.json,
+852BB,Rho,AD,KEC,Y,Simon,,,summer 2017,852BB.JPG,852BB.json,
+853AM,ABCA4,AR,KEC,Y,Simon,,,summer 2017,853AM.JPG,853AM.json,
+873WD,ABCA4,AR,KEC,Y,Simon,,,summer 2017,873WD.JPG,873WD.json,
+895ES,BBS1,AR,KEC,Y,Simon,,,summer 2017,895ES.JPG,895ES.json,
+904CD,ABCA4,AR,KEC,Y,Simon,,,summer 2017,904CD.JPG,904CD.json,
+918TB,GUCA1A,AD,KEC,Y,Simon,,,summer 2017,918TB.JPG,918TB.json,
+919KB,GUCA1A,AD,KEC,Y,Simon,,,summer 2017,919KB.JPG,919KB.json,
+927NW,Rho,AD,KEC,Y,Simon,,,summer 2017,927NW.JPG,927NW.json,
+989NT,PRPF31(RP11),AD,KEC,Y,Simon,,,summer 2017,989NT.JPG,989NT.json,
+NEI_INVAA147KKP,CYP4V2,AR,eyeGene,Y,Ben,,,fall 2017,20306.pdf,NEI_INVAA147KKP.json,20306.pdf
+NEI_INVAB415AXR,RGR,AD,eyeGene,,Ben,no proband,,fall 2017,25684.pdf,NEI_INVAB415AXR.json,25684.pdf
+NEI_INVAC983RNK,ABCA4,AR,eyeGene,,Ben,mapping doesn't exist. Maybe its one number off?(ns),,fall 2017,23454.pdf,NEI_INVAC983RNK.json,23454.pdf
+NEI_INVAG694CE5,RPGR,XL,eyeGene,,Ben,marked possibly affected as a separate disease(ns),,fall 2017,39908.pdf,NEI_INVAG694CE5.json,39908.pdf
+NEI_INVAH638ERF,RPGR,XL,eyeGene,Y,Ben,,,fall 2017,27232.pdf,NEI_INVAH638ERF.json,27232.pdf
+NEI_INVAJ998CWH,PRPH2 (RDS),AD,eyeGene,Y,Ben,,,fall 2017,31121.pdf,NEI_INVAJ998CWH.json,31121.pdf
+NEI_INVAL647TKY,CHM,XL,eyeGene,Y,Ben,,,fall 2017,15647.pdf,NEI_INVAL647TKY.json,15647.pdf
+NEI_INVAM138NTX,PRPH2 (RDS),AD,eyeGene,Y,Ben,said children A/W but I did not mark it anywhere,,fall 2017,38907.pdf,NEI_INVAM138NTX.json,38907.pdf
+NEI_INVAT894PH5,RPGR,XL,eyeGene,Y,Ben,,,fall 2017,22585.pdf,NEI_INVAT894PH5.json,22585.pdf
+NEI_INVAX686YAH,CHM,XL,eyeGene,Y,Ben,,,fall 2017,21180.pdf,NEI_INVAX686YAH.json,21180.pdf
+NEI_INVAY629ZB8,BEST1,AR,eyeGene,Y,Ben,said children A/W but I did not mark it anywhere,,fall 2017,42635.pdf,NEI_INVAY629ZB8.json,42635.pdf
+NEI_INVBB998CWA,RP1L1,AD,eyeGene,Y,Ben,,,fall 2017,18135.pdf,NEI_INVBB998CWA.json,18135.pdf
+NEI_INVBD595HCN,PRPH2 (RDS),AD,eyeGene,Y,Ben,,,fall 2017,43098.pdf,NEI_INVBD595HCN.json,43098.pdf
+NEI_INVBD979JEC,ABCA4,AR,eyeGene,Y,Ben,,,fall 2017,31647.pdf,NEI_INVBD979JEC.json,31647.pdf
+NEI_INVBF652LK0,ABCA4,AR,eyeGene,Y,Ben,,,fall 2017,15774.pdf,NEI_INVBF652LK0.json,15774.pdf
+NEI_INVBH011CH1,ABCA4,AR,eyeGene,,,weird markings and two probands,,fall 2017,10594.pdf,NEI_INVBH011CH1.json,10594.pdf
+NEI_INVBL279ACW,RP2,XL,eyeGene,Y,Ben,,,fall 2017,17260.pdf,NEI_INVBL279ACW.json,17260.pdf
+NEI_INVBP141BU0,GUCY2D,AR,eyeGene,Y,Ben,,,fall 2017,22099.pdf,NEI_INVBP141BU0.json,22099.pdf
+NEI_INVBR506FWV,USH2A,AR,eyeGene,Y,Ben,,,fall 2017,33734.pdf,NEI_INVBR506FWV.json,33734.pdf
+NEI_INVBT892WYH,RHO,AR,eyeGene,Y,Ben,,,fall 2017,14415.pdf,NEI_INVBT892WYH.json,14415.pdf
+NEI_INVBU668PYD,ABCA4,AR,eyeGene,Y,Ben,,,fall 2017,29306.pdf,NEI_INVBU668PYD.json,29306.pdf
+NEI_INVBW765NHJ,RGR,AD,eyeGene,,,weird labeling,,fall 2017,25687.pdf,NEI_INVBW765NHJ.json,25687.pdf
+NEI_INVBX298MH5,CHM,XL,eyeGene,Y,Ben,,,fall 2017,14005.pdf,NEI_INVBX298MH5.json,14005.pdf
+NEI_INVCA368YDV,PRPF31,AD,eyeGene,Y,Ben,,,fall 2017,26631.pdf,NEI_INVCA368YDV.json,26631.pdf
+NEI_INVCB046ACJ,CHM,XL,eyeGene,Y,Ben,,,fall 2017,27231.pdf,NEI_INVCB046ACJ.json,27231.pdf
+NEI_INVCC167YZG,ABCA4,AR,eyeGene,Y,Ben,,,fall 2017,14254.pdf,NEI_INVCC167YZG.json,14254.pdf
+NEI_INVCC748PRW,RPGR,XL,eyeGene,,,couldn't find pdf,,fall 2017,45840.pdf,NEI_INVCC748PRW.json,45840.pdf
+NEI_INVCD787DYL,TYR,AD,eyeGene,Y,Ben,,,fall 2017,23220.pdf,NEI_INVCD787DYL.json,23220.pdf
+NEI_INVCE244YCA,ABCA4,AR,eyeGene,Y,Ben,,,fall 2017,14303.pdf,NEI_INVCE244YCA.json,14303.pdf
+NEI_INVCE479GKE,RPGR,XL,eyeGene,Y,Ben,,,fall 2017,20744.pdf,NEI_INVCE479GKE.json,20744.pdf
+NEI_INVCF058JDH,GUCY2D,AD,eyeGene,Y,Ben,same as NEI_INVCF058JDH,,fall 2017,22100.pdf,NEI_INVCF058JDH.json,22100.pdf
+NEI_INVCG909KDJ,ABCA4,AR,eyeGene,Y,Ben,,,fall 2017,26042.pdf,NEI_INVCG909KDJ.json,26042.pdf
+NEI_INVCK013UBH,GPR143,XL,eyeGene,Y,Ben,,,fall 2017,34601.pdf,NEI_INVCK013UBH.json,34601.pdf
+NEI_INVCL412HLZ,RPGR,XL,eyeGene,Y,Ben,,,fall 2017,20369.pdf,NEI_INVCL412HLZ.json,20369.pdf
+NEI_INVCL445GWG,ABCA4,AR,eyeGene,,Ben,no proband and weird dotted line,,fall 2017,41284.pdf,NEI_INVCL445GWG.json,41284.pdf
+NEI_INVCM100CNM,PRPH2 (RDS),AD,eyeGene,Y,Ben,,,fall 2017,33895.pdf,NEI_INVCM100CNM.json,33895.pdf
+NEI_INVCM440LU8,CHM,XL,eyeGene,,Ben,no proband,,fall 2017,13110.pdf,NEI_INVCM440LU8.json,13110.pdf
+NEI_INVCN074DA1,RHO,AD,eyeGene,Y,Ben,,,fall 2017,41257.pdf,NEI_INVCN074DA1.json,41257.pdf
+NEI_INVCR356PMJ,USH2A,AR,eyeGene,Y,Ben,,,fall 2017,21601.pdf,NEI_INVCR356PMJ.json,21601.pdf
+NEI_INVCV818FGB,RHO,AR,eyeGene,,Ben,no proband,,fall 2017,7847.pdf,NEI_INVCV818FGB.json,7847.pdf
+NEI_INVCW605MMH,CHM,XL,eyeGene,Y,Ben,,,fall 2017,21322.pdf,NEI_INVCW605MMH.json,21322.pdf
+NEI_INVCZ412ZG3,RPGR,XL,eyeGene,Y,Ben,,,fall 2017,13871.pdf,NEI_INVCZ412ZG3.json,13871.pdf
+NEI_INVDB264FHL,SNRNP200,AD,eyeGene,Y,Ben,,,fall 2017,14425.pdf,NEI_INVDB264FHL.json,14425.pdf
+NEI_INVDB542NK4,ABCA4,AR,eyeGene,Y,Ben,,,fall 2017,20460.pdf,NEI_INVDB542NK4.json,20460.pdf
+NEI_INVDF079LCL,ABCA4,AR,eyeGene,,Ben,weird square on left,,fall 2017,28771.pdf,NEI_INVDF079LCL.json,28771.pdf
+NEI_INVDH120NAP,CRB1,AD,eyeGene,Y,Ben,,,fall 2017,16557.pdf,NEI_INVDH120NAP.json,16557.pdf
+NEI_INVDP757JH0,PRPH2 (RDS),AD,eyeGene,Y,Ben,,,fall 2017,13725.pdf,NEI_INVDP757JH0.json,13725.pdf
+NEI_INVDP765JX6,ABCA4,AR,eyeGene,Y,Margaret,,,fall 2017,18511.pdf,NEI_INVDP765JX6.json,18511.pdf
+NEI_INVDV551CK8,TOPORS,AD,eyeGene,Y,Margaret,,,fall 2017,15843.pdf,NEI_INVDV551CK8.json,15843.pdf
+NEI_INVDW602CXH,HPS1,AR,eyeGene,Y,Margaret,,,fall 2017,23854.pdf,NEI_INVDW602CXH.json,23854.pdf
+NEI_INVDZ481EPZ,CHM,XL,eyeGene,Y,Margaret,,,fall 2017,27230.pdf,NEI_INVDZ481EPZ.json,27230.pdf
+NEI_INVEA883CXD,IMPG2,AR,eyeGene,Y,Margaret,,,fall 2017,33885.pdf,NEI_INVEA883CXD.json,33885.pdf
+NEI_INVEB356HB3,XLRS1,XL,eyeGene,Y,Margaret,,,fall 2017,27421.pdf,NEI_INVEB356HB3.json,27421.pdf
+NEI_INVEC533GJ5,NYX,XL,eyeGene,Y,Margaret,,,fall 2017,15881.pdf,NEI_INVEC533GJ5.json,15881.pdf
+NEI_INVED272NL7,NR2E3,AR,eyeGene,Y,Margaret,,,fall 2017,27227.pdf,NEI_INVED272NL7.json,27227.pdf
+NEI_INVEE698ZVX,CDH23,AR,eyeGene,Y,Margaret,,,fall 2017,41090.pdf,NEI_INVEE698ZVX.json,41090.pdf
+NEI_INVEE913DGF,ABCA4,AR,eyeGene,Y,Margaret,,,fall 2017,13723.pdf,NEI_INVEE913DGF.json,13723.pdf
+NEI_INVEF735ZM6,USH1G,AR,eyeGene,Y,Margaret,,,fall 2017,18466.pdf,NEI_INVEF735ZM6.json,18466.pdf
+NEI_INVEH625LPT,CHM,XL,eyeGene,Y,Margaret,,,fall 2017,7014.pdf,NEI_INVEH625LPT.json,7014.pdf
+NEI_INVEJ773TXW,ABCA4,AR,eyeGene,Y,Margaret,,,fall 2017,18956.pdf,NEI_INVEJ773TXW.json,18956.pdf
+NEI_INVEK698MP1,RHO,AD,eyeGene,Y,Margaret,,,fall 2017,12985.pdf,NEI_INVEK698MP1.json,12985.pdf
+NEI_INVEL589CHQ,ABCA4,AR,eyeGene,Y,Margaret,,,fall 2017,27620.pdf,NEI_INVEL589CHQ.json,27620.pdf
+NEI_INVEN150MG6,GUCY2D,AD,eyeGene,Y,Margaret,,,fall 2017,13286.pdf,NEI_INVEN150MG6.json,13286.pdf
+NEI_INVEN248YME,CHM,XL,eyeGene,Y,Margaret,,,fall 2017,15203.pdf,NEI_INVEN248YME.json,15203.pdf
+NEI_INVEP077KRQ,TIMP3,AD,eyeGene,Y,Margaret,,,fall 2017,15489.pdf,NEI_INVEP077KRQ.json,15489.pdf
+NEI_INVER365TNE,PRPH2 (RDS),AD,eyeGene,,Margaret,plus sign?,,fall 2017,15182.pdf,NEI_INVER365TNE.json,15182.pdf
+NEI_INVET521BUC,RPGR,XL,eyeGene,Y,Margaret,,,fall 2017,14427.pdf,NEI_INVET521BUC.json,14427.pdf
+NEI_INVEX836UA9,OPA1,AD,eyeGene,,Margaret,No pedigree photo,,fall 2017,13952.pdf,NEI_INVEX836UA9.json,13952.pdf
+NEI_INVFE875EWD,ABCA4,AR,eyeGene,Y,Margaret,,,fall 2017,15254.pdf,NEI_INVFE875EWD.json,15254.pdf
+NEI_INVFF850PPA,PRPH2 (RDS),AD,eyeGene,Y,Margaret,,,fall 2017,16573.pdf,NEI_INVFF850PPA.json,16573.pdf
+NEI_INVFJ189MEL,RPGR,XL,eyeGene,Y,Margaret,,,fall 2017,14703.pdf,NEI_INVFJ189MEL.json,14703.pdf
+NEI_INVFK503PLX,RPGR,XL,eyeGene,Y,Margaret,,,fall 2017,27183.pdf,NEI_INVFK503PLX.json,27183.pdf
+NEI_INVFM551APR,BEST1,AR,eyeGene,,Margaret,plus sign?,,fall 2017,25234.pdf,NEI_INVFM551APR.json,25234.pdf
+NEI_INVFP047XFM,RPGR,XL,eyeGene,,Margaret,No pedigree photo,,fall 2017,44257.pdf,NEI_INVFP047XFM.json,44257.pdf
+NEI_INVFV081ZTY,CHM,XL,eyeGene,Y,Margaret,,,fall 2017,12986.pdf,NEI_INVFV081ZTY.json,12986.pdf
+NEI_INVFX567YP2,ABCA4,AR,eyeGene,Y,Margaret,,,fall 2017,27215.pdf,NEI_INVFX567YP2.json,27215.pdf
+NEI_INVFX809ND2,CHM,XL,eyeGene,Y,Margaret,,,fall 2017,37681.pdf,NEI_INVFX809ND2.json,37681.pdf
+NEI_INVGB238BTY,PRPH2 (RDS),AD,eyeGene,,Margaret,plus sign?,,fall 2017,15183.pdf,NEI_INVGB238BTY.json,15183.pdf
+NEI_INVGC283LNG,RP2,XL,eyeGene,Y,Margaret,,,fall 2017,15188.pdf,NEI_INVGC283LNG.json,15188.pdf
+NEI_INVGD997YX5,CHM,XL,eyeGene,Y,Margaret,,,fall 2017,15205.pdf,NEI_INVGD997YX5.json,15205.pdf
+NEI_INVGF339RMU,XLRS1,XL,eyeGene,Y,Margaret,,,fall 2017,27152.pdf,NEI_INVGF339RMU.json,27152.pdf
+NEI_INVGJ214HJL,CHM,XL,eyeGene,Y,Margaret,,,fall 2017,36629.pdf,NEI_INVGJ214HJL.json,36629.pdf
+NEI_INVGJ658WCD,RP1,AR,eyeGene,Y,Margaret,,,fall 2017,25187.pdf,NEI_INVGJ658WCD.json,25187.pdf
+NEI_INVGM027JLF,RPGR,XL,eyeGene,,Margaret,No pedigree photo,,fall 2017,3825.pdf,NEI_INVGM027JLF.json,3825.pdf
+NEI_INVGM538ZG1,ABCA4,AR,eyeGene,Y,Margaret,,,fall 2017,21658.pdf,NEI_INVGM538ZG1.json,21658.pdf
+NEI_INVGW999XGM,ABCA4,AR,eyeGene,Y,Margaret,,,fall 2017,15191.pdf,NEI_INVGW999XGM.json,15191.pdf
+NEI_INVGY947GUM,ABCA4,AR,eyeGene,,Margaret,No pedigree photo,,fall 2017,12617.pdf,NEI_INVGY947GUM.json,12617.pdf
+NEI_INVHB334FU2,RPGR,XL,eyeGene,Y,Margaret,,,fall 2017,14375.pdf,NEI_INVHB334FU2.json,14375.pdf
+NEI_INVHE305BX1,GUCY2D,AD,eyeGene,Y,Margaret,,,fall 2017,13285.pdf,NEI_INVHE305BX1.json,13285.pdf
+NEI_INVHG282EN1,GUCY2D,AD,eyeGene,Y,Margaret,,,fall 2017,12892.pdf,NEI_INVHG282EN1.json,12892.pdf
+NEI_INVHH078NP4,RPGR,XL,eyeGene,Y,Margaret,,,fall 2017,20938.pdf,NEI_INVHH078NP4.json,20938.pdf
+NEI_INVHL258UX4,RHO,AR,eyeGene,Y,Margaret,,,fall 2017,27564.pdf,NEI_INVHL258UX4.json,27564.pdf
+NEI_INVHT497ACM,ABCA4,AR,eyeGene,,Margaret,carrier R.P shadow? or female patient?,,fall 2017,24030.pdf,NEI_INVHT497ACM.json,24030.pdf
+NEI_INVHX999TX6,RHO,AR,eyeGene,Y,Margaret,,,fall 2017,13726.pdf,NEI_INVHX999TX6.json,13726.pdf
+NEI_INVJE037JA8,RPGR,XL,eyeGene,Y,Jason,,,fall 2017,25691.pdf,NEI_INVJE037JA8.json,25691.pdf
+NEI_INVJE516KJE,RPGR,XL,eyeGene,Y,Jason,,,fall 2017,15199.pdf,NEI_INVJE516KJE.json,15199.pdf
+NEI_INVJJ165DPE,RHO,AD,eyeGene,Y,Jason,,,fall 2017,15483.pdf,NEI_INVJJ165DPE.json,15483.pdf
+NEI_INVJT980TPH,RP1,AR,eyeGene,Y,Jason,,,fall 2017,13207.pdf,NEI_INVJT980TPH.json,13207.pdf
+NEI_INVJW849JUV,CNGB3,AR,eyeGene,Y,Jason,,,fall 2017,22192.pdf,NEI_INVJW849JUV.json,22192.pdf
+NEI_INVJW850HAX,ABCA4,AR,eyeGene,Y,Jason,,,fall 2017,31308.pdf,NEI_INVJW850HAX.json,31308.pdf
+NEI_INVKE437DH4,PRPH2 (RDS),AD,eyeGene,Y,Jason,,,fall 2017,26418.pdf,NEI_INVKE437DH4.json,26418.pdf
+NEI_INVKH434EWG,PRPH2 (RDS),AD,eyeGene,Y,Jason,,,fall 2017,27128.pdf,NEI_INVKH434EWG.json,27128.pdf
+NEI_INVKK051EG9,RHO,AR,eyeGene,Y,Jason,,,fall 2017,14412.pdf,NEI_INVKK051EG9.json,14412.pdf
+NEI_INVKK215VFA,USH2A,AR,eyeGene,Y,Jason,,,fall 2017,20885.pdf,NEI_INVKK215VFA.json,20885.pdf
+NEI_INVKK953BC1,RGR,AD,eyeGene,,Jason,No proband,,fall 2017,25683.pdf,NEI_INVKK953BC1.json,25683.pdf
+NEI_INVKL676ZZ3,PRPF8,AD,eyeGene,,Jason,No pedigree photo,,fall 2017,51452.pdf,NEI_INVKL676ZZ3.json,51452.pdf
+NEI_INVKP170XZH,KLHL7,AD,eyeGene,Y,Jason,,,fall 2017,14374.pdf,NEI_INVKP170XZH.json,14374.pdf
+NEI_INVKP622HFT,ABCA4,AR,eyeGene,Y,Jason,,,fall 2017,14408.pdf,NEI_INVKP622HFT.json,14408.pdf
+NEI_INVKY290GJJ,ABCA4,AR,eyeGene,Y,Jason,,,fall 2017,13735.pdf,NEI_INVKY290GJJ.json,13735.pdf
+NEI_INVKY813MEU,CHM,XL,eyeGene,Y,Jason,,,fall 2017,15177.pdf,NEI_INVKY813MEU.json,15177.pdf
+NEI_INVKZ593JR4,RPGR,XL,eyeGene,,Jason,No pedigree photo,,fall 2017,51514.pdf,NEI_INVKZ593JR4.json,51514.pdf
+NEI_INVKZ940FF1,BEST1,AR,eyeGene,Y,Jason,,,fall 2017,31471.pdf,NEI_INVKZ940FF1.json,31471.pdf
+NEI_INVLA551WK1,ABCA4,AR,eyeGene,Y,Jason,,,fall 2017,15193.pdf,NEI_INVLA551WK1.json,15193.pdf
+NEI_INVLD241ET1,SNRNP200,AD,eyeGene,Y,Jason,,,fall 2017,14424.pdf,NEI_INVLD241ET1.json,14424.pdf
+NEI_INVLD632HM6,RPGR,XL,eyeGene,,Jason,No pedigree photo,,fall 2017,44140.pdf,NEI_INVLD632HM6.json,44140.pdf
+NEI_INVLD750EXK,BEST1,AR,eyeGene,Y,Jason,,,fall 2017,32846.pdf,NEI_INVLD750EXK.json,32846.pdf
+NEI_INVLE210PL6,RPGR,XL,eyeGene,Y,Jason,,,fall 2017,15176.pdf,NEI_INVLE210PL6.json,15176.pdf
+NEI_INVLG761DLX,CHM,XL,eyeGene,Y,Jason,,,fall 2017,12888.pdf,NEI_INVLG761DLX.json,12888.pdf
+NEI_INVLG919LXT,GUCY2D,AD,eyeGene,Y,Jason,,,fall 2017,12891.pdf,NEI_INVLG919LXT.json,12891.pdf
+NEI_INVLG970TX6,ABCA4,AR,eyeGene,Y,Jason,,,fall 2017,17399.pdf,NEI_INVLG970TX6.json,17399.pdf
+NEI_INVLM171TDA,ABCA4,AR,eyeGene,Y,Jason,,,fall 2017,13860.pdf,NEI_INVLM171TDA.json,13860.pdf
+NEI_INVLM458UAJ,RPGR,XL,eyeGene,Y,Jason,,,fall 2017,22239.pdf,NEI_INVLM458UAJ.json,22239.pdf
+NEI_INVLP180BFG,RPGR,XL,eyeGene,Y,Jason,,,fall 2017,7706.pdf,NEI_INVLP180BFG.json,7706.pdf
+NEI_INVLR991GGT,PRPH2 (RDS),AD,eyeGene,Y,Jason,,,fall 2017,15184.pdf,NEI_INVLR991GGT.json,15184.pdf
+NEI_INVLT754ZDU,PRPF31,AD,eyeGene,Y,Jason,,,fall 2017,31721.pdf,NEI_INVLT754ZDU.json,31721.pdf
+NEI_INVLU847DCX,RP1,AD,eyeGene,Y,Jason,,,fall 2017,25690.pdf,NEI_INVLU847DCX.json,25690.pdf
+NEI_INVLV031FPC,GPR143,XL,eyeGene,,Jason,Multiple probands,,fall 2017,40802.pdf,NEI_INVLV031FPC.json,40802.pdf
+NEI_INVLY002NLJ,ABCA4,AR,eyeGene,Y,Jason,,,fall 2017,27522.pdf,NEI_INVLY002NLJ.json,27522.pdf
+NEI_INVMA516HM3,RGR,AD,eyeGene,,Jason,No proband,,fall 2017,25686.pdf,NEI_INVMA516HM3.json,25686.pdf
+NEI_INVMD108DNV,ELOVL4,AD,eyeGene,Y,Jason,,,fall 2017,15646.pdf,NEI_INVMD108DNV.json,15646.pdf
+NEI_INVMD956GGN,PRPH2 (RDS),AD,eyeGene,Y,Jason,,,fall 2017,22737.pdf,NEI_INVMD956GGN.json,22737.pdf
+NEI_INVMF012LK5,USH2A,AR,eyeGene,Y,Jason,,,fall 2017,34059.pdf,NEI_INVMF012LK5.json,34059.pdf
+NEI_INVMF884GR2,ABCA4,AR,eyeGene,Y,Jason,,,fall 2017,27621.pdf,NEI_INVMF884GR2.json,27621.pdf
+NEI_INVMH904EE7,ABCA4,AR,eyeGene,Y,Jason,,,fall 2017,15849.pdf,NEI_INVMH904EE7.json,15849.pdf
+NEI_INVMK735EA3,RP1L1,AD,eyeGene,Y,Jason,,,fall 2017,24966.pdf,NEI_INVMK735EA3.json,24966.pdf
+NEI_INVMK954UYF,RPGR,XL,eyeGene,Y,Jason,,,fall 2017,20770.pdf,NEI_INVMK954UYF.json,20770.pdf
+NEI_INVMT062RJ3,RHO,AR,eyeGene,,Jason,Multiple probands,,fall 2017,43396.pdf,NEI_INVMT062RJ3.json,43396.pdf
+NEI_INVMT995EXP,PRPF31,AD,eyeGene,Y,Jason,,,fall 2017,34656.pdf,NEI_INVMT995EXP.json,34656.pdf
+NEI_INVNA854FRH,CHM,XL,eyeGene,Y,Jason,,,fall 2017,21954.pdf,NEI_INVNA854FRH.json,21954.pdf
+NEI_INVND452CH5,ABCA4,AR,eyeGene,Y,Jason,,,fall 2017,22165.pdf,NEI_INVND452CH5.json,22165.pdf
+NEI_INVND452RKM,RPGR,XL,eyeGene,,Jason,Not sure what dashed line means,,fall 2017,43096.pdf,NEI_INVND452RKM.json,43096.pdf
+NEI_INVNJ698LV9,RPGR,XL,eyeGene,Y,Margaret,,,fall 2017,27233.pdf,NEI_INVNJ698LV9.json,27233.pdf
+NEI_INVNK513DRK,PDE6B,AR,eyeGene,Y,Margaret,,,fall 2017,14185.pdf,NEI_INVNK513DRK.json,14185.pdf
+NEI_INVNL899LP6,XLRS1,XL,eyeGene,Y,Margaret,,,fall 2017,25282.pdf,NEI_INVNL899LP6.json,25282.pdf
+NEI_INVNX703MYA,IMPG2,AR,eyeGene,Y,Margaret,,,fall 2017,25309.pdf,NEI_INVNX703MYA.json,25309.pdf
+NEI_INVNZ374UVP,BEST1,AR,eyeGene,,Margaret,no pedigree photo,,fall 2017,49071.pdf,NEI_INVNZ374UVP.json,49071.pdf
+NEI_INVPE887JM0,HPS3,AR,eyeGene,Y,Margaret,,,fall 2017,17272.pdf,NEI_INVPE887JM0.json,17272.pdf
+NEI_INVPG412BTF,ABCA4,AR,eyeGene,Y,Margaret,,,fall 2017,14710.pdf,NEI_INVPG412BTF.json,14710.pdf
+NEI_INVPK543BV8,RPGR,XL,eyeGene,Y,Margaret,,,fall 2017,22238.pdf,NEI_INVPK543BV8.json,22238.pdf
+NEI_INVPK971KPR,PRPF31,AD,eyeGene,Y,Margaret,,,fall 2017,26634.pdf,NEI_INVPK971KPR.json,26634.pdf
+NEI_INVPL205XFJ,ABCA4,AR,eyeGene,Y,Margaret,,,fall 2017,30080.pdf,NEI_INVPL205XFJ.json,30080.pdf
+NEI_INVPL331URV,ABCA4,AR,eyeGene,Y,Margaret,,,fall 2017,25823.pdf,NEI_INVPL331URV.json,25823.pdf
+NEI_INVPM894DVL,GUCY2D,AD,eyeGene,Y,Margaret,,,fall 2017,12890.pdf,NEI_INVPM894DVL.json,12890.pdf
+NEI_INVPN452HD6,ABCA4,AR,eyeGene,Y,Margaret,,,fall 2017,9200.pdf,NEI_INVPN452HD6.json,9200.pdf
+NEI_INVPP431KL5,RPGR,XL,eyeGene,Y,Margaret,,,fall 2017,15200.pdf,NEI_INVPP431KL5.json,15200.pdf
+NEI_INVPP853XK1,ABCA4,AR,eyeGene,Y,Margaret,,,fall 2017,21316.pdf,NEI_INVPP853XK1.json,21316.pdf
+NEI_INVPR982XJT,ABCA4,AR,eyeGene,Y,Margaret,,,fall 2017,20086.pdf,NEI_INVPR982XJT.json,20086.pdf
+NEI_INVPT827UYN,ABCA4,AR,eyeGene,Y,Margaret,,,fall 2017,29873.pdf,NEI_INVPT827UYN.json,29873.pdf
+NEI_INVPV787WLZ,ABCA4,AR,eyeGene,Y,Margaret,,,fall 2017,19745.pdf,NEI_INVPV787WLZ.json,19745.pdf
+NEI_INVPW823HD8,GUCY2D,AD,eyeGene,Y,Margaret,,,fall 2017,13287.pdf,NEI_INVPW823HD8.json,13287.pdf
+NEI_INVPX337GV2,XLRS1,XL,eyeGene,Y,Margaret,,,fall 2017,27217.pdf,NEI_INVPX337GV2.json,27217.pdf
+NEI_INVPY479JBL,RHO,AR,eyeGene,Y,Margaret,,,fall 2017,38950.pdf,NEI_INVPY479JBL.json,38950.pdf
+NEI_INVRF003UBG,RP2,XL,eyeGene,,BInghao,No image file,,fall 2017,10849.pdf,NEI_INVRF003UBG.json,10849.pdf
+NEI_INVRF829RCK,RP1,AD,eyeGene,,BInghao,No image file,,fall 2017,48719.pdf,NEI_INVRF829RCK.json,48719.pdf
+NEI_INVRG706LW7,RP2,XL,eyeGene,Y,Binghao,,,fall 2017,27092.pdf,NEI_INVRG706LW7.json,27092.pdf
+NEI_INVRL483BHK,KLHL7,AD,eyeGene,Y,Binghao,,,fall 2017,14373.pdf,NEI_INVRL483BHK.json,14373.pdf
+NEI_INVRP075DR0,PRPH2 (RDS),AD,eyeGene,Y,Binghao,,,fall 2017,13727.pdf,NEI_INVRP075DR0.json,13727.pdf
+NEI_INVRV053UZG,CRB1,AR,eyeGene,,Binghao,no proband,,fall 2017,17383.pdf,NEI_INVRV053UZG.json,17383.pdf
+NEI_INVRW032HP6,PRPH2 (RDS),AD,eyeGene,Y,Binghao,,,fall 2017,14006.pdf,NEI_INVRW032HP6.json,14006.pdf
+NEI_INVRY277ACB,PRPH2 (RDS),AD,eyeGene,,Binghao,"no proband, three shadings, which should be count as unknown?",,fall 2017,5664.pdf,NEI_INVRY277ACB.json,5664.pdf
+NEI_INVRZ832KHH,ABCA4,AR,eyeGene,,Binghao,No image file,,fall 2017,7220.pdf,NEI_INVRZ832KHH.json,7220.pdf
+NEI_INVRZ998GAH,ABCA4,AR,eyeGene,Y,Binghao,,,fall 2017,34479.pdf,NEI_INVRZ998GAH.json,34479.pdf
+NEI_INVTD470RL4,ABCA4,AR,eyeGene,Y,Binghao,,,fall 2017,31394.pdf,NEI_INVTD470RL4.json,31394.pdf
+NEI_INVTE607VYA,RPGR,XL,eyeGene,Y,Binghao,,,fall 2017,18341.pdf,NEI_INVTE607VYA.json,18341.pdf
+NEI_INVTF299VC2,RPGR,XL,eyeGene,Y,Binghao,,,fall 2017,20745.pdf,NEI_INVTF299VC2.json,20745.pdf
+NEI_INVTJ109AY9,BEST1,AR,eyeGene,Y,Binghao,,,fall 2017,17499.pdf,NEI_INVTJ109AY9.json,17499.pdf
+NEI_INVTM269RXM,ABCA4,AR,eyeGene,Y,Binghao,,,fall 2017,38150.pdf,NEI_INVTM269RXM.json,38150.pdf
+NEI_INVTP921JLT,PRPF31,AD,eyeGene,Y,Binghao,,,fall 2017,18510.pdf,NEI_INVTP921JLT.json,18510.pdf
+NEI_INVTR106KDR,PRPH2 (RDS),AD,eyeGene,Y,Binghao,,,fall 2017,17401.pdf,NEI_INVTR106KDR.json,17401.pdf
+NEI_INVTR368NYJ,RHO,AD,eyeGene,,Binghao,"two probands, should all of the shading counted as retinal diseases?",,fall 2017,43397.pdf,NEI_INVTR368NYJ.json,43397.pdf
+NEI_INVTU321XN5,BEST1,AD,eyeGene,Y,Binghao,,,fall 2017,18752.pdf,NEI_INVTU321XN5.json,18752.pdf
+NEI_INVTV167NUE,GUCY2D,AD,eyeGene,Y,Binghao,,,fall 2017,12889.pdf,NEI_INVTV167NUE.json,12889.pdf
+NEI_INVTV261VMB,RHO,AD,eyeGene,Y,Binghao,,,fall 2017,30072.pdf,NEI_INVTV261VMB.json,30072.pdf
+NEI_INVTX385WJH,ND6,Mitochondrial,eyeGene,Y,Jason,,,fall 2017,14721.pdf,NEI_INVTX385WJH.json,14721.pdf
+NEI_INVTY339PYY,RPGR,XL,eyeGene,Y,Jason,,,fall 2017,13639.pdf,NEI_INVTY339PYY.json,13639.pdf
+NEI_INVUF476XMD,TIMP3,AD,eyeGene,Y,Jason,,,fall 2017,14324.pdf,NEI_INVUF476XMD.json,14324.pdf
+NEI_INVUJ931WBX,PRPF31,AD,eyeGene,Y,Jason,,,fall 2017,25857.pdf,NEI_INVUJ931WBX.json,25857.pdf
+NEI_INVUP435XX5,ABCA4,AR,eyeGene,Y,Jason,,,fall 2017,17978.pdf,NEI_INVUP435XX5.json,17978.pdf
+NEI_INVUP593ZEZ,RP1,AR,eyeGene,Y,Simon,,,fall 2017,30134.pdf,NEI_INVUP593ZEZ.json,30134.pdf
+NEI_INVUY628MYF,RPGR,XL,eyeGene,Y,Simon,,,fall 2017,16041.pdf,NEI_INVUY628MYF.json,16041.pdf
+NEI_INVVA212BAL,GUCY2D,AD,eyeGene,Y,Simon,,,fall 2017,12886.pdf,NEI_INVVA212BAL.json,12886.pdf
+NEI_INVVA744LZ4,RPGR,XL,eyeGene,Y,Simon,,,fall 2017,18516.pdf,NEI_INVVA744LZ4.json,18516.pdf
+NEI_INVVD274UGD,RPGR,XL,eyeGene,Y,Simon,,,fall 2017,19003.pdf,NEI_INVVD274UGD.json,19003.pdf
+NEI_INVVD368XUB,EYS,AR,eyeGene,Y,Simon,,,fall 2017,18518.pdf,NEI_INVVD368XUB.json,18518.pdf
+NEI_INVVD680TNA,PRPH2 (RDS),AD,eyeGene,Y,Simon,,,fall 2017,18751.pdf,NEI_INVVD680TNA.json,18751.pdf
+NEI_INVVF153ZEA,IMPDH1,AD,eyeGene,,,cant find image,,fall 2017,51465.pdf,NEI_INVVF153ZEA.json,51465.pdf
+NEI_INVVF245NUH,ABCA4,AR,eyeGene,Y,Simon,,,fall 2017,39136.pdf,NEI_INVVF245NUH.json,39136.pdf
+NEI_INVVH314FE8,PRPF3,AD,eyeGene,Y,Simon,,,fall 2017,38906.pdf,NEI_INVVH314FE8.json,38906.pdf
+NEI_INVVJ880XAQ,ABCA4,AR,eyeGene,Y,Simon,,,fall 2017,27146.pdf,NEI_INVVJ880XAQ.json,27146.pdf
+NEI_INVVR788HXB,NR2E3,AD,eyeGene,Y,Simon,,,fall 2017,23798.pdf,NEI_INVVR788HXB.json,23798.pdf
+NEI_INVVV014NBL,CHM,XL,eyeGene,,Simon,proband unknown or not,,fall 2017,39323.pdf,NEI_INVVV014NBL.json,39323.pdf
+NEI_INVVX276WR0,ABCA4,AR,eyeGene,,Simon,json problem. need redraw,,fall 2017,43256.pdf,NEI_INVVX276WR0.json,43256.pdf
+NEI_INVVZ646KYZ,SNRNP200,AD,eyeGene,Y,Simon,,,fall 2017,26272.pdf,NEI_INVVZ646KYZ.json,26272.pdf
+NEI_INVWA923NUY,TYR,AR,eyeGene,Y,Simon,,,fall 2017,22271.pdf,NEI_INVWA923NUY.json,22271.pdf
+NEI_INVWB058TN4,ELOVL4,AD,eyeGene,Y,Simon,,,fall 2017,31599.pdf,NEI_INVWB058TN4.json,31599.pdf
+NEI_INVWE417LNR,PRPH2 (RDS),AD,eyeGene,Y,Simon,,,fall 2017,10595.pdf,NEI_INVWE417LNR.json,10595.pdf
+NEI_INVWH233AD3,RPGR,XL,eyeGene,,,,,fall 2017,27105.pdf,NEI_INVWH233AD3.json,27105.pdf
+NEI_INVWJ126HVH,CNGA3,AR,eyeGene,Y,Simon,,,fall 2017,25562.pdf,NEI_INVWJ126HVH.json,25562.pdf
+NEI_INVWK955WP6,PRPH2 (RDS),AD,eyeGene,Y,Simon,,,fall 2017,18750.pdf,NEI_INVWK955WP6.json,18750.pdf
+NEI_INVWL948EJX,RHO,AD,eyeGene,Y,Simon,,,fall 2017,21116.pdf,NEI_INVWL948EJX.json,21116.pdf
+NEI_INVWM047XF4,BEST1,AR,eyeGene,,Binghao,OCA? juvenile macular degeneration?,,fall 2017,23455.pdf,NEI_INVWM047XF4.json,23455.pdf
+NEI_INVWP039HAB,RPGR,XL,eyeGene,Y,Binghao,,,fall 2017,42191.pdf,NEI_INVWP039HAB.json,42191.pdf
+NEI_INVWU131JB2,PRPH2,AD,eyeGene,,Binghao,No image file,,fall 2017,48902.pdf,NEI_INVWU131JB2.json,48902.pdf
+NEI_INVXB405EVE,XLRS1,XL,eyeGene,Y,Binghao,,,fall 2017,42333.pdf,NEI_INVXB405EVE.json,42333.pdf
+NEI_INVXC997YD9,ABCA4,AR,eyeGene,Y,Binghao,,,fall 2017,33579.pdf,NEI_INVXC997YD9.json,33579.pdf
+NEI_INVXL209KEN,NR2E3,AD,eyeGene,,Binghao,no proband,,fall 2017,22343.docx,NEI_INVXL209KEN.json,22343.pdf
+NEI_INVXL241WCX,SNRNP200,AD,eyeGene,Y,Binghao,,,fall 2017,14423.pdf,NEI_INVXL241WCX.json,14423.pdf
+NEI_INVXP861TMQ,RP2,XL,eyeGene,,Binghao,No image file,,fall 2017,49334.pdf,NEI_INVXP861TMQ.json,49334.pdf
+NEI_INVXT811ZXX,ABCA4,AR,eyeGene,Y,Binghao,,,fall 2017,15187.pdf,NEI_INVXT811ZXX.json,15187.pdf
+NEI_INVYB004CPH,RP2,XL,eyeGene,Y,Binghao,,,fall 2017,33786.pdf,NEI_INVYB004CPH.json,33786.pdf
+NEI_INVYC319FF1,RPGR,XL,eyeGene,Y,Binghao,"different shading, same disease",,fall 2017,18543.pdf,NEI_INVYC319FF1.json,18543.pdf
+NEI_INVYJ899VCF,RPGR,XL,eyeGene,Y,Binghao,,,fall 2017,14707.pdf,NEI_INVYJ899VCF.json,14707.pdf
+NEI_INVYP210BUJ,BEST1,AD,eyeGene,Y,Binghao,,,fall 2017,38437.pdf,NEI_INVYP210BUJ.json,38437.pdf
+NEI_INVYY367HCY,GUCY2D,AR,eyeGene,Y,Binghao,,,fall 2017,13951.pdf,NEI_INVYY367HCY.json,13951.pdf
+NEI_INVZA659LWW,CHM,XL,eyeGene,Y,Binghao,,,fall 2017,19272.pdf,NEI_INVZA659LWW.json,19272.pdf
+NEI_INVZB583XLC,RP2,XL,eyeGene,Y,Binghao,,,fall 2017,11219.pdf,NEI_INVZB583XLC.json,11219.pdf
+NEI_INVZB638WT9,GUCY2D,AD,eyeGene,Y,Binghao,,,fall 2017,12887.pdf,NEI_INVZB638WT9.json,12887.pdf
+NEI_INVZD802TH4,RPGR,XL,eyeGene,Y,Binghao,,,fall 2017,22235.pdf,NEI_INVZD802TH4.json,22235.pdf
+NEI_INVZE223GZ1,BEST1,AR,eyeGene,Y,Binghao,,,fall 2017,29850.pdf,NEI_INVZE223GZ1.json,29850.pdf
+NEI_INVZF657LJ0,ABCA4,AR,eyeGene,Y,Binghao,,,fall 2017,27214.pdf,NEI_INVZF657LJ0.json,27214.pdf
+NEI_INVZG068WHA,RPGR,XL,eyeGene,Y,Binghao,,,fall 2017,18515.pdf,NEI_INVZG068WHA.json,18515.pdf
+NEI_INVZH058FCF,ABCA4,AR,eyeGene,Y,Binghao,,,fall 2017,20759.pdf,NEI_INVZH058FCF.json,20759.pdf
+NEI_INVZU573HP5,CYP4V2,AR,eyeGene,Y,Binghao,,,fall 2017,13621.pdf,NEI_INVZU573HP5.json,13621.pdf
+NEI_INVZX275NXN,XLRS1,XL,eyeGene,,Binghao,No image file,,fall 2017,3824.pdf,NEI_INVZX275NXN.json,3824.pdf
+NEI_INVZY488CEP,ABCA4,AR,eyeGene,Y,Binghao,,,fall 2017,30806.pdf,NEI_INVZY488CEP.json,30806.pdf
+NEI_INVZZ306WVJ,RPGR,XL,eyeGene,Y,Binghao,,,fall 2017,31122.pdf,NEI_INVZZ306WVJ.json,31122.pdf

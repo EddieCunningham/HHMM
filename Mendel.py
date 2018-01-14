@@ -5,7 +5,6 @@ from Distributions import Categorical
 import numpy as np
 from cycleDetector import identifyCycles
 
-import sys
 
 class AutosomalMendelModel():
 
@@ -158,11 +157,6 @@ class AutosomalMendelModel():
         for i, graph in enumerate( self.graphs ):
             graph.resampleGraphStates()
 
-            if( int( i / nGraphs * 100 ) % 10 == 0 ):
-                print( '.', end=' ' )
-                sys.stdout.flush()
-        print('\n')
-
     def resample( self ):
         # Sample from P( X, θ | Y )
 
@@ -195,3 +189,4 @@ class AutosomalMendelModel():
             val += self.emissionDists[ i ].log_likelihood()
 
         return val
+
