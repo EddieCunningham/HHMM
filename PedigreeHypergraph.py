@@ -1,7 +1,6 @@
 from HHMMMessagePasser import HiddenMarkovModelMessagePasser
 from HHMMHG import MessagePassingHG
 from HHMMNode import NodeForHMM
-from AutosomalDistribution import hyperGraphBaseHyperParameters
 
 def getY( person ):
     if( 'diagnoses' in dir( person ) ):
@@ -95,8 +94,3 @@ class PedigreeHG( MessagePassingHG ):
                     familyEdge.addChild( childNode )
 
         super( PedigreeHG, self ).initialize()
-
-    # get rid of this later.  this is specific to bayesian stuff
-    def initHyperParams( self, transType, emissionType, priorStrength=1 ):
-        self._initialHyperParams = hyperGraphBaseHyperParameters( self, transType, emissionType, priorStrength )
-        self._hyperParams = hyperGraphBaseHyperParameters( self, transType, emissionType, priorStrength )

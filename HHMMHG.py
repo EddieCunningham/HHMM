@@ -94,38 +94,6 @@ class MessagePassingHG( BaseHyperGraph ):
     def resample( self ):
         self.resampleGraphStates()
 
-    def graphIterate( self, nodeWork ):
-
-        current = []
-        visited = set()
-
-        for root in self.roots:
-            nodeWork( root )
-            visited.add( root._id )
-
-            for edge in root._downEdges:
-                current.extend( edge._children )
-
-        current = list( set( current ) )
-
-        while( len( current ) > 0 ):
-
-            nextCurrent = []
-            for node in current:
-                if( node._id in visited ):
-                    continue
-                if( len( [ n for n in node._parents if n._id not in visited ] ) == 0 ):
-
-                    nodeWork( node )
-                    visited.add( node._id )
-
-                    for edge in node._downEdges:
-                        nextCurrent.extend( edge._children)
-                else:
-                    nextCurrent.append( node )
-
-            current = list( set( nextCurrent ) )
-
     def log_joint( self ):
         # P( Y, X | θ )
         self.workspace = LogVar( 1 )

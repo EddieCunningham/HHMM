@@ -4,7 +4,7 @@ from HHMMHG import MessagePassingHG
 from Distributions import Categorical
 import numpy as np
 from cycleDetector import identifyCycles
-
+from util import RunningStats
 
 class AutosomalMendelModel():
 
@@ -33,6 +33,23 @@ class AutosomalMendelModel():
             graph.draw()
 
         self.resample()
+
+    def transitionTensor( self ):
+
+        tensor = []
+        for i, matHyper in enumerate( self._transHypers ):
+            matrix = []
+            for j, transHyper in enumerate( matHyper ):
+                matrix.append( self.transDists[ i ][ j ].probabilities() )
+            tensor.append( matrix )
+        return np.array( tensor )
+
+    def emissionMatrix( self ):
+
+        matrix = []
+        for emissionHyper in self._emissionHypers:
+            matrix.append( self.emissionDists[ i ].probabilities() )
+        return np.array( matrix )
 
     # Closure so that to the graph the root distributions
     # look the same way as the transition and emission
@@ -170,7 +187,7 @@ class AutosomalMendelModel():
 
         val = 0
 
-        for graph in self.graphs:
+        for i, graph in enumerate( self.graphs ):
 
             # P( Y, X | A, L, π )
             val += graph.log_joint()
@@ -190,3 +207,17 @@ class AutosomalMendelModel():
 
         return val
 
+    def modelEvidence( self, mixin=20, samples=50 ):
+        # Use monte carlo integration to approximate P( Y )
+
+        # Let the chain mix
+        for i in range( mixin ):
+            self.resample()
+
+        # Accumulate the integral
+        integral = RunningStats( useLogVar=True )
+        for i in range( samples ):
+            self.resample()
+            integral.pushVal( self.log_joint(), isLog=True )
+
+        return ( integral.log_mean(), integral.log_variance() )

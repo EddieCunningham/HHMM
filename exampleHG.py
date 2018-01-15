@@ -1,7 +1,6 @@
-from AutosomalDistribution import generic2DParameters
+from Parameters import generic2DParameters
 from HHMMMessagePasser import HiddenMarkovModelMessagePasser
 from HHMMHG import MessagePassingHG
-from MMUpDown import MarkovModelMessagePasser
 
 def cycleExample1( hiddenStateSize=2, obsSize=2, isHidden=True, initParams=True ):
     hg = MessagePassingHG( N=hiddenStateSize, NObs=obsSize )

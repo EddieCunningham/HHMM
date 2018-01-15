@@ -37,16 +37,16 @@ def logAdd( logA, sgnA, logB, sgnB ):
         # either computing ( a - b ) or -( a - b )
         if( sgnA == 1 ):
             # computing a - b
-            if( logB > logA ):
-                return ( _logSub( logB, logA ), -1 )
-            else:
+            if( logA > logB ):
                 return ( _logSub( logA, logB ), 1 )
+            else:
+                return ( _logSub( logB, logA ), -1 )
         else:
             # computing b - a
-            if( logB < logA ):
-                return ( _logSub( logB, logA ), -1 )
+            if( logB > logA ):
+                return ( _logSub( logB, logA ), 1 )
             else:
-                return ( _logSub( logA, logB ), 1 )
+                return ( _logSub( logA, logB ), -1 )
 
 def logMul( logA, sgnA, logB, sgnB ):
     if( logA == ZERO or logB == ZERO ):
@@ -75,12 +75,15 @@ def extractVal( val, sgn=None ):
         return ( ZERO, 1 )
 
     if( sgn is not None ):
-        return ( np.log( val ), sgn )
+        if( val > 0 ):
+            return ( np.log( val ), sgn )
+        else:
+            return ( np.log( -val ), sgn )
 
     if( val > 0 ):
         return ( np.log( val ), 1 )
 
-    return ( np.log( val ), -1 )
+    return ( np.log( -val ), -1 )
 
 class LogVar():
     def __init__( self, val=None, sgn=None, isLog=False ):
@@ -161,6 +164,9 @@ class LogVar():
             return 0
         return np.exp( self.logVal )
 
+    def logValue( self ):
+        return self.logVal * self.sgn
+
     def isZero( self ):
         return self.logVal == 'ZERO'
 
@@ -185,13 +191,8 @@ def test():
         val1 += val2
         print( val1.logVal )
 
-# a = LogVar( 0 )
+# a = LogVar( val=1.2, isLog=True )
+# print( a )
 # a += 4
-# a -= 2
-# a *= 1.3
-# a /= 59
-# a += 3
-# a -= 1.2
-# b = LogVar( 0.12 )
-# a -= b
+
 # print( a )

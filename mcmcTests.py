@@ -1,6 +1,7 @@
 from Mendel import AutosomalMendelModel
 from HGTest import marginalizeTest
 import numpy as np
+from scipy.stats import mode
 
 """ State marginalization test """
 
@@ -19,24 +20,17 @@ def ratioTest( model ):
     model.useFakeY()
 
     log_cond1 = 0
-    log_joint1 = 0
+    log_joint1 = model.log_joint()
     for i, graph in enumerate( model.graphs ):
         log_cond1  += graph.log_likelihood()
-        log_joint1 += graph.log_joint()
-        for j, root in enumerate( graph.roots ):
-            log_joint1 += model.rootDists[ i ][ j ].log_likelihood()
 
     for graph in model.graphs:
         graph.resampleEmissions()
 
     log_cond2 = 0
-    log_joint2 = 0
+    log_joint2 = model.log_joint()
     for i, graph in enumerate( model.graphs ):
         log_cond2  += graph.log_likelihood()
-        log_joint2 += graph.log_joint()
-        for j, root in enumerate( graph.roots ):
-            log_joint2 += model.rootDists[ i ][ j ].log_likelihood()
-
 
     if( not np.isclose( log_cond1 - log_cond2, log_joint1 - log_joint2 ) ):
         print('Failed the ratio test!')
@@ -56,8 +50,7 @@ def ratioTest( model ):
 
 """ Gewek test """
 
-
-def _forwardSample( model ):
+def forwardSample( model ):
     # Sample from P( θ )
     for i, graph in enumerate( model.graphs ):
         for j, root in enumerate( graph.roots ):
@@ -67,7 +60,7 @@ def _forwardSample( model ):
     for graph in model.graphs:
         graph.resampleGraphStatesAndEmissions()
 
-def _fullGibbsSample( model ):
+def fullGibbsSample( model ):
     # Sample from P( X, θ | Y )
     model.resample()
 
@@ -75,10 +68,35 @@ def _fullGibbsSample( model ):
     for graph in model.graphs:
         graph.resampleEmissions()
 
-def _collectStats( model ):
-    assert 0
+def accumulateStats( model, accumulators ):
 
-def _compareStats( model, stats1, stats2 ):
+    allStates = []
+    for graph in model.graphs:
+        for node in graph.nodes:
+            allStates.append( node.x )
+    allStates = np.array( allStates )
+
+    # state mean
+    meanState = np.mean( allStates )
+
+    # state mode
+    ( ( modeState, ),_ ) = mode( allStates )
+
+    # state variance
+    stateVar = np.var( allStates )
+
+    # mean transition trace
+    transTr = np.mean( np.trace( model.transitionTensor() ) )
+
+    # mean transition determinant
+    transDet = np.mean( np.linalg.det( model.transitionTensor() ) )
+
+    allStats = ( meanState, modeState, stateVar, transTr, transDet )
+    for stat, acc in zip( allStats, accumulators ):
+        acc.pushVal( stat )
+
+def compareStats( model, stats1, stats2 ):
+    # probably just plot things
     assert 0
 
 def gewekeTest( model ):
@@ -87,17 +105,18 @@ def gewekeTest( model ):
     #  2. P( X, θ | Y ), then P( Y | X, θ )
     # And make sure that they agree
 
-
     nIters = 1000
+    stats1 = [ RunningStats( checkpoint=10 ) for _ in range( 5 ) ]
+    stats2 = [ RunningStats( checkpoint=10 ) for _ in range( 5 ) ]
 
     stats1 = []
     for i in range( nIters ):
-        model._forwardSample()
-        stats1.append( model._collectStats() )
+        forwardSample( model )
+        accumulateStats( model, stats1 )
 
     stats2 = []
     for i in range( nIters ):
-        model._fullGibbsSample()
-        stats2.append( model._collectStats() )
+        fullGibbsSample( model )
+        accumulateStats( model, stats2 )
 
-    model._compareStats( stats1, stats2 )
+    model.compareStats( stats1, stats2 )

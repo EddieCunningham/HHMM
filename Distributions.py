@@ -38,6 +38,9 @@ class Categorical():
 
         self.N = self._probs.shape[ 0 ]
 
+    def probabilities( self ):
+        return self._probs
+
     def resample( self, newAlpha=None, observations=None ):
 
         if( observations is not None ):
