@@ -1,15 +1,34 @@
 from __future__ import division
 import numpy as np
 ZERO = 'ZERO'
-UNDERFLOW = 500
+UNDERFLOW = 20
+
+# https://cran.r-project.org/web/packages/Rmpfr/vignettes/log1mexp-note.pdf
+def log1pexp( x ):
+    # np.log1p( np.exp( x )
+    if( x < -37 ):
+        return np.exp( x )
+    elif( x <= 18 ):
+        return np.log1p( np.exp( x ) )
+    elif( x <= 33.3 ):
+        return x + np.exp( -x )
+    else:
+        return x
+
+def log1mexp( x ):
+    # np.log1p( -np.exp( x ) )
+    if( x > -np.log( 2 ) ):
+        return np.log( -( np.exp( x ) - 1 ) )
+    else:
+        return np.log1p( -np.exp( x ) )
 
 def _logAdd( logA, logB ):
     # compute log( A + B ) using log( A ) and log( B )
-    return logA + np.log1p( np.exp( logB - logA ) )
+    return logA + log1pexp( logB - logA )
 
 def _logSub( logA, logB ):
     # compute log( A - B ) using log( A ) and log( B )
-    return logA + np.log1p( -np.exp( logB - logA ) )
+    return logA + log1mexp( logB - logA )
 
 def logAdd( logA, sgnA, logB, sgnB ):
     if( logA == ZERO ):
@@ -27,13 +46,17 @@ def logAdd( logA, sgnA, logB, sgnB ):
     if( sgnA == sgnB ):
         # either computing ( a + b ) or -( a + b )
 
-        if( logB < logA ):
-            # make sure that the # that goes into np.exp isn't too big
+        if( logB > logA ):
+            # ideally want logB - logA to be big
             return _logAdd( logA, logB ), sgnA
         else:
             return _logAdd( logB, logA ), sgnA
 
     else:
+
+        if( np.isclose( logA, logB, rtol=1e-20, atol=1e-20 ) ):
+            return ZERO, 1
+
         # either computing ( a - b ) or -( a - b )
         if( sgnA == 1 ):
             # computing a - b
@@ -119,7 +142,7 @@ class LogVar():
         return self.genericOperator( other, logAdd )
 
     def __radd__( self, other ):
-        return self+other
+        return self + other
 
     def __iadd__( self, other ):
         return self.iGenericOperator( other, logAdd )
@@ -130,7 +153,9 @@ class LogVar():
         return self.genericOperator( other, logAdd, otherNeg=True )
 
     def __rsub__( self, other ):
-        return self+other
+        ans = self - other
+        ans.sgn *= -1
+        return ans
 
     def __isub__( self, other ):
         return self.iGenericOperator( other, logAdd, otherNeg=True )
@@ -141,7 +166,7 @@ class LogVar():
         return self.genericOperator( other, logMul )
 
     def __rmul__( self, other ):
-        return self*other
+        return self * other
 
     def __imul__( self, other ):
         return self.iGenericOperator( other, logMul )
@@ -159,16 +184,11 @@ class LogVar():
     def __pow__( self, exponent ):
         return LogVar( val=self.logVal * float( exponent ), isLog=True )
 
-    def toFloat( self ):
-        if( self.logVal == ZERO ):
-            return 0
-        return np.exp( self.logVal )
-
     def logValue( self ):
         return self.logVal * self.sgn
 
     def isZero( self ):
-        return self.logVal == 'ZERO'
+        return self.logVal == ZERO
 
     def __float__( self ):
         if( self.logVal == ZERO ):
@@ -191,8 +211,6 @@ def test():
         val1 += val2
         print( val1.logVal )
 
-# a = LogVar( val=1.2, isLog=True )
-# print( a )
-# a += 4
+# a = LogVar( val=1 )
 
-# print( a )
+# print( 4 - a )

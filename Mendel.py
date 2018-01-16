@@ -5,6 +5,7 @@ from Distributions import Categorical
 import numpy as np
 from cycleDetector import identifyCycles
 from util import RunningStats
+import sys
 
 class AutosomalMendelModel():
 
@@ -32,7 +33,7 @@ class AutosomalMendelModel():
             graph.preprocess( feedbackSetIds )
             graph.draw()
 
-        self.resample()
+        # self.resample()
 
     def transitionTensor( self ):
 
@@ -168,14 +169,15 @@ class AutosomalMendelModel():
                 self.rootDists[ i ][ j ].resample( observations=obs )
 
     def resampleGraphs( self ):
-        # Sample from P( X | θ, Y )
+        # Sample from P( X | A, L, π, Y )
 
         nGraphs = len( self.graphs )
         for i, graph in enumerate( self.graphs ):
             graph.resampleGraphStates()
 
+
     def resample( self ):
-        # Sample from P( X, θ | Y )
+        # Sample from P( X, A, L, π | Y )
 
         self.resampleGraphs()
         self.resampleTransitionDistribution()
@@ -190,20 +192,28 @@ class AutosomalMendelModel():
         for i, graph in enumerate( self.graphs ):
 
             # P( Y, X | A, L, π )
-            val += graph.log_joint()
+            _val = graph.log_joint()
+            # print( 'graph.log_joint(): %f'%_val )
+            val += _val
 
             # P( π )
             for j, root in enumerate( graph.roots ):
-                val += self.rootDists[ i ][ j ].log_likelihood()
+                _val = self.rootDists[ i ][ j ].log_likelihood()
+                # print( 'self.rootDists[ %d ][ %d ].log_likelihood(): %f'%( i, j, _val ) )
+                val += _val
 
         # P( A )
         for i, matHyper in enumerate( self._transHypers ):
             for j, transHyper in enumerate( matHyper ):
-                val += self.transDists[ i ][ j ].log_likelihood()
+                _val = self.transDists[ i ][ j ].log_likelihood()
+                # print( 'self.transDists[ %d ][ %d ].log_likelihood(): %f'%( i, j, _val ) )
+                val += _val
 
         # P( L )
         for i, emissionHyper in enumerate( self._emissionHypers ):
-            val += self.emissionDists[ i ].log_likelihood()
+            _val = self.emissionDists[ i ].log_likelihood()
+            # print( 'self.emissionDists[ %d ].log_likelihood(): %f'%( i, _val ) )
+            val += _val
 
         return val
 
@@ -213,11 +223,24 @@ class AutosomalMendelModel():
         # Let the chain mix
         for i in range( mixin ):
             self.resample()
+            joint = self.log_joint()
+            # print( 'joint: %f'%joint )
+            # sys.stdout.flush()
 
         # Accumulate the integral
         integral = RunningStats( useLogVar=True )
         for i in range( samples ):
             self.resample()
-            integral.pushVal( self.log_joint(), isLog=True )
+            joint = self.log_joint()
+            # print( 'joint: %f'%joint )
+            if( i%4 == 0 ):
+                integral.pushVal( joint, isLog=True )
+
+            if( i < 20 ):
+                continue
+            # print( integral.log_mean() )
+            # print( integral.log_variance() )
+            print('%d, %f, %f'%( i, integral.log_mean(), integral.log_variance() ))
+            sys.stdout.flush()
 
         return ( integral.log_mean(), integral.log_variance() )

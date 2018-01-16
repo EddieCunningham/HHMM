@@ -3,7 +3,9 @@
 
 #define ZERO true
 #define NOTZERO false
-#define LOG_UNDERFLOW 500
+#define POSITIVE true
+#define NEGATIVE false
+#define LOG_UNDERFLOW 20
 #define EQUAL_TOLERANCE 1e-5
 
 #include <iostream>
@@ -12,7 +14,8 @@ typedef float lvFloat;
 
 struct lv {
     lvFloat f;
-    bool    i = NOTZERO;
+    bool    i   = NOTZERO;
+    bool    sng = POSITIVE;
 };
 
 class LogVar {
@@ -20,10 +23,10 @@ class LogVar {
 private:
     lv _logVal;
 
-    static lv _logAdd    ( lv log_x, lv log_y );
-    static lv _logMul    ( lv log_x, lv log_y );
-    static lv _logDiv    ( lv log_x, lv log_y );
-    static lv _parseFloat( lvFloat f          );
+    static lv logAdd    ( lv log_x, lv log_y );
+    static lv logMul    ( lv log_x, lv log_y );
+    static lv logDiv    ( lv log_x, lv log_y );
+    static lv parseFloat( lvFloat f          );
 
 public:
 

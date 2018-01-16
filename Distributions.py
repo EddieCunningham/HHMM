@@ -15,7 +15,7 @@ class Dirichlet():
 
     def sample( self, newAlpha=None ):
         if( newAlpha ):
-            return Dirichlet.sample( newAlpha )
+            return Dirichlet( newAlpha ).sample()
         return self._dir.rvs( 1 )[ 0 ]
 
     def pdf( self, probs ):
@@ -41,17 +41,14 @@ class Categorical():
     def probabilities( self ):
         return self._probs
 
-    def resample( self, newAlpha=None, observations=None ):
+    def resample( self, observations=None ):
+
+        newAlpha = self.alpha
 
         if( observations is not None ):
-            # print( self.alpha )
-            # print( observations )
-            newAlpha = self.alpha + observations
+            newAlpha += observations
 
-        if( newAlpha is not None ):
-            self._probs = Dirichlet( newAlpha ).sample()
-        else:
-            self._probs = self._prior.sample()
+        self._probs = Dirichlet( newAlpha ).sample()
         return self._probs
 
     def sample( self, newParams=None ):
@@ -62,7 +59,7 @@ class Categorical():
     def pdf( self, i ):
         return self._probs[ i ]
 
-    def log_pdf( self, i ):
+    def logpdf( self, i ):
         return np.log( self.pdf( i ) )
 
     def log_likelihood( self ):
@@ -76,7 +73,6 @@ class Categorical():
     def sample( probs, normalized=False ):
 
         N = len( probs )
-        # print('probs: '+str(probs))
 
         if( normalized == False ):
 
@@ -89,23 +85,13 @@ class Categorical():
                 probs = np.array( [ float( p ) for p in probs ] )
 
             if( not np.isclose( reduce( lambda x,y: x+y, probs ), 1.0 ) ):
-                print( probs )
-                print( reduce( lambda x,y: x+y, probs ) )
-                print( reduce( lambda x,y: x+y, probs ) - 1.0 )
                 assert 0
 
         else:
             if( not np.isclose( reduce( lambda x,y: x+y, probs ), 1.0 ) ):
-                print( probs )
-                print( reduce( lambda x,y: x+y, probs ) )
-                print( reduce( lambda x,y: x+y, probs ) - 1.0 )
                 assert 0
 
             if( isinstance( probs, list ) or isinstance( probs, tuple ) ):
                 probs = np.array( probs )
 
         return np.random.choice( N, 1, p=probs )[ 0 ]
-
-    # @staticmethod
-    # def pdf( probs, i ):
-    #     return probs[ i ]

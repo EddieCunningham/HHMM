@@ -52,7 +52,7 @@ class NodeForHMM( NodeBase ):
     """ ------------------------------------------------------------------------------------ """
 
     def aKey( self, conditioning ):
-        actualCond = {k:v for k, v in conditioning.items() if k in self._aDeps}
+        actualCond = { k:v for k, v in conditioning.items() if k in self._aDeps }
         key = self.keyFromCond( actualCond )
         return key
 
@@ -77,7 +77,6 @@ class NodeForHMM( NodeBase ):
             assert 0
 
     def getA( self, edge, i, conditioning, depth=0 ):
-        assert depth < 8
 
         key = self.aKey( conditioning )
 
@@ -97,7 +96,6 @@ class NodeForHMM( NodeBase ):
         return aVal
 
     def _computeA( self, edge, i, conditioning, depth=0 ):
-        assert depth < 8
 
         a_ = LogVar( 1 )
 
@@ -122,7 +120,7 @@ class NodeForHMM( NodeBase ):
         margOut = filter( lambda n:n not in nodesToKeep and n in self._aDeps, feedbackSet )
         a = LogVar( 0 )
         for X in itertools.product( *[ range( n.N ) for n in margOut ] ):
-            conditioning = {node:_i for node, _i in zip( margOut, X )}
+            conditioning = { node:_i for node, _i in zip( margOut, X ) }
             conditioning.update( nodesToKeep )
             a += self.getA( edge, i, conditioning )
         return a
@@ -150,7 +148,7 @@ class NodeForHMM( NodeBase ):
     """ ------------------------------------------------------------------------------------ """
 
     def bKey( self, conditioning ):
-        actualCond = {k:v for k, v in conditioning.items() if k in self._bDeps}
+        actualCond = { k:v for k, v in conditioning.items() if k in self._bDeps }
         key = self.keyFromCond( actualCond )
         return key
 
@@ -171,7 +169,6 @@ class NodeForHMM( NodeBase ):
             assert 0
 
     def getB( self, X, conditioning, depth=0 ):
-        assert depth < 8
 
         key = self.bKey( conditioning )
 
@@ -190,7 +187,6 @@ class NodeForHMM( NodeBase ):
         return bVal
 
     def _computeB( self, X, conditioning, depth=0 ):
-        assert depth < 8
 
         b_ = LogVar( 0 )
 
@@ -214,7 +210,7 @@ class NodeForHMM( NodeBase ):
         margOut = filter( lambda n:n not in nodesToKeep and n in self._bDeps, feedbackSet )
         b = LogVar( 0 )
         for _X in itertools.product( *[ range( n.N ) for n in margOut ] ):
-            conditioning = {node:i for node, i in zip( margOut, _X )}
+            conditioning = { node:i for node, i in zip( margOut, _X ) }
             conditioning.update( nodesToKeep )
             b += self.getB( X, conditioning )
         return b
@@ -238,7 +234,7 @@ class NodeForHMM( NodeBase ):
     """ ------------------------------------------------------------------------------------ """
 
     def UKey( self, conditioning ):
-        actualCond = {k:v for k, v in conditioning.items() if k in self._UDeps}
+        actualCond = { k:v for k, v in conditioning.items() if k in self._UDeps }
         key = self.keyFromCond( actualCond )
         return key
 
@@ -253,7 +249,6 @@ class NodeForHMM( NodeBase ):
         return LogVar( self._U[ i ][ key ] )
 
     def getU( self, i, conditioning, depth=0 ):
-        assert depth < 8
 
         key = self.UKey( conditioning )
 
@@ -272,7 +267,6 @@ class NodeForHMM( NodeBase ):
         return uVal
 
     def _computeU( self, i, conditioning, depth=0 ):
-        assert depth < 8
 
         parents = self._parents
         if( len( parents ) == 0 or self.inFBS ):
@@ -314,7 +308,7 @@ class NodeForHMM( NodeBase ):
         margOut = filter( lambda n:n not in nodesToKeep and n in self._UDeps, feedbackSet )
         u = LogVar( 0 )
         for X in itertools.product( *[ range( n.N ) for n in margOut ] ):
-            conditioning = {node:i for node, i in zip( margOut, X )}
+            conditioning = { node:i for node, i in zip( margOut, X ) }
             conditioning.update( nodesToKeep )
             u += self.getU( i, conditioning )
         return u
@@ -342,7 +336,7 @@ class NodeForHMM( NodeBase ):
     """ ------------------------------------------------------------------------------------ """
 
     def VKey( self, conditioning ):
-        actualCond = {k:v for k, v in conditioning.items() if k in self._VDeps}
+        actualCond = { k:v for k, v in conditioning.items() if k in self._VDeps }
         key = self.keyFromCond( actualCond )
         return key
 
@@ -359,7 +353,6 @@ class NodeForHMM( NodeBase ):
         return LogVar( self._V[ edge ][ i ][ key ] )
 
     def getV( self, edge, i, conditioning, depth=0 ):
-        assert depth < 8
 
         key = self.VKey( conditioning )
 
@@ -379,7 +372,6 @@ class NodeForHMM( NodeBase ):
         return vVal
 
     def _computeV( self, edge, i, conditioning, depth=0 ):
-        assert depth < 8
 
         if( self.inFBS or len( self._downEdges ) == 0 ):
             return LogVar( 1 )
@@ -414,7 +406,7 @@ class NodeForHMM( NodeBase ):
         margOut = filter( lambda n:n not in nodesToKeep and n in self._VDeps, feedbackSet )
         v = LogVar( 0 )
         for X in itertools.product( *[ range( n.N ) for n in margOut ] ):
-            conditioning = {node:i for node, i in zip( margOut, X )}
+            conditioning = { node:i for node, i in zip( margOut, X ) }
             conditioning.update( nodesToKeep )
             v += self.getV( edge, i, conditioning )
         return v
@@ -456,7 +448,7 @@ class NodeForHMM( NodeBase ):
 
                 total = LogVar( 0 )
                 for X in itertools.product( *[ range( n.N ) for n in feedbackSet ] ):
-                    conditioning = {node:_i for node, _i in zip( feedbackSet, X )}
+                    conditioning = { node:_i for node, _i in zip( feedbackSet, X ) }
 
                     prod = self.getU( i, conditioning )
 
@@ -473,7 +465,7 @@ class NodeForHMM( NodeBase ):
 
                 total = LogVar( 0 )
                 for X in itertools.product( *[ range( n.N ) for n in feedbackSet ] ):
-                    conditioning = {node:_i for node, _i in zip( feedbackSet, X )}
+                    conditioning = { node:_i for node, _i in zip( feedbackSet, X ) }
 
                     total += self.getU( i, conditioning ) * self.sortaRootProb( conditioning )
 

@@ -146,31 +146,30 @@ class BaseHyperGraph( object ):
             if( len( e._children ) == 0 ):
                 raise Exception('Can\'t have an edge with no children!!!!')
 
-        # # check if the graph is disjoint
-        # aLeaf = list( self.leaves )[ 0 ]
-        # current = [ aLeaf ]
-        # visited = set( current )
+        # check if the graph is disjoint
+        aLeaf = list( self.leaves )[ 0 ]
+        current = [ aLeaf ]
+        visited = set()
 
-        # while( len( current ) > 0 ):
+        while( len( current ) > 0 ):
 
-        #     nextCurrent = []
+            nextCurrent = []
 
-        #     for node in current:
-        #         if( node in visited ): continue
+            for node in current:
+                if( node in visited ): continue
 
-        #         for parent in node._parents:
-        #             nextCurrent.append( parent )
+                for parent in node._parents:
+                    nextCurrent.append( parent )
 
-        #         for edge in node._downEdges:
-        #             nextCurrent.extend( edge._parents )
-        #             nextCurrent.extend( edge._children )
+                for edge in node._downEdges:
+                    nextCurrent.extend( edge._parents )
+                    nextCurrent.extend( edge._children )
 
-        #     nextCurrent = set( nextCurrent )
-        #     current = list( nextCurrent )
+                visited.add( node )
+            current = set( nextCurrent )
 
-        # if( len( visited ) != len( self._nodes ) ):
-        #     raise Exception('This graph is disjoint!!!')
-
+        if( len( visited ) != len( self._nodes ) ):
+            raise Exception('This graph is disjoint!!!')
 
     def graphIterate( self, nodeWork ):
 

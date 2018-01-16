@@ -46,7 +46,7 @@ class RunningStats():
         delta_n2 = delta_n * delta_n
         term1 = delta * delta_n * n1
         self.M1 += delta_n
-        self.M4 += term1 * delta_n2 * ( self.n**2 - 3*self.n + 3 ) + 6 * delta_n2 * self.M2 - 4 * delta_n * self.M3
+        self.M4 += term1 * delta_n2 * ( self.n**2 - 3 * self.n + 3 ) + 6 * delta_n2 * self.M2 - 4 * delta_n * self.M3
         self.M3 += term1 * delta_n * ( self.n - 2 ) - 3 * delta_n * self.M2
         self.M2 += term1
 
@@ -117,14 +117,15 @@ class RunningStats():
 
 
 def test():
-    a = RunningStats(useLogVar=True)
-    for i in range( 100 ):
+    a = RunningStats( useLogVar=True )
+    allVals = []
+    for i in range(50000):
+        i = np.random.normal( scale=10/(i+1) )
         a.pushVal( i )
+        allVals.append( i )
 
-    print( a.mean() )
-    print( np.sqrt( a.variance() ) )
-    print( a.variance() )
-    print( a.skewness() )
-    print( a.kurtosis() )
+    print('%d, %f, %f'%( i, a.mean(), a.variance() ))
+    print('True mean: %f True var: %f'%(np.mean(allVals),np.var(allVals)))
 
-test()
+
+# test()
