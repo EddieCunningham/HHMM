@@ -46,9 +46,21 @@ class RunningStats():
         delta_n2 = delta_n * delta_n
         term1 = delta * delta_n * n1
         self.M1 += delta_n
-        self.M4 += term1 * delta_n2 * ( self.n**2 - 3*self.n + 3 ) + 6 * delta_n2 * self.M2 - 4 * delta_n * self.M3
+        self.M4 += term1 * delta_n2 * ( self.n**2 - 3 * self.n + 3 ) + 6 * delta_n2 * self.M2 - 4 * delta_n * self.M3
         self.M3 += term1 * delta_n * ( self.n - 2 ) - 3 * delta_n * self.M2
         self.M2 += term1
+
+        # print( self.n )
+        # print( n1 )
+        # print( delta )
+        # print( delta_n )
+        # print( delta_n2 )
+        # print( term1 )
+        # print( self.M1 )
+        # print( self.M2 )
+        # print( self.M3 )
+        # print( self.M4 )
+        # print('\n')
 
         if( self.checkpoint != -1 and self.n % self.checkpoint == 0 ):
             if( self.useLV ):
@@ -117,8 +129,8 @@ class RunningStats():
 
 
 def test():
-    a = RunningStats(useLogVar=True)
-    for i in range( 100 ):
+    a = RunningStats( useLogVar=False )
+    for i in range( 500 ):
         a.pushVal( i )
 
     print( a.mean() )
@@ -127,4 +139,4 @@ def test():
     print( a.skewness() )
     print( a.kurtosis() )
 
-test()
+# test()
