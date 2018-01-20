@@ -50,6 +50,18 @@ class RunningStats():
         self.M3 += term1 * delta_n * ( self.n - 2 ) - 3 * delta_n * self.M2
         self.M2 += term1
 
+        # print( self.n )
+        # print( n1 )
+        # print( delta )
+        # print( delta_n )
+        # print( delta_n2 )
+        # print( term1 )
+        # print( self.M1 )
+        # print( self.M2 )
+        # print( self.M3 )
+        # print( self.M4 )
+        # print('\n')
+
         if( self.checkpoint != -1 and self.n % self.checkpoint == 0 ):
             if( self.useLV ):
                 self.saveLogVals()
@@ -121,11 +133,11 @@ def test():
     allVals = []
     for i in range(50000):
         i = np.random.normal( scale=10/(i+1) )
+
         a.pushVal( i )
         allVals.append( i )
 
     print('%d, %f, %f'%( i, a.mean(), a.variance() ))
     print('True mean: %f True var: %f'%(np.mean(allVals),np.var(allVals)))
-
 
 # test()
