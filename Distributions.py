@@ -7,22 +7,84 @@ from pyLogVar import LogVar
 from functools import reduce
 import numpy as np
 
+class HDP():
+    def __init__( self, gamma, alpha_0, truncation ):
+        self.gamma = gamma
+        self.alpha_0 = alpha_0
+        self.K = truncation
+        alpha = Dirchlet.sample( np.ones( self.K ) * self.gamma / self.K )
+        self.beta = Dirichlet( alpha, prior=self )
+
+    def sampleTableDishCounts( self, custDishCounts ):
+        # ( Algorithm 9.3.a in Emily Fox's PhD Thesis and in pyhsmm )
+
+        # Samples the number of tables over all of the restaurants
+        # serving the different dishes ( m_j. )
+
+        # custDishCounts is the number of customers in each
+        # restaurant eating a dish ( n_j.k ).  A transition from
+        # state j to state i is equivalent to having a customer
+        # in restaurant j eating dish i
+
+        # m_jk is the number of tables in rest j serving dish k
+        m = np.zeros_like( custDishCounts )
+
+        # generate a random number for each customer
+        tot = custDishCounts.sum()
+        randseq = np.random.random( tot )
+
+        starts = np.empty_like( custDishCounts )
+        starts[ 0, 0 ] = 0
+        # for indexing into the correct customers random number
+        starts.flat[ 1: ] = np.cumsum( np.ravel( custDishCounts )[ :custDishCounts.size - 1 ] )
+
+        for ( i, j ), n in np.ndenumerate( custDishCounts ):
+            w = self.beta[ j ]
+            for k in range( n ):
+                # sample for each customer at table j in restaurant i
+                m[ i, j ] += randseq[ starts[ i, j ] + k ] \
+                        < ( self.alpha_0 * w ) / ( k + self.alpha_0 * w )
+
+        return m
+
+    def posteriorSampleBeta( self, transitionCounts ):
+        dishCounts = self.sampleTableDishCounts( transitionCounts )
+        alpha = np.hstack( ( dishCounts, np.array( [ self.gamma ] ) ) )
+        return Dirichlet.sample( alpha )
+
+    def sampleProbs( self ):
+        return Dirichlet.sample( self.beta * self.alpha_0 )
+
+    def resample( self, transitionCounts ):
+        self.beta.resample( transitionCounts )
+
 class Dirichlet():
 
-    def __init__( self, alpha ):
+    def __init__( self, alpha, prior=None ):
         self.alpha = alpha
-        self._dir = dirichlet( np.array( alpha ) )
+        self.prior = prior
 
-    def sample( self, newAlpha=None ):
-        if( newAlpha ):
-            return Dirichlet( newAlpha ).sample()
-        return self._dir.rvs( 1 )[ 0 ]
+    @classmethod
+    def sample( cls, alpha ):
+        return dirichlet.rvs( alpha, size=1 )[ 0 ]
 
-    def pdf( self, probs ):
-        return self._dir.pdf( probs )
+    @classmethod
+    def pdf( cls, x, alpha ):
+        return dirichlet.pdf( x, alpha )
 
-    def logpdf( self, probs ):
-        return self._dir.logpdf( probs )
+    @classmethod
+    def log_pdf( cls, x, alpha ):
+        return dirichlet.logpdf( x, alpha )
+
+    def ilog_pdf( self, x ):
+        return dirichlet.logpdf( x, self.alpha )
+
+    def resample( self, x ):
+        if( isinstance( self.prior, HDP ) ):
+            # x should be transitionCounts
+            self.alpha = self.prior.posteriorSampleBeta( x )
+        else:
+            assert 0, 'Not using any other prior'
 
 class Categorical():
 
@@ -30,47 +92,42 @@ class Categorical():
 
         if( alpha is not None ):
             self.alpha = alpha
-            self._prior = Dirichlet( alpha )
-            self._probs = self.resample()
+            self.prior = Dirichlet( alpha )
+            self.probs = Dirichlet.sample( alpha )
         else:
             assert params is not None
-            self._probs = params
+            self.probs = params
 
-        self.N = self._probs.shape[ 0 ]
+        self.N = self.probs.shape[ 0 ]
 
     def probabilities( self ):
-        return self._probs
+        return self.probs
 
-    def resample( self, observations=None ):
+    def resample( self, x ):
+        alpha = self.alpha + x
+        self.probs = Dirichlet.sample( alpha )
+        return self.probs
 
-        newAlpha = self.alpha
+    @classmethod
+    def pdf( cls, i, probs ):
+        return probs[ i ]
 
-        if( observations is not None ):
-            newAlpha += observations
+    def ipdf( self, i ):
+        return self.probs[ i ]
 
-        self._probs = Dirichlet( newAlpha ).sample()
-        return self._probs
-
-    def sample( self, newParams=None ):
-        if( newParams ):
-            return Categorical.sample( newParams )
-        return np.random.choice( self.N, 1, p=self._probs )[ 0 ]
-
-    def pdf( self, i ):
-        return self._probs[ i ]
-
-    def logpdf( self, i ):
-        return np.log( self.pdf( i ) )
+    @classmethod
+    def log_pdf( cls, i, probs ):
+        return np.log( cls.pdf( i ) )
 
     def log_likelihood( self ):
-        return self._prior.logpdf( self._probs )
+        return self.prior.ilog_pdf( self.probs )
 
     def log_posterior( self, observations ):
         newAlpha = self.alpha + observations
-        return Dirichlet( newAlpha ).logpdf( self._probs )
+        return Dirichlet( newAlpha ).log_pdf( self.probs )
 
-    @staticmethod
-    def sample( probs, normalized=False ):
+    @classmethod
+    def sample( cls, probs, normalized=True ):
 
         N = len( probs )
 

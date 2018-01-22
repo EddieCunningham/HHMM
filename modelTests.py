@@ -3,7 +3,6 @@ from pedigreeHGs import allPedigrees
 import numpy as np
 from mcmcTests import ratioTest, marginalizeTests
 from Parameters import autosomalHyperParameters
-from PedigreeHypergraph import PedigreeHG
 
 
 # from Distributions import Categorical
@@ -17,7 +16,7 @@ from PedigreeHypergraph import PedigreeHG
 
 
 
-graphs = allPedigrees( nPedigrees=-1 )
+graphs = allPedigrees( nPedigrees=1 )
 
 A_hyper, L_hyper, pi_hyper = autosomalHyperParameters()
 model = AutosomalMendelModel( graphs, A_hyper, L_hyper, pi_hyper )
