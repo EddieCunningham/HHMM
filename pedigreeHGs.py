@@ -1,7 +1,7 @@
 from HHMMMessagePasser import HiddenMarkovModelMessagePasser
 from HHMMHG import MessagePassingHG
 from model import Pedigree
-from PedigreeHypergraph import PedigreeHG
+from PedigreeHypergraph import AutosomalPedigree
 import json
 import os
 import numpy as np
@@ -22,7 +22,7 @@ def pedigreeExampleOldJSON( name ):
             to changing how model.py works """
         pedigree.setAffectedFunctions( lambda x: None )
 
-        hg = PedigreeHG( name )
+        hg = AutosomalPedigree( name )
         hg.initialize( pedigree )
 
 
@@ -56,7 +56,7 @@ def allPedigrees( nPedigrees=-1 ):
             pedigree = Pedigree( data )
             nIP[ IPMap[ pedigree.inheritancePattern ] ] += 1
 
-            hg = PedigreeHG( filename )
+            hg = AutosomalPedigree( filename )
             hg.initialize( pedigree )
 
             print( 'Done with %s (%s)'%( filename, pedigree.inheritancePattern ) )

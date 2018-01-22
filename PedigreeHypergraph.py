@@ -2,30 +2,16 @@ from HHMMMessagePasser import HiddenMarkovModelMessagePasser
 from HHMMHG import MessagePassingHG
 from HHMMNode import NodeForHMM
 
-def getY( person ):
-    if( 'diagnoses' in dir( person ) ):
-        return int( len( person.diagnoses ) > 0 )
-    return 0
-
-def getSex( person ):
-    return person.sex
-
-def calcN( person ):
-    return 4
-
-def calcNObs( person ):
-    return 2
-
 class PersonNode( NodeForHMM ):
     def __init__( self, y, N, NObs, sex ):
         super( PersonNode, self ).__init__( y, N, NObs )
         self.sex = sex
 
-class PedigreeHG( MessagePassingHG ):
+class PedigreeHGBase( MessagePassingHG ):
 
     def __init__( self, filename ):
         # Set N to None so that we can have different Ns for different nodes
-        super( PedigreeHG, self ).__init__( N=None, NodeType=PersonNode )
+        super( PedigreeHGBase, self ).__init__( N=None, NodeType=PersonNode )
         self._filename = filename
 
         self._parentsToEdge = {}
@@ -37,6 +23,22 @@ class PedigreeHG( MessagePassingHG ):
         node = super( MessagePassingHG, self ).addNode( ID, y, N, NObs, sex )
         return node
 
+    def calcN( self, person ):
+        assert 0, 'Implement this'
+        return 4
+
+    def calcNObs( self, person ):
+        assert 0, 'Implement this'
+        return 2
+
+    def getY( self, person ):
+        if( 'diagnoses' in dir( person ) ):
+            return int( len( person.diagnoses ) > 0 )
+        return 0
+
+    def getSex( self, person ):
+        return person.sex
+
     def checkNode( self, person ):
         if( len( person.parents + person.mateKids ) == 0 ):
             return False
@@ -44,12 +46,12 @@ class PedigreeHG( MessagePassingHG ):
         personId = person.Id
 
         if( self.hasNode( personId ) ):
-            currentNode = super( PedigreeHG, self ).getNode( personId )
+            currentNode = super( PedigreeHGBase, self ).getNode( personId )
         else:
-            y = getY( person )
-            N = calcN( person )
-            NObs = calcNObs( person )
-            sex = getSex( person )
+            y = self.getY( person )
+            N = self.calcN( person )
+            NObs = self.calcNObs( person )
+            sex = self.getSex( person )
             currentNode = self.addNode( personId, y, N, NObs, sex )
 
         return currentNode
@@ -59,10 +61,10 @@ class PedigreeHG( MessagePassingHG ):
         if( sortedParents not in self._parentsToEdge ):
             edgeNumber = len( self._parentsToEdge )
             self._parentsToEdge[ sortedParents ] = edgeNumber
-            return super( PedigreeHG, self ).addEdge( parents, edgeNumber )
+            return super( PedigreeHGBase, self ).addEdge( parents, edgeNumber )
         else:
             edgeNumber = self._parentsToEdge[ sortedParents ]
-            return super( PedigreeHG, self ).getEdge( edgeNumber )
+            return super( PedigreeHGBase, self ).getEdge( edgeNumber )
 
     def initialize( self, pedigree ):
 
@@ -93,4 +95,28 @@ class PedigreeHG( MessagePassingHG ):
                     if( not childNode ): continue
                     familyEdge.addChild( childNode )
 
-        super( PedigreeHG, self ).initialize()
+        super( PedigreeHGBase, self ).initialize()
+
+class AutosomalPedigree( PedigreeHGBase ):
+
+    def calcN( self, person ):
+        return 4
+
+    def calcNObs( self, person ):
+        return 2
+
+class XLinkedPedigree( PedigreeHGBase ):
+
+    def calcN( self, person ):
+        if( person.sex == 'female' ):
+            return 2
+        elif( person.sex == 'male' ):
+            return 4
+        elif( person.sex == 'unknown' ):
+            return 6
+        else:
+            assert 0, 'invalid sex'
+
+    def calcNObs( self, person ):
+        return 2
+

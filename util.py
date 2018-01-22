@@ -1,5 +1,6 @@
 import numpy as np
 from pyLogVar import LogVar
+from scipy.special import gammaln, digamma
 
 def prettyPrint( d, indent=0 ):
     for key, value in d.items():
@@ -9,6 +10,13 @@ def prettyPrint( d, indent=0 ):
         else:
             print( '\t' * ( indent+1 ) + str( value ) )
 
+def dirichletKLDivergence( alpha, beta ):
+    aSum = alpha.sum()
+    bSum = beta.sum()
+
+    return gammaln( aSum ) - gammaln( bSum ) - \
+           gammaln( alpha ).sum() + gammaln( beta ).sum() + \
+           ( ( alpha - beta ) * ( digamma( alpha ) - digamma( aSum ) ) ).sum()
 
 class RunningStats():
 
@@ -33,7 +41,15 @@ class RunningStats():
     # taken from https://www.johndcook.com/blog/skewness_kurtosis/
     def pushVal( self, x, isLog=False ):
 
-        if( isLog ):
+        if( isinstance( x, list ) or isinstance( x, tuple ) ):
+            x = np.array( x )
+
+        if( isinstance( x, np.array ) ):
+            if( isLog ):
+                assert 0
+
+
+        if( isLog and isinstance( x, np.array ) == False ):
             if( self.useLV ):
                 x = LogVar( val=x, isLog=True )
             else:
@@ -49,18 +65,6 @@ class RunningStats():
         self.M4 += term1 * delta_n2 * ( self.n**2 - 3 * self.n + 3 ) + 6 * delta_n2 * self.M2 - 4 * delta_n * self.M3
         self.M3 += term1 * delta_n * ( self.n - 2 ) - 3 * delta_n * self.M2
         self.M2 += term1
-
-        # print( self.n )
-        # print( n1 )
-        # print( delta )
-        # print( delta_n )
-        # print( delta_n2 )
-        # print( term1 )
-        # print( self.M1 )
-        # print( self.M2 )
-        # print( self.M3 )
-        # print( self.M4 )
-        # print('\n')
 
         if( self.checkpoint != -1 and self.n % self.checkpoint == 0 ):
             if( self.useLV ):
@@ -141,3 +145,5 @@ def test():
     print('True mean: %f True var: %f'%(np.mean(allVals),np.var(allVals)))
 
 # test()
+
+

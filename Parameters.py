@@ -130,3 +130,12 @@ def autosomalHyperParameters():
     pi_hyper = np.ones( 4 )
 
     return ( A_hyper, L_hyper, pi_hyper )
+
+def HDPParameters( stateTrunc=5, emissionTrunc=4 ):
+
+    transHDP = HDP( gamma=2, alpha_0=3, truncation=stateTrunc )
+    emissionHDP = HDP( gamma=2, alpha_0=3, truncation=emissionTrunc )
+
+    pi_hyper = np.ones( 4 )
+
+    return ( transHDP, emissionHDP, pi_hyper )
