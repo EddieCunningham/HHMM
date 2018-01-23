@@ -1,5 +1,5 @@
 from Mendel import AutosomalMendelModel
-from pedigreeHGs import allPedigrees
+from pedigreeHGs import allPedigrees, allXLPedigrees, allARPedigrees, allADPedigrees
 import numpy as np
 from mcmcTests import ratioTest, marginalizeTests
 from Parameters import autosomalHyperParameters
@@ -16,10 +16,25 @@ from Parameters import autosomalHyperParameters
 
 
 
-graphs = allPedigrees( nPedigrees=1 )
+# graphs = allPedigrees( nPedigrees=1 )
+# graphs = allXLPedigrees( nPedigrees=1 )
+# graphs = allARPedigrees( nPedigrees=1 )
+graphs = allADPedigrees( nPedigrees=1 )
 
 A_hyper, L_hyper, pi_hyper = autosomalHyperParameters()
 model = AutosomalMendelModel( graphs, A_hyper, L_hyper, pi_hyper )
+
+transPost, emissionPost = model.posteriorEstimate()
+
+print( transPost.mean() )
+print( np.sqrt( transPost.variance() ) )
+
+print('\n')
+
+print( emissionPost.mean() )
+print( np.sqrt( emissionPost.variance() ) )
+
+assert 0
 marginalizeTests( model )
 log_mean, log_var = model.modelEvidence( samples=5000 )
 print('Mean: %f, var: %f'%(log_mean, log_var))

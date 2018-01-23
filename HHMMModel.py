@@ -15,9 +15,11 @@ class HHMMModelBase():
 
         self._transHypers = transHypers
         self.transDists = []
+        self.transShape = ( 0, 0, 0 )
 
         self._emissionHypers = emissionHypers
         self.emissionDists = []
+        self.emissionShape = ( 0, 0 )
 
         # assume all roots have same hyper parameters
         self._rootHypers = rootHypers
@@ -55,7 +57,7 @@ class HHMMModelBase():
         obs = self.countEmissions()
 
         matrix = []
-        for emissionDist in self.emissionDists:
+        for i, emissionDist in enumerate( self.emissionDists ):
             matrix.append( self.emissionDists[ i ].alpha )
 
         return obs + np.array( matrix )
@@ -116,9 +118,16 @@ class HHMMModelBase():
                 transDist.append( Categorical( alpha=transHyper ) )
             self.transDists.append( transDist )
 
+        D = len( self.transDists )
+        self.transShape = ( D, D, D )
+
         # make the emission parameters
         for emissionHyper in self._emissionHypers:
             self.emissionDists.append( Categorical( alpha=emissionHyper ) )
+
+        D = len( self.emissionDists )
+        M = self.emissionDists[ 0 ].N
+        self.emissionShape = ( D, M )
 
         for graph in self.graphs:
 
@@ -288,6 +297,27 @@ class HHMMModelBase():
             sys.stdout.flush()
 
         return ( integral.log_mean(), integral.log_variance() )
+
+
+    def posteriorEstimate( self, mixin=20, samples=50 ):
+
+        # Let the chain mix
+        for i in range( mixin ):
+            self.resample()
+
+        # Accumulate the integral
+        transPost = RunningStats( useNumpy=True, numpyShape=self.transShape )
+        emissionPost = RunningStats( useNumpy=True, numpyShape=self.emissionShape )
+        for i in range( samples ):
+            self.resample()
+
+            tp = self.transitionPosterior()
+            transPost.pushVal( tp )
+
+            ep = self.emissionPosterior()
+            emissionPost.pushVal( ep )
+
+        return transPost, emissionPost
 
 
 class WeakLimitHDPHHMM( HHMMModelBase ):

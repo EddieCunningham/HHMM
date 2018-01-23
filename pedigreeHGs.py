@@ -83,3 +83,50 @@ def allPedigrees( nPedigrees=-1 ):
     # print('AD: %d, AR: %d, XL: %d, M: %d'%( nIP[ 0 ], nIP[ 1 ], nIP[ 2 ], nIP[ 3 ] ) )
     # print('AD: %d, AR: %d, XL: %d, M: %d'%( nIPGood[ 0 ], nIPGood[ 1 ], nIPGood[ 2 ], nIPGood[ 3 ] ) )
     return graphs
+
+def pedigreeOfType( pedType, nPedigrees=-1 ):
+
+    graphs = []
+
+    goodPedigrees = 0
+    badPedigrees = 0
+
+
+    dataFolder = 'Pedigrees_JSON_Fixed_Label'
+    for filename in os.listdir( dataFolder ):
+
+        try:
+            filename = os.path.join( dataFolder, filename )
+
+            with open( filename ) as data_file:
+                data = json.loads( json.load( data_file ) )
+
+            pedigree = Pedigree( data )
+            if( pedigree.inheritancePattern != pedType ):
+                continue
+
+            hg = AutosomalPedigree( filename )
+            hg.initialize( pedigree )
+
+            print( 'Done with %s (%s)'%( filename, pedigree.inheritancePattern ) )
+
+            graphs.append( hg )
+
+            if( nPedigrees != -1 and len( graphs ) >= nPedigrees ):
+                break
+
+        except Exception as error:
+            print( 'FAILED ON %s.  %s'%( filename, str( error ) ) )
+
+            badPedigrees += 1
+
+    return graphs
+
+def allXLPedigrees( nPedigrees=-1 ):
+    return pedigreeOfType( 'XL', nPedigrees=nPedigrees )
+
+def allARPedigrees( nPedigrees=-1 ):
+    return pedigreeOfType( 'AR', nPedigrees=nPedigrees )
+
+def allADPedigrees( nPedigrees=-1 ):
+    return pedigreeOfType( 'AD', nPedigrees=nPedigrees )

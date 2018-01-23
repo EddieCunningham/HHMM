@@ -20,8 +20,11 @@ def dirichletKLDivergence( alpha, beta ):
 
 class RunningStats():
 
-    def __init__( self, checkpoint=-1, useLogVar=False ):
+    def __init__( self, checkpoint=-1, useNumpy=False, numpyShape=None, useLogVar=False ):
 
+        assert useNumpy ^ useLogVar
+
+        self.useNP = useNumpy
         self.useLV = useLogVar
         self.checkpoint = checkpoint
         self.savedVals = []
@@ -32,6 +35,11 @@ class RunningStats():
             self.M2 = LogVar( 0 )
             self.M3 = LogVar( 0 )
             self.M4 = LogVar( 0 )
+        elif( useNumpy ):
+            self.M1 = np.zeros( numpyShape )
+            self.M2 = np.zeros( numpyShape )
+            self.M3 = np.zeros( numpyShape )
+            self.M4 = np.zeros( numpyShape )
         else:
             self.M1 = 0
             self.M2 = 0
@@ -41,15 +49,7 @@ class RunningStats():
     # taken from https://www.johndcook.com/blog/skewness_kurtosis/
     def pushVal( self, x, isLog=False ):
 
-        if( isinstance( x, list ) or isinstance( x, tuple ) ):
-            x = np.array( x )
-
-        if( isinstance( x, np.array ) ):
-            if( isLog ):
-                assert 0
-
-
-        if( isLog and isinstance( x, np.array ) == False ):
+        if( isLog ):
             if( self.useLV ):
                 x = LogVar( val=x, isLog=True )
             else:
@@ -76,6 +76,8 @@ class RunningStats():
         return self.M1
 
     def mean( self ):
+        if( self.useNP ):
+            return self._mean()
         return float( self._mean() )
 
     def log_mean( self ):
@@ -92,6 +94,8 @@ class RunningStats():
             return 0.0
 
     def variance( self ):
+        if( self.useNP ):
+            return self._variance()
         return float( self._variance() )
 
     def log_variance( self ):
